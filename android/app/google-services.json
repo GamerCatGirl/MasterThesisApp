@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1000029646327",
+    "project_id": "master-thesis-cdaa7",
+    "storage_bucket": "master-thesis-cdaa7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000029646327:android:72446744ab9e8cdc4212f2",
+        "android_client_info": {
+          "package_name": "com.math.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZm2Z6VDw4cnaGR45EeTL52pcc9O48h9Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000029646327:android:2e6227612de446634212f2",
+        "android_client_info": {
+          "package_name": "com.mathapp.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZm2Z6VDw4cnaGR45EeTL52pcc9O48h9Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
