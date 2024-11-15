@@ -3,7 +3,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class StartExercise extends StatefulWidget {
   final String typeOefeningen;
-  final VoidCallback onStartClicked;
+  final void Function(int) onStartClicked;
 
   const StartExercise(
       {super.key, required this.typeOefeningen, required this.onStartClicked});
@@ -65,7 +65,8 @@ class _StartExerciseState extends State<StartExercise> {
         ),
         onPressed: () {
           //TODO: post to database
-          widget.onStartClicked();
+          int amount = int.parse(aantalOrTijd);
+          widget.onStartClicked(amount);
         },
       ),
     );

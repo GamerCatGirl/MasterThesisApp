@@ -5,6 +5,7 @@ import 'package:mathapp/components/row_exercise.dart';
 import 'package:mathapp/components/start_exercise.dart';
 import 'package:mathapp/components/title_tile.dart';
 import 'package:mathapp/pages/meetkunde_ex.dart';
+import 'dart:math';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -15,7 +16,12 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool _show_start_exercise = true;
+  final ValueNotifier<bool> _makeNewExercise = ValueNotifier<bool>(false);
   int selectedPage = 0;
+  int currentExercise = 1;
+  int amountExercises = 0;
+  List _pages = [];
+  int currentRandom = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +36,36 @@ class _HomeState extends State<Home> {
         GlobalKey<IconButtonSwitchState>();
     final GlobalKey<IconButtonSwitchState> tileKey2 =
         GlobalKey<IconButtonSwitchState>();
+
+    VoidCallback newExercise = () {
+      print("Parent knows that action is done");
+      _makeNewExercise.value = true;
+    };
+
+    void generateInt() {
+      currentRandom = Random().nextInt(98) + 2;
+    }
+
+    _makeNewExercise.addListener(() {
+      print("Value is changed");
+      if (_makeNewExercise.value) {
+        int random = Random().nextInt(98) + 2;
+        this.currentExercise += 1;
+        print("random: " + random.toString() + "\n");
+        _pages.add(MeetkundeEx(
+          z: random,
+          callback: newExercise,
+          amountExercises: amountExercises,
+          currentExercise: this.currentExercise,
+        ));
+        print(_pages);
+        setState(() {
+          selectedPage += 1;
+          print(selectedPage);
+        });
+        _makeNewExercise.value = false;
+      }
+    });
 
     IconButtonSwitch meetkunde = IconButtonSwitch(
       key: tileKey1,
@@ -63,8 +99,15 @@ class _HomeState extends State<Home> {
             //TODO: visibility doesn't change yet
             child: StartExercise(
               typeOefeningen: "Meetkunde",
-              onStartClicked: () {
+              onStartClicked: (amount) {
+                _pages.add(new MeetkundeEx(
+                  z: Random().nextInt(98) + 2,
+                  callback: newExercise,
+                  amountExercises: amount,
+                  currentExercise: this.currentExercise,
+                ));
                 setState(() {
+                  amountExercises = amount;
                   selectedPage = 1;
                 });
               },
@@ -75,8 +118,9 @@ class _HomeState extends State<Home> {
       ),
     );
 
-    final List _pages = [homePage, MeetkundeEx()];
-
+    if (_pages.isEmpty) {
+      _pages.add(homePage);
+    }
     // TODO: implement build
     return Scaffold(
       body: Center(child: _pages[selectedPage]),

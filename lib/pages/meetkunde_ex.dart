@@ -8,10 +8,20 @@ import 'package:mathapp/components/start_exercise.dart';
 import 'package:mathapp/components/title_tile.dart';
 
 class MeetkundeEx extends StatefulWidget {
-  const MeetkundeEx({super.key});
+  final VoidCallback callback;
+  final int z;
+  final int amountExercises;
+  final int currentExercise;
+
+  const MeetkundeEx(
+      {super.key,
+      required this.z,
+      required this.currentExercise,
+      required this.amountExercises,
+      required this.callback});
 
   @override
-  State<MeetkundeEx> createState() => _MeetkundeExState();
+  State<MeetkundeEx> createState() => new _MeetkundeExState();
 }
 
 class _MeetkundeExState extends State<MeetkundeEx> {
@@ -31,7 +41,7 @@ class _MeetkundeExState extends State<MeetkundeEx> {
     //Widget iconButton = IconButton(onPressed: (){}), icon: icon);
     String story =
         "We willen de oppervlakte van de vloer van ons nieuw kapsalon berekenen. \nWe weten dat 1 zijde " +
-            size.toString() +
+            widget.z.toString() +
             "m lang is, hoeveel is dan de oppervlakte van onze vloer?";
 
     var input1Field = TextFormField(
@@ -56,26 +66,29 @@ class _MeetkundeExState extends State<MeetkundeEx> {
       ),
     );
 
-    String varAssign = "z = " + size.toString() + "m";
+    String varAssign = "z = " + widget.z.toString() + "m";
 
     Widget storyText = Text(story);
-    Widget vars = Text(varAssign);
+    Widget vars = Text(
+      varAssign,
+      style: TextStyle(fontWeight: FontWeight.bold),
+    );
 
     bool checkResult() {
-      if (zijde1.text != size.toString()) {
+      if (zijde1.text != widget.z.toString()) {
         setState(() {
           errorCode =
               "de ingevulde zijde (z) komt niet overeen met de werkelijke zijde (input 1)";
         });
         return false;
-      } else if (zijde2.text != size.toString()) {
+      } else if (zijde2.text != widget.z.toString()) {
         setState(() {
           errorCode =
               "de ingevulde zijde (z) komt niet overeen met de werkelijke zijde (input 2)";
         });
         return false;
-      } else if (oppervlakte.text != (size * size).toString()) {
-        print((size * size).toString());
+      } else if (oppervlakte.text != (widget.z * widget.z).toString()) {
+        print((widget.z * widget.z).toString());
         setState(() {
           errorCode =
               "de oppervlakte is niet juist berekend, maar zijde 1 en 2 kloppen, probeer opnieuw, je bent er bijna :)";
@@ -85,6 +98,14 @@ class _MeetkundeExState extends State<MeetkundeEx> {
       setState(() {
         errorCode = "";
       });
+
+      //TODO: callback to make new ex
+      widget.callback();
+      setState(() {
+        zijde1.text = "";
+        zijde2.text = "";
+        oppervlakte.text = "";
+      });
       return true;
     }
 
@@ -92,6 +113,16 @@ class _MeetkundeExState extends State<MeetkundeEx> {
     return Scaffold(
       body: Center(
         child: Column(children: [
+          Row(
+            children: [
+              Spacer(),
+              Text("Exercise " +
+                  widget.currentExercise.toString() +
+                  " out of " +
+                  widget.amountExercises.toString()),
+              Spacer(),
+            ],
+          ),
           Row(
             children: [Spacer(), vierkant, Spacer()],
           ),
