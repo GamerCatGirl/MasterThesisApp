@@ -12,12 +12,14 @@ class MeetkundeEx extends StatefulWidget {
   final int z;
   final int amountExercises;
   final int currentExercise;
+  final String image;
 
   const MeetkundeEx(
       {super.key,
       required this.z,
       required this.currentExercise,
       required this.amountExercises,
+      required this.image,
       required this.callback});
 
   @override
@@ -32,13 +34,13 @@ class _MeetkundeExState extends State<MeetkundeEx> {
   final TextEditingController zijde2 = TextEditingController();
   final TextEditingController oppervlakte = TextEditingController();
   //TODO: hou een lijst bij van de exercises
-  final vierkant = Image(
-      fit: BoxFit.fitWidth,
-      image: AssetImage('assets/images/Vierkant_Easy.jpg'));
 
   @override
   Widget build(BuildContext context) {
     //Widget iconButton = IconButton(onPressed: (){}), icon: icon);
+    final vierkant =
+        Image(fit: BoxFit.fitWidth, image: AssetImage(widget.image));
+
     String story =
         "We willen de oppervlakte van de vloer van ons nieuw kapsalon berekenen. \nWe weten dat 1 zijde " +
             widget.z.toString() +
@@ -152,7 +154,10 @@ class _MeetkundeExState extends State<MeetkundeEx> {
                 icon: Icon(Icons.done)),
             Spacer()
           ]),
-          Text(errorCode),
+          Text(
+            errorCode,
+            style: TextStyle(color: Colors.red),
+          ),
           //])
         ]),
       ),

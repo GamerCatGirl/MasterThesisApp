@@ -17,6 +17,9 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   bool _show_start_exercise = true;
   final ValueNotifier<bool> _makeNewExercise = ValueNotifier<bool>(false);
+  String path_easy_square = "assets/images/Vierkant_Easy.jpg";
+  String path_harder_square = "assets/images/Vierkant_Harder.jpg";
+
   int selectedPage = 0;
   int currentExercise = 1;
   int amountExercises = 0;
@@ -25,6 +28,9 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    //print(imageIdx.toString() + "\n");
+    List<String> images = [path_easy_square, path_harder_square];
+
     final List _exercises = [
       ExerciseTile(nameExercise: "Exercise 1"),
       ExerciseTile(nameExercise: "Exercise 2"),
@@ -50,11 +56,14 @@ class _HomeState extends State<Home> {
       print("Value is changed");
       if (_makeNewExercise.value) {
         int random = Random().nextInt(98) + 2;
+        int imageIdx = Random().nextInt(2);
+        String image = images[imageIdx];
         this.currentExercise += 1;
         print("random: " + random.toString() + "\n");
         _pages.add(MeetkundeEx(
           z: random,
           callback: newExercise,
+          image: image,
           amountExercises: amountExercises,
           currentExercise: this.currentExercise,
         ));
@@ -96,12 +105,12 @@ class _HomeState extends State<Home> {
             children: [Spacer(), hoofdrekenen, meetkunde, Spacer()],
           ),
           Visibility(
-            //TODO: visibility doesn't change yet
             child: StartExercise(
               typeOefeningen: "Meetkunde",
               onStartClicked: (amount) {
                 _pages.add(new MeetkundeEx(
                   z: Random().nextInt(98) + 2,
+                  image: path_easy_square,
                   callback: newExercise,
                   amountExercises: amount,
                   currentExercise: this.currentExercise,

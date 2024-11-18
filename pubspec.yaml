@@ -70,6 +70,7 @@ flutter:
   assets:
     - assets/images/example_img.jpg
     - assets/images/Vierkant_Easy.jpg
+    - assets/images/Vierkant_Harder.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
