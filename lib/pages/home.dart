@@ -17,6 +17,30 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   bool _show_start_exercise = true;
   final ValueNotifier<bool> _makeNewExercise = ValueNotifier<bool>(false);
+
+  //TODO: make difficulties depending on the student
+  List Difficulties = ["easy", "medium", "hard"];
+
+  List<String> ImagesEasy = ["Vierkant_Easy.jpg"];
+
+  List<String> ImagesSquare = [
+    "Bakery.jpg",
+    "Bar.jpg",
+    "Beautysalon_.jpg",
+    "IceShop.jpg",
+    "Lobby.jpg",
+    "Paintrstudio2.jpg",
+    "Paintstudio.jpg",
+    "Room.jpg",
+    "Room2.jpg",
+    "Room3.jpg",
+    "Room4.jpg",
+    "Room5.jpg",
+    "Vierkant.jpg"
+  ];
+
+  String path_images = "assets/images/vierkant/";
+
   String path_easy_square = "assets/images/Vierkant_Easy.jpg";
   String path_harder_square = "assets/images/Vierkant_Harder.jpg";
 
@@ -30,6 +54,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     //print(imageIdx.toString() + "\n");
     List<String> images = [path_easy_square, path_harder_square];
+    int amountDifficulties = Difficulties.length;
 
     final List _exercises = [
       ExerciseTile(nameExercise: "Exercise 1"),
@@ -52,18 +77,53 @@ class _HomeState extends State<Home> {
       currentRandom = Random().nextInt(98) + 2;
     }
 
+    bool randomBool() {
+      int x = Random().nextInt(2);
+      if (x == 0) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+
+    void setupImages(String difficulty) {
+      if (difficulty == "easy") {
+        images = ImagesEasy;
+      } else {
+        images = ImagesSquare;
+      }
+    }
+
+    bool displayFormula(difficulty) {
+      if (difficulty == "easy") {
+        return true;
+      } else {
+        return randomBool();
+      }
+    }
+
     _makeNewExercise.addListener(() {
       print("Value is changed");
       if (_makeNewExercise.value) {
         int random = Random().nextInt(98) + 2;
         int imageIdx = Random().nextInt(2);
+        ////...
+        int difficultyIdx = Random().nextInt(amountDifficulties);
+        String difficulty = Difficulties[difficultyIdx];
+        setupImages(difficulty);
+
+        int length = images.length;
+        int imageIdxNew = Random().nextInt(length);
+        bool formula = displayFormula(difficulty); //TODO: implement in ex
+        //......
         String image = images[imageIdx];
+        String pathImage = path_images + difficulty + "/" + image;
         this.currentExercise += 1;
         print("random: " + random.toString() + "\n");
         _pages.add(MeetkundeEx(
           z: random,
           callback: newExercise,
-          image: image,
+          image: pathImage,
           amountExercises: amountExercises,
           currentExercise: this.currentExercise,
         ));
