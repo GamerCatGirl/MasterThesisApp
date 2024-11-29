@@ -75,7 +75,7 @@ flutter:
     - assets/images/vierkant/easy/
     - assets/images/vierkant/medium/
     - assets/images/vierkant/hard/
-    
+    - assets/images/paths/
     #- assets/images/vierkant/medium/Bakery.jpg
     #- assets/images/vierkant/medium/Bar.jpg
     #- assets/images/vierkant/medium/Beautysalon_.jpg
