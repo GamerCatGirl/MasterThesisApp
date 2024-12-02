@@ -6,6 +6,8 @@ import 'package:mathapp/components/learningPathTileRight.dart';
 import 'package:mathapp/components/row_exercise.dart';
 import 'package:mathapp/components/title_tile.dart';
 import 'package:mathapp/pages/add_exercise.dart';
+import 'package:mathapp/pages/oppervlakte_theory.dart';
+import 'package:mathapp/pages/square_theory.dart';
 
 //TODO: add floating add button
 
@@ -38,14 +40,20 @@ class _LearningPathState extends State<LearningPath> {
   IconData iconDownload = Icons.download;
   IconData iconTestKnowledge = Icons.edit_note_outlined;
   IconData iconCheckKnowledge = Icons.fact_check_rounded;
-
-  VoidCallback theoryCallback = () => {print("opening theory")};
+  List path = [];
 
   //TODO: in first theory of chapter, get the knowledge of the student
   //TODO: then make sure if student needs a fast or slow learning path
 
   @override
   Widget build(BuildContext context) {
+    VoidCallback theoryCallback = () => {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => OppervlakteTheory(done: () {}),
+            ),
+          )
+        };
     // TODO: implement build
     final Center exercises = Center(
       child: Column(children: [
