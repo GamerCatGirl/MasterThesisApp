@@ -22,7 +22,18 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
   IconData iconTriangleEx = Icons.change_history_sharp;
   IconData iconCirlceEx = Icons.circle_outlined;
   IconData iconRectangle = Icons.crop_16_9_outlined;
+
   final TextEditingController inputVierkant = TextEditingController();
+  final TextEditingController inputRechthoek = TextEditingController();
+  final TextEditingController inputDriehoek = TextEditingController();
+  final TextEditingController inputCirkel = TextEditingController();
+  final TextEditingController inputVierkantFormule = TextEditingController();
+  final TextEditingController inputRechthoekFormule = TextEditingController();
+  final TextEditingController inputDriehoekFormule = TextEditingController();
+  final TextEditingController inputCirkelFormule = TextEditingController();
+
+  bool showAnswers = false;
+
   String textSucceeded100 =
       "Je hebt alles juist ingevuld, je kan deze theory nu proberen toepassen in het dagelijkse leven!";
   String textSucceeded80 =
@@ -33,17 +44,39 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
       "Je wist meer de helft van de theory al! Ik zal je nu verder helpen met de delen die iets minder vlot gingen.";
   String textSucceedLess =
       "Geen zorgen als je niet alle antwoorden wist, ik zal je helpen bij het leren van deze formules!";
+  String error = "";
+  void checkResults() {
+    //TODO:
+    String vierkant = inputVierkant.value.text;
+    String rechthoek = inputRechthoek.value.text;
+    String driehoek = inputDriehoek.value.text;
+    String cirkel = inputCirkel.value.text;
+    String vierkantFormule = inputVierkantFormule.value.text;
+    String rechthoekFormule = inputRechthoekFormule.value.text;
+    String driehoekFormule = inputDriehoekFormule.value.text;
+    String cirkelFormule = inputCirkelFormule.value.text;
+
+    if (vierkant == "" ||
+        rechthoek == "" ||
+        driehoek == "" ||
+        cirkel == "" ||
+        vierkantFormule == "" ||
+        rechthoekFormule == "" ||
+        driehoekFormule == "" ||
+        cirkelFormule == "") {
+      setState(() {
+        error =
+            "Please fill in all fields, if you don't know the answer fill in '/'";
+      });
+    } else {
+      setState(() {
+        showAnswers = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    var inputField = TextFormField(
-      controller: inputVierkant,
-      decoration: const InputDecoration(
-        border: UnderlineInputBorder(),
-        labelText: 'Naam figuur',
-      ),
-    );
-
     return Scaffold(
         body: Center(
             child: Column(children: [
@@ -51,23 +84,54 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
       Spacer(),
       Text("Ken je alle onderstaande figuren?"),
       FigureInputTile(
-          onTileClicked: () {}, icon: iconVierkantEx, name: "Vierkant"),
+          result: inputVierkant,
+          showAnswers: showAnswers,
+          icon: iconVierkantEx,
+          name: "Vierkant"),
       FigureInputTile(
-          onTileClicked: () {}, icon: iconRectangle, name: "Rechthoek"),
+          result: inputRechthoek,
+          showAnswers: showAnswers,
+          icon: iconRectangle,
+          name: "Rechthoek"),
       FigureInputTile(
-          onTileClicked: () {}, icon: iconTriangleEx, name: "Driehoek"),
-      FigureInputTile(onTileClicked: () {}, icon: iconCirlceEx, name: "Cirkel"),
+          result: inputDriehoek,
+          showAnswers: showAnswers,
+          icon: iconTriangleEx,
+          name: "Driehoek"),
+      FigureInputTile(
+          result: inputCirkel,
+          showAnswers: showAnswers,
+          icon: iconCirlceEx,
+          name: "Cirkel"),
+      Spacer(),
       Text("Welke formules ken je nog voor de oppervlakte?"),
       FormuleInputTile(
-          onTileClicked: () {}, icon: iconVierkantEx, name: "Vierkant"),
+          result: inputVierkantFormule,
+          showAnswers: showAnswers,
+          icon: iconVierkantEx,
+          name: "Vierkant"),
       FormuleInputTile(
-          onTileClicked: () {}, icon: iconRectangle, name: "Rechthoek"),
+          result: inputRechthoekFormule,
+          showAnswers: showAnswers,
+          icon: iconRectangle,
+          name: "Rechthoek"),
       FormuleInputTile(
-          onTileClicked: () {}, icon: iconTriangleEx, name: "Driehoek"),
+          result: inputDriehoekFormule,
+          showAnswers: showAnswers,
+          icon: iconTriangleEx,
+          name: "Driehoek"),
       FormuleInputTile(
-          onTileClicked: () {}, icon: iconCirlceEx, name: "Cirkel"),
+          result: inputCirkelFormule,
+          showAnswers: showAnswers,
+          icon: iconCirlceEx,
+          name: "Cirkel"),
+      Spacer(),
       Text(
           "Geen zorgen als je niet alle antwoorden wist, ik zal je helpen bij het leren van deze formules!"),
+      Spacer(),
+      ElevatedButton(
+          onPressed: checkResults, child: Text('Controleer Antwoorden')),
+      Text(error, style: TextStyle(color: Colors.red)),
       Spacer(),
     ])));
   }
