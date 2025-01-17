@@ -6,6 +6,7 @@ import 'package:mathapp/components/learningPathTileRight.dart';
 import 'package:mathapp/components/row_exercise.dart';
 import 'package:mathapp/components/title_tile.dart';
 import 'package:mathapp/pages/add_exercise.dart';
+import 'package:mathapp/pages/conversion_theory.dart';
 import 'package:mathapp/pages/oppervlakte_theory.dart';
 import 'package:mathapp/pages/square_theory.dart';
 
@@ -54,6 +55,15 @@ class _LearningPathState extends State<LearningPath> {
             ),
           )
         };
+
+    VoidCallback conversionCallback = () => {
+          print("On conversion clicked"),
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ConversionTheory(done: () {}),
+            ),
+          )
+        };
     // TODO: implement build
     final Center exercises = Center(
       child: Column(children: [
@@ -70,7 +80,7 @@ class _LearningPathState extends State<LearningPath> {
             fit: BoxFit.fitWidth,
             image: AssetImage("assets/images/paths/MtoR.jpg")),
         Learningpathtileright(
-            onTileClicked: theoryCallback, icon: iconOppervlakte),
+            onTileClicked: conversionCallback, icon: iconOppervlakte),
         Image(
             fit: BoxFit.fitWidth,
             image: AssetImage("assets/images/paths/RtoM.jpg")),

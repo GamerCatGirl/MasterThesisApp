@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mathapp/components/exercise_tile.dart';
 import 'package:mathapp/components/figure_input.dart';
@@ -22,6 +22,19 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
   IconData iconTriangleEx = Icons.change_history_sharp;
   IconData iconCirlceEx = Icons.circle_outlined;
   IconData iconRectangle = Icons.crop_16_9_outlined;
+
+  //FirebaseFirestore db = FirebaseFirestore.instance;
+  //CollectionReference dbExercises = db.collection("MeetkundeResults");
+  //CollectionReference dbExercises = db.collection("MeetkundeResults");
+  //TODO: check add_exercise.dart for more info on how to connect with DB
+
+  final meetkundeLevel = <String, dynamic>{
+    "studentID": "Admin",
+  };
+
+  final meetkundeResults = <String, dynamic>{
+    "studentID": "Admin",
+  };
 
   final TextEditingController inputVierkant = TextEditingController();
   final TextEditingController inputRechthoek = TextEditingController();
@@ -72,6 +85,13 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
       setState(() {
         showAnswers = true;
       });
+
+      // post the results
+      var time = DateTime.now();
+      meetkundeLevel["date"] = time;
+      meetkundeResults["date"] = time;
+
+      print(meetkundeLevel);
     }
   }
 
@@ -84,44 +104,78 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
       Spacer(),
       Text("Ken je alle onderstaande figuren?"),
       FigureInputTile(
-          result: inputVierkant,
+          controller: inputVierkant,
+          saveResult: (res) {
+            meetkundeLevel["vierkantName"] = res;
+            meetkundeResults["vierkantName"] = inputVierkant.text;
+          },
           showAnswers: showAnswers,
           icon: iconVierkantEx,
           name: "Vierkant"),
       FigureInputTile(
-          result: inputRechthoek,
+          controller: inputRechthoek,
+          saveResult: (res) {
+            meetkundeLevel["rechthoekName"] = res;
+            meetkundeResults["rechthoekName"] = inputRechthoek.text;
+          },
           showAnswers: showAnswers,
           icon: iconRectangle,
           name: "Rechthoek"),
       FigureInputTile(
-          result: inputDriehoek,
+          controller: inputDriehoek,
+          saveResult: (res) {
+            meetkundeLevel["driehoekName"] = res;
+            meetkundeResults["driehoekName"] = inputDriehoek.text;
+          },
           showAnswers: showAnswers,
           icon: iconTriangleEx,
           name: "Driehoek"),
       FigureInputTile(
-          result: inputCirkel,
+          controller: inputCirkel,
+          saveResult: (res) {
+            meetkundeLevel["cirkelName"] = res;
+            meetkundeResults["cirkelName"] = inputCirkel.text;
+          },
           showAnswers: showAnswers,
           icon: iconCirlceEx,
           name: "Cirkel"),
       Spacer(),
       Text("Welke formules ken je nog voor de oppervlakte?"),
       FormuleInputTile(
-          result: inputVierkantFormule,
+          controller: inputVierkantFormule,
+          saveResult: (res) {
+            meetkundeLevel["vierkantFormule"] = res;
+            meetkundeResults["vierkantFormule"] = inputVierkantFormule.text;
+          },
           showAnswers: showAnswers,
           icon: iconVierkantEx,
           name: "Vierkant"),
       FormuleInputTile(
-          result: inputRechthoekFormule,
+          controller: inputRechthoekFormule,
+          saveResult: (res) {
+            meetkundeLevel["rechthoekFormule"] = res;
+            meetkundeResults["rechthoekFormule"] = inputRechthoekFormule.text;
+          },
           showAnswers: showAnswers,
           icon: iconRectangle,
           name: "Rechthoek"),
       FormuleInputTile(
-          result: inputDriehoekFormule,
+          controller: inputDriehoekFormule,
+          saveResult: (res) {
+            //meetkundeLevel["driehoekFormule"] = res;
+            //meetkundeResults["driehoekFormule"] = inputDriehoekFormule.text;
+          },
           showAnswers: showAnswers,
           icon: iconTriangleEx,
           name: "Driehoek"),
       FormuleInputTile(
-          result: inputCirkelFormule,
+          controller: inputCirkelFormule,
+          saveResult: (res) {
+            meetkundeLevel["cirkelFormule"] = res;
+            meetkundeResults["cirkelFormule"] = inputCirkelFormule.text;
+            print(meetkundeLevel);
+            print(meetkundeResults);
+          },
           showAnswers: showAnswers,
           icon: iconCirlceEx,
           name: "Cirkel"),

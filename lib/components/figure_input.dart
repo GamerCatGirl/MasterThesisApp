@@ -4,12 +4,14 @@ class FigureInputTile extends StatefulWidget {
   final IconData icon;
   final String name;
   final bool showAnswers;
-  final TextEditingController result;
+  final void Function(bool) saveResult;
+  final TextEditingController controller;
 
   const FigureInputTile(
       {super.key,
       required this.showAnswers,
-      required this.result,
+      required this.saveResult,
+      required this.controller,
       required this.icon,
       required this.name});
 
@@ -24,7 +26,7 @@ class _FigureInputTileState extends State<FigureInputTile> {
   @override
   Widget build(BuildContext context) {
     var inputField = TextFormField(
-      controller: widget.result,
+      controller: widget.controller,
       decoration: const InputDecoration(
         border: UnderlineInputBorder(),
         labelText: 'Naam figuur',
@@ -33,18 +35,20 @@ class _FigureInputTileState extends State<FigureInputTile> {
 
     if (widget.showAnswers) {
       if (widget.name.toUpperCase() ==
-          widget.result.value.text.toUpperCase().trim()) {
+          widget.controller.value.text.toUpperCase().trim()) {
         answer = SizedBox(
             child: Icon(
           iconCheck,
           color: Colors.green,
         ));
+        widget.saveResult(true);
       } else {
         answer = SizedBox(
             child: Icon(
           iconWrong,
           color: Colors.red,
         ));
+        widget.saveResult(false);
       }
     }
 
