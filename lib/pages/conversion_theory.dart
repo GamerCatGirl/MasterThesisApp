@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mathapp/components/formule_input.dart';
 import 'package:mathapp/components/subtitle.dart';
 import 'package:mathapp/components/title.dart';
 
@@ -28,6 +29,18 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
 
   final TextEditingController breedte1controller = TextEditingController();
   final TextEditingController lengte1controller = TextEditingController();
+  final TextEditingController inputRechthoekFormule = TextEditingController();
+
+  bool breedte1Correct = false;
+  bool lengte1Correct = false;
+  bool showFormule = false;
+  bool showAnswers = false;
+
+  IconData iconRectangle = Icons.crop_16_9_outlined;
+
+  String errorBreedte = "";
+  String errorLengte = "";
+  String oppervlakteRechthoek = "Oppervlakte rechthoek = ";
 
   final breedte1 = 60;
   final lengte1 = 140;
@@ -191,26 +204,116 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
     ),
   ];
 
-  void checkBreedte1() {
-    int res = int.parse(breedte1controller.text);
-    if (res == breedte1) {
-      //TODO: result is correct
-    } else {
-      //TODO: result is false
-    }
-  }
-
-  void checkLengte1() {
-    int res = int.parse(lengte1controller.text);
-    if (res == lengte1) {
-      //TODO: result is correct
-    } else {
-      //TODO: result is false
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    Container inputBreedteContainer = Container(
+      child: Text("data"),
+    );
+
+    Container inputLengteContainer = Container(
+      child: Text("data"),
+    );
+
+    Container inputFormuleContainer = Container(
+      child: FormuleInputTile(
+          controller: inputRechthoekFormule,
+          saveResult: (res) {
+            if (res) {
+              //TODO:
+            }
+          },
+          showAnswers: showAnswers,
+          icon: iconRectangle,
+          name: "Rechthoek"),
+    );
+
+    void checkBreedte1() {
+      int res = int.parse(breedte1controller.text);
+      if (res == breedte1) {
+        setState(() {
+          breedte1Correct = true;
+        });
+      } else {
+        //TODO: print error on screen
+        setState(() {
+          errorBreedte =
+              "De gegeven breedte klopt niet, lees de zin onder voorbeeld 2!";
+        });
+      }
+    }
+
+    if (breedte1Correct) {
+      inputBreedteContainer = Container(
+        child: Text("breedte tafel: b = 60 cm"),
+      );
+    } else {
+      inputBreedteContainer = Container(
+        child: Row(
+          children: [
+            Spacer(),
+            Text(" - breedte tafel: b = "),
+            SizedBox(
+              width: 30,
+              child: TextFormField(
+                controller: breedte1controller,
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: '...',
+                ),
+              ),
+            ),
+            Text("cm"),
+            IconButton(onPressed: checkBreedte1, icon: Icon(Icons.check)),
+            Text(
+              errorBreedte,
+              style: TextStyle(color: Colors.red),
+            ),
+            Spacer()
+          ],
+        ),
+      );
+    }
+
+    void checkLengte1() {
+      int res = int.parse(lengte1controller.text);
+      if (res == lengte1) {
+        setState(() {
+          lengte1Correct = true;
+        });
+      } else {
+        //TODO: result is false
+        print("False lengte");
+      }
+    }
+
+    if (lengte1Correct) {
+      inputLengteContainer = Container(
+        child: Text("lengte tafel: l = 140 cm"),
+      );
+    } else {
+      inputLengteContainer = Container(
+        child: Row(
+          children: [
+            Spacer(),
+            Text(" - lengte tafel: l = "),
+            SizedBox(
+              width: 30,
+              child: TextFormField(
+                controller: lengte1controller,
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: '...',
+                ),
+              ),
+            ),
+            Text("cm"),
+            IconButton(onPressed: checkLengte1, icon: Icon(Icons.check)),
+            Spacer()
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
         body: Center(
             child: Column(children: [
@@ -235,48 +338,19 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
       Text(
           "We willen de tafel verven want de oude verf is beschadigt. De tafel is 60 cm op 140 cm. Om te kunnen berekenen hoeveel verf we nodig hebben moeten we de oppervlakte van de tafel weten in m^2."),
       Subtitle(title: "Gegeven: "),
-      Row(
-        children: [
-          Spacer(),
-          Text(" - breedte tafel: b = "),
-          SizedBox(
-            width: 30,
-            child: TextFormField(
-              controller: breedte1controller,
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: '...',
-              ),
-            ),
-          ),
-          Text("cm"),
-          IconButton(onPressed: () {}, icon: Icon(Icons.check)),
-          Spacer()
-        ],
-      ),
-      Row(
-        children: [
-          Spacer(),
-          Text(" - lengte tafel: l = "),
-          SizedBox(
-            width: 30,
-            child: TextFormField(
-              controller: lengte1controller,
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: '...',
-              ),
-            ),
-          ),
-          Text("cm"),
-          IconButton(onPressed: () {}, icon: Icon(Icons.check)),
-          Spacer()
-        ],
-      ),
+      inputBreedteContainer,
+      inputLengteContainer,
       Subtitle(title: "Gevraagd: "),
-      Text("TODO: make student fill in"),
       Text("Oppervlakte tafel in m^2"),
-      Text("Oppervlakte rechthoek = l x b"),
+      Text(oppervlakteRechthoek),
+      inputFormuleContainer,
+      IconButton(
+          onPressed: () {
+            setState(() {
+              showAnswers = true;
+            });
+          },
+          icon: Icon(Icons.check)),
       Subtitle(title: "Oplossing: "),
       Text("l x b = 140 cm x 60 cm = 8400 cm^2"),
       Text(
