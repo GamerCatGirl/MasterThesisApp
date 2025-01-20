@@ -27,23 +27,37 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
     7: FixedColumnWidth(128),
   };
 
+  //Gegeven ex 2
   final TextEditingController breedte1controller = TextEditingController();
   final TextEditingController lengte1controller = TextEditingController();
+  //Gevraagd ex 2
   final TextEditingController inputRechthoekFormule = TextEditingController();
+  //Oplossing ex 2
+  final TextEditingController inputBreedte = TextEditingController();
+  final TextEditingController inputLengte = TextEditingController();
+  final TextEditingController inputOplossingX = TextEditingController();
 
   bool breedte1Correct = false;
   bool lengte1Correct = false;
   bool showFormule = false;
   bool showAnswers = false;
+  bool formuleCorrect = false;
 
   IconData iconRectangle = Icons.crop_16_9_outlined;
 
   String errorBreedte = "";
   String errorLengte = "";
+  String errorFormule = "";
   String oppervlakteRechthoek = "Oppervlakte rechthoek = ";
+  String oppervlakteRechthoek2 = "Oppervlakte rechthoek = ";
+
+  //EX2: oplossing
+  bool breedte2Correct = false;
+  String errorBreedte2 = "";
 
   final breedte1 = 60;
   final lengte1 = 140;
+  final oplossing = 8400;
   final row1 = TableRow(
     decoration: const BoxDecoration(
       color: Color.fromARGB(255, 218, 188, 255),
@@ -220,12 +234,107 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
           saveResult: (res) {
             if (res) {
               //TODO:
+              formuleCorrect = true;
             }
           },
           showAnswers: showAnswers,
           icon: iconRectangle,
           name: "Rechthoek"),
     );
+
+    //Oplossing ex 2
+    void checkOplossing() {
+      int res = int.parse(inputBreedte.text);
+      if (res == breedte1) {
+        setState(() {
+          breedte2Correct = true;
+        });
+      } else {
+        //TODO: print error on screen
+        setState(() {
+          errorBreedte2 =
+              "De gegeven breedte klopt niet, lees de zin onder voorbeeld 2!";
+        });
+      }
+    }
+
+    Container inputOplossing = Container(
+      child: Row(
+        children: [
+          Spacer(),
+          Text(oppervlakteRechthoek2),
+          SizedBox(
+            width: 30,
+            child: TextFormField(
+              controller: inputBreedte,
+              decoration: const InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'b',
+              ),
+            ),
+          ),
+          Text("cm x "),
+          SizedBox(
+            width: 30,
+            child: TextFormField(
+              controller: inputLengte,
+              decoration: const InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'l',
+              ),
+            ),
+          ),
+          Text(" cm =  "),
+          SizedBox(
+            width: 60,
+            child: TextFormField(
+              controller: inputOplossingX,
+              decoration: const InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'Opp',
+              ),
+            ),
+          ),
+          Text(" cm^2"),
+          IconButton(onPressed: checkOplossing, icon: Icon(Icons.check)),
+          Text(
+            errorBreedte2,
+            style: TextStyle(color: Colors.red),
+          ),
+          Spacer()
+        ],
+      ),
+    );
+
+    Container checkFormule = Container(
+        child: Row(
+      children: [
+        Spacer(),
+        IconButton(
+            onPressed: () {
+              if (!lengte1Correct) {
+                setState(() {
+                  errorFormule = "Vul eerst de lengte in bij gegeven";
+                });
+              } else if (!breedte1Correct) {
+                setState(() {
+                  errorFormule = "Vul eerst de breedte in bij gegeven";
+                });
+              } else if (inputRechthoekFormule.text == "l x b") {
+                setState(() {
+                  formuleCorrect = true;
+                });
+              } else {
+                setState(() {
+                  showAnswers = true;
+                });
+              }
+            },
+            icon: Icon(Icons.check)),
+        Text(errorFormule),
+        Spacer()
+      ],
+    ));
 
     void checkBreedte1() {
       int res = int.parse(breedte1controller.text);
@@ -240,6 +349,14 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
               "De gegeven breedte klopt niet, lees de zin onder voorbeeld 2!";
         });
       }
+    }
+
+    if (formuleCorrect) {
+      print("Formule correct");
+      oppervlakteRechthoek = "Oppervlakte rechthoek = l x b";
+      oppervlakteRechthoek2 = "l x b = ";
+      inputFormuleContainer = Container();
+      checkFormule = Container();
     }
 
     if (breedte1Correct) {
@@ -344,15 +461,12 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
       Text("Oppervlakte tafel in m^2"),
       Text(oppervlakteRechthoek),
       inputFormuleContainer,
-      IconButton(
-          onPressed: () {
-            setState(() {
-              showAnswers = true;
-            });
-          },
-          icon: Icon(Icons.check)),
+      checkFormule,
       Subtitle(title: "Oplossing: "),
-      Text("l x b = 140 cm x 60 cm = 8400 cm^2"),
+      Row(
+        children: [Spacer(), Text(oppervlakteRechthoek2), Spacer()],
+      ),
+      inputOplossing,
       Text(
           "We vullen nu de oppervlakte in de tabel in, we schrijven het laatste getal van de oppervlakte (0), in de laatste kolom van cm^2. We vullen de rest van de cijfers in door steeds een kolom naar links te schuiven."),
       Text("TODO: vull de gegevens in de tabel in"),
