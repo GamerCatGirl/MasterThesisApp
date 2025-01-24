@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mathapp/components/conversionTable.dart';
 import 'package:mathapp/components/formule_input.dart';
 import 'package:mathapp/components/subtitle.dart';
 import 'package:mathapp/components/title.dart';
@@ -42,6 +43,27 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
   bool showFormule = false;
   bool showAnswers = false;
   bool formuleCorrect = false;
+
+  bool checkFilledIn = false;
+  //String errorTable = "";
+  final ValueNotifier<String> errorTable = ValueNotifier("");
+  final filledIn = ["", "", "", "", "", "", "", "", "8", "4", "0", "0", "", ""];
+  final extended = [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "0,",
+    "8",
+    "4",
+    "0",
+    "0",
+    "",
+    ""
+  ];
 
   IconData iconRectangle = Icons.crop_16_9_outlined;
 
@@ -130,7 +152,12 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
         Container(
           child: Row(
             children: [
-              Container(width: 64, height: 64, color: Colors.white),
+              GestureDetector(
+                onTap: () {
+                  print("on km-1 clicked");
+                },
+                child: Container(width: 64, height: 64, color: Colors.white),
+              ),
               Container(
                 width: 64,
               )
@@ -442,11 +469,30 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
       Text(
           "Hoe men deze tabel gebruiken, zal worden uitgelegd met behulp van 2 voorbeelden."),
       Spacer(),
+      /*
       Table(
         border: TableBorder.all(),
         columnWidths: widthColumns,
         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
         children: rows,
+      ),
+      */
+      Conversiontable(
+        done: (error) {
+          errorTable.value = error;
+          checkFilledIn = false;
+        },
+        result: filledIn,
+        checkCorrectFilled: checkFilledIn,
+      ),
+      ValueListenableBuilder<String>(
+        valueListenable: errorTable,
+        builder: (context, value, child) {
+          return Text(
+            value,
+            style: TextStyle(color: Colors.red),
+          );
+        },
       ),
       Spacer(),
       Text("Voorbeeld 1: \n"),
@@ -469,7 +515,18 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
       inputOplossing,
       Text(
           "We vullen nu de oppervlakte in de tabel in, we schrijven het laatste getal van de oppervlakte (0), in de laatste kolom van cm^2. We vullen de rest van de cijfers in door steeds een kolom naar links te schuiven."),
-      Text("TODO: vull de gegevens in de tabel in"),
+      Row(children: [
+        Spacer(),
+        Text("TODO: vull de gegevens in de tabel in"),
+        IconButton(
+            onPressed: () {
+              setState(() {
+                checkFilledIn = true;
+              });
+            },
+            icon: Icon(Icons.check)),
+        Spacer(),
+      ]),
       Text(
           "We zetten altijd de komma van de maateenheid waar we geinteresseerd zijn het meest rechts van die kolom!"),
       Text("TODO: vul de extra 0 en , in!"),
