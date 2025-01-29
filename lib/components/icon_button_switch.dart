@@ -84,7 +84,8 @@ class IconButtonSwitchState extends State<IconButtonSwitch> {
                     fontSize: 16),
               )),
               Visibility(
-                child: Icon(IconData(0xf6fc, fontFamily: 'MaterialIcons'),
+                //Icon(IconData(0xf6fc, fontFamily: 'MaterialIcons'),
+                child: Icon(Icons.eject,
                     color: Color.fromRGBO(245, 230, 255, 1), size: 40),
                 visible: _isIconVisible,
               )
