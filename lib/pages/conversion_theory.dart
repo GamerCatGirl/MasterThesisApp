@@ -38,11 +38,19 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
   final TextEditingController inputLengte = TextEditingController();
   final TextEditingController inputOplossingX = TextEditingController();
 
+  final correct = Icon(Icons.check);
+  final fault = Icon(Icons.error);
+
   bool breedte1Correct = false;
   bool lengte1Correct = false;
   bool showFormule = false;
   bool showAnswers = false;
   bool formuleCorrect = false;
+  bool table1correct = false;
+  bool table2correct = false;
+
+  String table1correctString = "";
+  String table2correctString = "";
 
   bool checkFilledIn = false;
   //String errorTable = "";
@@ -378,6 +386,12 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
       }
     }
 
+    void checkTable() {
+      setState(() {
+        checkFilledIn = true;
+      });
+    }
+
     if (formuleCorrect) {
       print("Formule correct");
       oppervlakteRechthoek = "Oppervlakte rechthoek = l x b";
@@ -479,7 +493,14 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
       */
       Conversiontable(
         done: (error) {
-          errorTable.value = error;
+          if (error == "correct") {
+            errorTable.value = "";
+            table1correct = true;
+            table1correctString = "Goed! :)";
+            checkFilledIn = false;
+          } else {
+            errorTable.value = error;
+          }
           checkFilledIn = false;
         },
         result: filledIn,
@@ -518,20 +539,37 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
       Row(children: [
         Spacer(),
         Text("TODO: vull de gegevens in de tabel in"),
-        IconButton(
-            onPressed: () {
-              setState(() {
-                checkFilledIn = true;
-              });
-            },
-            icon: Icon(Icons.check)),
+        IconButton(onPressed: checkTable, icon: Icon(Icons.check)),
+        Text(table1correctString),
         Spacer(),
       ]),
       Text(
           "We zetten altijd de komma van de maateenheid waar we geinteresseerd zijn het meest rechts van die kolom!"),
-      Text("TODO: vul de extra 0 en , in!"),
       Text(
           "Vul nu 0 in voor het getal tot en met we in de rechter kolom van de maateenheid zijn."),
+      Row(
+        children: [
+          Spacer(),
+          Text("TODO: vul de extra 0 en , in!"),
+          IconButton(
+              onPressed: () {
+                //TODO: check if previous was correct
+                if (table1correct) {
+                  table2correctString = "";
+                  checkTable();
+                } else {
+                  //Display error
+                  setState(() {
+                    table2correctString =
+                        "Vul eerst de huidige oppervlakte correct in! En probeer dan opnieuw!";
+                  });
+                }
+              },
+              icon: Icon(Icons.check)),
+          Text(table2correctString),
+          Spacer()
+        ],
+      ),
       Text("Oppervlakte = 0,84 m^2"),
       Spacer(),
     ])));

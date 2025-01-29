@@ -97,6 +97,8 @@ class _ConversionTableState extends State<Conversiontable> {
         widget.done("Nothing filled in");
       } else if (faultOn > -1) {
         widget.done("fault on index: " + faultOn.toString());
+      } else {
+        widget.done("correct");
       }
     }
 
