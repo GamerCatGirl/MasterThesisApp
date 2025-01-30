@@ -576,7 +576,13 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
     return Scaffold(
         body: Center(
             child: ListView(
-      children: [Header(title: "Conversion Page")],
+      children: [
+        Header(title: "Conversion Page"),
+        Text(
+            "Om oppervlakte maten te herleiden kunnen we gebruik maken van onderstaande tabel."),
+        Text(
+            "Hoe men deze tabel gebruiken, zal worden uitgelegd met behulp van 2 voorbeelden."),
+      ],
     ))
 
         /* ListView(children: [
