@@ -569,28 +569,12 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
 
     return Scaffold(
         body: Center(
-            child: ListView(
-      children: [
-        Header(title: "Conversion Page"),
-        Text(
-            "Om oppervlakte maten te herleiden kunnen we gebruik maken van onderstaande tabel."),
-        Text(
-            "Hoe men deze tabel gebruiken, zal worden uitgelegd met behulp van 2 voorbeelden."),
-        Row(
-          children: [
-            Spacer(),
-            Conversiontable(
-              done: callbackTable,
-              result: filledIn,
-              checkCorrectFilled: checkFilledIn,
-            ),
-            Spacer()
-          ],
-        ),
-      ],
-    ))
-
-        /*
+            child: ListView(children: [
+      Header(title: "Conversion Page"),
+      Text(
+          "Om oppervlakte maten te herleiden kunnen we gebruik maken van onderstaande tabel."),
+      Text(
+          "Hoe men deze tabel gebruiken, zal worden uitgelegd met behulp van 2 voorbeelden."),
       Row(
         children: [
           Spacer(),
@@ -602,8 +586,6 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
           Spacer()
         ],
       ),
-      */
-        /*
       ValueListenableBuilder<String>(
         valueListenable: errorTable,
         builder: (context, value, child) {
@@ -713,9 +695,6 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
             ),
             fillinInResult,
           ])),
-      Spacer(),
-      */
-        //])
-        );
+    ])));
   }
 }
