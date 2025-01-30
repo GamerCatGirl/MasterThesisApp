@@ -595,12 +595,10 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
           );
         },
       ),
-      Spacer(),
       Visibility(
         visible: showVoorbeeld1,
         child: Text("Voorbeeld 1: \n"),
       ),
-      Spacer(),
       Column(children: [
         Text("Voorbeeld 2: \n"),
         Text(
