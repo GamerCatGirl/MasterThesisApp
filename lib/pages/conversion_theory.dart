@@ -279,7 +279,6 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
 
   @override
   Widget build(BuildContext context) {
-    /*
     Container inputBreedteContainer = Container(
       child: Text("data"),
     );
@@ -567,7 +566,6 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
         ),
       );
     }
-    */
 
     return Scaffold(
         body: Center(
