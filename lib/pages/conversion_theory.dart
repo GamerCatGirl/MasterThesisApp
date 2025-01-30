@@ -37,6 +37,7 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
   final TextEditingController inputBreedte = TextEditingController();
   final TextEditingController inputLengte = TextEditingController();
   final TextEditingController inputOplossingX = TextEditingController();
+  final TextEditingController inputResult = TextEditingController();
 
   final correct = Icon(Icons.check);
   final fault = Icon(Icons.error);
@@ -55,8 +56,23 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
   bool checkFilledIn = false;
   //String errorTable = "";
   final ValueNotifier<String> errorTable = ValueNotifier("");
-  final filledIn = ["", "", "", "", "", "", "", "", "8", "4", "0", "0", "", ""];
-  final extended = [
+  List<String> filledIn = [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "8",
+    "4",
+    "0",
+    "0",
+    "",
+    ""
+  ];
+  List<String> extended = [
     "",
     "",
     "",
@@ -84,6 +100,8 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
   //EX2: oplossing
   bool breedte2Correct = false;
   String errorBreedte2 = "";
+  String errorResult = "";
+  Color resError = Colors.red;
 
   final breedte1 = 60;
   final lengte1 = 140;
@@ -341,6 +359,57 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
       ),
     );
 
+    Row fillinInResult = Row(
+      children: [
+        Spacer(),
+        Text("Oppervlakte = "),
+        SizedBox(
+          width: 60,
+          child: TextFormField(
+            controller: inputResult,
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Opp',
+            ),
+          ),
+        ),
+        Text("m^2"),
+        IconButton(
+            onPressed: () {
+              setState(() {
+                if (!table1correct) {
+                  errorResult = "Vul eerst de oppervlakte in in de tabel";
+                } else if (!table2correct) {
+                  errorResult =
+                      "Controleer eerst het resultaat in de tabel voor m^2";
+                } else if (inputResult.text == "0,84") {
+                  resError = Colors.green;
+                  errorResult = "Goed!";
+                  //TODO:
+                } else if (inputResult.text == "0,8400") {
+                  errorResult =
+                      "Probeer je resultaat af te ronden op 2 cijfers na de komma";
+                  //TODO:
+                } else if (inputResult.text == "0,840") {
+                  errorResult =
+                      "Probeer je resultaat af te ronden op 2 cijfers na de komma";
+                  // TODO:
+                } else {
+                  errorResult =
+                      "Resultaat is niet juist, kijk naar de waarde dat je in de tabel hebt ingevuld!";
+                  //TODO:
+                }
+              });
+            },
+            icon: Icon(Icons.check)),
+        Text(
+          errorResult,
+          style: TextStyle(color: resError),
+        ),
+        Spacer()
+      ],
+    );
+
     Container checkFormule = Container(
         child: Row(
       children: [
@@ -444,6 +513,23 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
       }
     }
 
+    void callbackTable(String error) {
+      if (error == "correct") {
+        if (filledIn == extended) {
+          table2correct = true;
+          table2correctString = "Goed! :)";
+        }
+        errorTable.value = "";
+        table1correct = true;
+        filledIn = extended;
+        table1correctString = "Goed! :)";
+        checkFilledIn = false;
+      } else {
+        errorTable.value = error;
+      }
+      checkFilledIn = false;
+    }
+
     if (lengte1Correct) {
       inputLengteContainer = Container(
         child: Text("lengte tafel: l = 140 cm"),
@@ -491,20 +577,16 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
         children: rows,
       ),
       */
-      Conversiontable(
-        done: (error) {
-          if (error == "correct") {
-            errorTable.value = "";
-            table1correct = true;
-            table1correctString = "Goed! :)";
-            checkFilledIn = false;
-          } else {
-            errorTable.value = error;
-          }
-          checkFilledIn = false;
-        },
-        result: filledIn,
-        checkCorrectFilled: checkFilledIn,
+      Row(
+        children: [
+          Spacer(),
+          Conversiontable(
+            done: callbackTable,
+            result: filledIn,
+            checkCorrectFilled: checkFilledIn,
+          ),
+          Spacer()
+        ],
       ),
       ValueListenableBuilder<String>(
         valueListenable: errorTable,
@@ -538,9 +620,18 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
           "We vullen nu de oppervlakte in de tabel in, we schrijven het laatste getal van de oppervlakte (0), in de laatste kolom van cm^2. We vullen de rest van de cijfers in door steeds een kolom naar links te schuiven."),
       Row(children: [
         Spacer(),
-        Text("TODO: vull de gegevens in de tabel in"),
+        Text("VUL IN de oppervlakte in de tabel!"),
         IconButton(onPressed: checkTable, icon: Icon(Icons.check)),
-        Text(table1correctString),
+        //Text(table1correctString),
+        ValueListenableBuilder<String>(
+          valueListenable: errorTable,
+          builder: (context, value, child) {
+            return Text(
+              table1correctString,
+              style: TextStyle(color: Colors.green),
+            );
+          },
+        ),
         Spacer(),
       ]),
       Text(
@@ -550,7 +641,7 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
       Row(
         children: [
           Spacer(),
-          Text("TODO: vul de extra 0 en , in!"),
+          Text("VUL IN de 0, in op de juiste plaats!"),
           IconButton(
               onPressed: () {
                 //TODO: check if previous was correct
@@ -566,11 +657,22 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
                 }
               },
               icon: Icon(Icons.check)),
-          Text(table2correctString),
+          ValueListenableBuilder<String>(
+            valueListenable: errorTable,
+            builder: (context, value, child) {
+              return Text(
+                table2correctString,
+                style: TextStyle(color: Colors.green),
+              );
+            },
+          ),
           Spacer()
         ],
       ),
-      Text("Oppervlakte = 0,84 m^2"),
+      fillinInResult,
+      Row(
+        children: [Spacer(), Text("Oppervlakte = 0,84 m^2"), Spacer()],
+      ),
       Spacer(),
     ])));
   }

@@ -57,7 +57,6 @@ class _ConversionTableState extends State<Conversiontable> {
   @override
   Widget build(BuildContext context) {
     if (widget.checkCorrectFilled) {
-      //TODO:
       List<String> filledIn = [
         km1.text,
         km2.text,
@@ -74,8 +73,6 @@ class _ConversionTableState extends State<Conversiontable> {
         mm1.text,
         mm2.text
       ];
-
-      print("Testing");
 
       bool isEmpty = true;
       int faultOn = -1;
