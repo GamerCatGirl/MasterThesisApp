@@ -17,6 +17,9 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
   //CollectionReference dbExercises = db.collection("MeetkundeResults");
   //CollectionReference dbExercises = db.collection("MeetkundeResults");
   //TODO: check add_exercise.dart for more info on how to connect with DB
+
+  /*
+
   final widthColumns = <int, TableColumnWidth>{
     0: IntrinsicColumnWidth(),
     1: FixedColumnWidth(128),
@@ -276,8 +279,11 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
     ),
   ];
 
+  */
+
   @override
   Widget build(BuildContext context) {
+    /*
     Container inputBreedteContainer = Container(
       child: Text("data"),
     );
@@ -565,10 +571,10 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
         ),
       );
     }
+    */
 
     return Scaffold(
-        body: Center(
-            child: ListView(children: [
+        body: ListView(children: [
       Spacer(),
       Header(title: "Conversion Page"),
       Spacer(),
@@ -702,6 +708,6 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
           ])),
       Spacer(),
       */
-    ])));
+    ]));
   }
 }
