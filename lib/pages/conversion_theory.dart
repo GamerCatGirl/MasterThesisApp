@@ -574,8 +574,8 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
     */
 
     return Scaffold(
-        body: Center(
-      child: Text("test"),
+        body: ListView(
+      children: [Spacer(), Header(title: "Conversion Page"), Spacer()],
     )
 
         /* ListView(children: [
