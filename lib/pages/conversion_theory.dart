@@ -27,17 +27,21 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
     6: FixedColumnWidth(128),
     7: FixedColumnWidth(128),
   };
+  //ex 1
+  bool showVoorbeeld1 = false;
 
   //Gegeven ex 2
   final TextEditingController breedte1controller = TextEditingController();
   final TextEditingController lengte1controller = TextEditingController();
   //Gevraagd ex 2
   final TextEditingController inputRechthoekFormule = TextEditingController();
+  bool showGevraagd2 = false;
   //Oplossing ex 2
   final TextEditingController inputBreedte = TextEditingController();
   final TextEditingController inputLengte = TextEditingController();
   final TextEditingController inputOplossingX = TextEditingController();
   final TextEditingController inputResult = TextEditingController();
+  bool showOplossing2 = false;
 
   final correct = Icon(Icons.check);
   final fault = Icon(Icons.error);
@@ -47,7 +51,8 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
   bool showFormule = false;
   bool showAnswers = false;
   bool formuleCorrect = false;
-  bool table1correct = false;
+  //bool table1correct = false;
+  final ValueNotifier<bool> table1correct = ValueNotifier(false);
   bool table2correct = false;
 
   String table1correctString = "";
@@ -377,7 +382,7 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
         IconButton(
             onPressed: () {
               setState(() {
-                if (!table1correct) {
+                if (!table1correct.value) {
                   errorResult = "Vul eerst de oppervlakte in in de tabel";
                 } else if (!table2correct) {
                   errorResult =
@@ -385,19 +390,15 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
                 } else if (inputResult.text == "0,84") {
                   resError = Colors.green;
                   errorResult = "Goed!";
-                  //TODO:
                 } else if (inputResult.text == "0,8400") {
                   errorResult =
                       "Probeer je resultaat af te ronden op 2 cijfers na de komma";
-                  //TODO:
                 } else if (inputResult.text == "0,840") {
                   errorResult =
                       "Probeer je resultaat af te ronden op 2 cijfers na de komma";
-                  // TODO:
                 } else {
                   errorResult =
                       "Resultaat is niet juist, kijk naar de waarde dat je in de tabel hebt ingevuld!";
-                  //TODO:
                 }
               });
             },
@@ -426,6 +427,7 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
                 });
               } else if (inputRechthoekFormule.text == "l x b") {
                 setState(() {
+                  showOplossing2 = true;
                   formuleCorrect = true;
                 });
               } else {
@@ -444,6 +446,9 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
       int res = int.parse(breedte1controller.text);
       if (res == breedte1) {
         setState(() {
+          if (lengte1Correct) {
+            showGevraagd2 = true;
+          }
           breedte1Correct = true;
         });
       } else {
@@ -505,6 +510,9 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
       int res = int.parse(lengte1controller.text);
       if (res == lengte1) {
         setState(() {
+          if (breedte1Correct) {
+            showGevraagd2 = true;
+          }
           lengte1Correct = true;
         });
       } else {
@@ -520,7 +528,7 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
           table2correctString = "Goed! :)";
         }
         errorTable.value = "";
-        table1correct = true;
+        table1correct.value = true;
         filledIn = extended;
         table1correctString = "Goed! :)";
         checkFilledIn = false;
@@ -598,81 +606,105 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
         },
       ),
       Spacer(),
-      Text("Voorbeeld 1: \n"),
+      Visibility(
+        visible: showVoorbeeld1,
+        child: Text("Voorbeeld 1: \n"),
+      ),
       Spacer(),
-      Text("Voorbeeld 2: \n"),
-      Text(
-          "We willen de tafel verven want de oude verf is beschadigt. De tafel is 60 cm op 140 cm. Om te kunnen berekenen hoeveel verf we nodig hebben moeten we de oppervlakte van de tafel weten in m^2."),
-      Subtitle(title: "Gegeven: "),
-      inputBreedteContainer,
-      inputLengteContainer,
-      Subtitle(title: "Gevraagd: "),
-      Text("Oppervlakte tafel in m^2"),
-      Text(oppervlakteRechthoek),
-      inputFormuleContainer,
-      checkFormule,
-      Subtitle(title: "Oplossing: "),
-      Row(
-        children: [Spacer(), Text(oppervlakteRechthoek2), Spacer()],
-      ),
-      inputOplossing,
-      Text(
-          "We vullen nu de oppervlakte in de tabel in, we schrijven het laatste getal van de oppervlakte (0), in de laatste kolom van cm^2. We vullen de rest van de cijfers in door steeds een kolom naar links te schuiven."),
-      Row(children: [
-        Spacer(),
-        Text("VUL IN de oppervlakte in de tabel!"),
-        IconButton(onPressed: checkTable, icon: Icon(Icons.check)),
-        //Text(table1correctString),
-        ValueListenableBuilder<String>(
-          valueListenable: errorTable,
-          builder: (context, value, child) {
-            return Text(
-              table1correctString,
-              style: TextStyle(color: Colors.green),
-            );
-          },
-        ),
-        Spacer(),
+      Column(children: [
+        Text("Voorbeeld 2: \n"),
+        Text(
+            "We willen de tafel verven want de oude verf is beschadigt. De tafel is 60 cm op 140 cm. Om te kunnen berekenen hoeveel verf we nodig hebben moeten we de oppervlakte van de tafel weten in m^2."),
+        Subtitle(title: "Gegeven: "),
+        inputBreedteContainer,
+        inputLengteContainer,
       ]),
-      Text(
-          "We zetten altijd de komma van de maateenheid waar we geinteresseerd zijn het meest rechts van die kolom!"),
-      Text(
-          "Vul nu 0 in voor het getal tot en met we in de rechter kolom van de maateenheid zijn."),
-      Row(
-        children: [
-          Spacer(),
-          Text("VUL IN de 0, in op de juiste plaats!"),
-          IconButton(
-              onPressed: () {
-                //TODO: check if previous was correct
-                if (table1correct) {
-                  table2correctString = "";
-                  checkTable();
-                } else {
-                  //Display error
-                  setState(() {
-                    table2correctString =
-                        "Vul eerst de huidige oppervlakte correct in! En probeer dan opnieuw!";
-                  });
-                }
-              },
-              icon: Icon(Icons.check)),
-          ValueListenableBuilder<String>(
-            valueListenable: errorTable,
-            builder: (context, value, child) {
-              return Text(
-                table2correctString,
-                style: TextStyle(color: Colors.green),
-              );
-            },
-          ),
-          Spacer()
-        ],
+      Visibility(
+        visible: showGevraagd2,
+        child: Column(
+          children: [
+            Subtitle(title: "Gevraagd: "),
+            Text("Oppervlakte tafel in m^2"),
+            Text(oppervlakteRechthoek),
+            inputFormuleContainer,
+            checkFormule,
+          ],
+        ),
       ),
-      fillinInResult,
-      Row(
-        children: [Spacer(), Text("Oppervlakte = 0,84 m^2"), Spacer()],
-      ),
+      Visibility(
+          visible: showOplossing2,
+          child: Column(children: [
+            Subtitle(title: "Oplossing: "),
+            Row(
+              children: [Spacer(), Text(oppervlakteRechthoek2), Spacer()],
+            ),
+            inputOplossing,
+            Text(
+                "We vullen nu de oppervlakte in de tabel in, we schrijven het laatste getal van de oppervlakte (0), in de laatste kolom van cm^2. We vullen de rest van de cijfers in door steeds een kolom naar links te schuiven."),
+            Row(children: [
+              Spacer(),
+              Text("VUL IN de oppervlakte in de tabel!     "),
+
+              ValueListenableBuilder(
+                valueListenable: table1correct,
+                builder: (context, value, child) {
+                  return Visibility(
+                    visible: !table1correct.value,
+                    child: IconButton(
+                        onPressed: checkTable, icon: Icon(Icons.check)),
+                  );
+                },
+              ),
+
+              //Text(table1correctString),
+              ValueListenableBuilder<String>(
+                valueListenable: errorTable,
+                builder: (context, value, child) {
+                  return Text(
+                    table1correctString,
+                    style: TextStyle(color: Colors.green),
+                  );
+                },
+              ),
+              Spacer(),
+            ]),
+            Text(
+                "We zetten altijd de komma van de maateenheid waar we geinteresseerd zijn het meest rechts van die kolom!"),
+            Text(
+                "Vul nu 0 in voor het getal tot en met we in de rechter kolom van de maateenheid zijn."),
+            Row(
+              children: [
+                Spacer(),
+                Text("VUL IN de 0, in op de juiste plaats!"),
+                IconButton(
+                    onPressed: () {
+                      //TODO: check if previous was correct
+                      if (table1correct.value) {
+                        table2correctString = "";
+                        checkTable();
+                      } else {
+                        //Display error
+                        setState(() {
+                          table2correctString =
+                              "Vul eerst de huidige oppervlakte correct in! En probeer dan opnieuw!";
+                        });
+                      }
+                    },
+                    icon: Icon(Icons.check)),
+                ValueListenableBuilder<String>(
+                  valueListenable: errorTable,
+                  builder: (context, value, child) {
+                    return Text(
+                      table2correctString,
+                      style: TextStyle(color: Colors.green),
+                    );
+                  },
+                ),
+                Spacer()
+              ],
+            ),
+            fillinInResult,
+          ])),
       Spacer(),
     ])));
   }
