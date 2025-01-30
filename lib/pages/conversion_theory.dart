@@ -576,6 +576,17 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
             "Om oppervlakte maten te herleiden kunnen we gebruik maken van onderstaande tabel."),
         Text(
             "Hoe men deze tabel gebruiken, zal worden uitgelegd met behulp van 2 voorbeelden."),
+        Row(
+          children: [
+            Spacer(),
+            Conversiontable(
+              done: callbackTable,
+              result: filledIn,
+              checkCorrectFilled: checkFilledIn,
+            ),
+            Spacer()
+          ],
+        ),
       ],
     ))
 
