@@ -18,8 +18,6 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
   //CollectionReference dbExercises = db.collection("MeetkundeResults");
   //TODO: check add_exercise.dart for more info on how to connect with DB
 
-  /*
-
   final widthColumns = <int, TableColumnWidth>{
     0: IntrinsicColumnWidth(),
     1: FixedColumnWidth(128),
@@ -278,8 +276,6 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
       ],
     ),
   ];
-
-  */
 
   @override
   Widget build(BuildContext context) {
@@ -585,16 +581,6 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
       ],
     ))
 
-        /* ListView(children: [
-      Spacer(),
-      Header(title: "Conversion Page"),
-      Spacer(),
-      Text(
-          "Om oppervlakte maten te herleiden kunnen we gebruik maken van onderstaande tabel."),
-      Text(
-          "Hoe men deze tabel gebruiken, zal worden uitgelegd met behulp van 2 voorbeelden."),
-      Spacer(),
-      */
         /*
       Row(
         children: [
