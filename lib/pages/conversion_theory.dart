@@ -574,7 +574,11 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
     */
 
     return Scaffold(
-        body: ListView(children: [
+        body: Center(
+      child: Text("test"),
+    )
+
+        /* ListView(children: [
       Spacer(),
       Header(title: "Conversion Page"),
       Spacer(),
@@ -583,7 +587,8 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
       Text(
           "Hoe men deze tabel gebruiken, zal worden uitgelegd met behulp van 2 voorbeelden."),
       Spacer(),
-      /*
+      */
+        /*
       Row(
         children: [
           Spacer(),
@@ -596,7 +601,7 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
         ],
       ),
       */
-      /*
+        /*
       ValueListenableBuilder<String>(
         valueListenable: errorTable,
         builder: (context, value, child) {
@@ -708,6 +713,7 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
           ])),
       Spacer(),
       */
-    ]));
+        //])
+        );
   }
 }
