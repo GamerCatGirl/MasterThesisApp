@@ -578,13 +578,6 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
           "Hoe men deze tabel gebruiken, zal worden uitgelegd met behulp van 2 voorbeelden."),
       Spacer(),
       /*
-      Table(
-        border: TableBorder.all(),
-        columnWidths: widthColumns,
-        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-        children: rows,
-      ),
-      */
       Row(
         children: [
           Spacer(),
@@ -596,6 +589,8 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
           Spacer()
         ],
       ),
+      */
+      /*
       ValueListenableBuilder<String>(
         valueListenable: errorTable,
         builder: (context, value, child) {
@@ -706,6 +701,7 @@ class _OppervlakteTheoryState extends State<ConversionTheory> {
             fillinInResult,
           ])),
       Spacer(),
+      */
     ])));
   }
 }
