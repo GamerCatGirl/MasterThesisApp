@@ -29,10 +29,13 @@ class _RatingState extends State<Rating> {
     return Row(
       children: [
         Spacer(),
-        Text(widget.question),
+        SizedBox(
+          width: 600,
+          child: Text(widget.question),
+        ),
+        Spacer(),
         ratingWidget,
         Spacer(),
-        Spacer()
       ],
     );
   }
