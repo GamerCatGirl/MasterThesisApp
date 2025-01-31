@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mathapp/pages/signIn.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -10,6 +11,26 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
+
+  int selectedPage = 0;
+
+  void _routeToLogin() {
+    //TODO
+    setState(() {
+      selectedPage = 1;
+    });
+  }
+
+  void _routeToSignIn() {
+    //TODO
+    setState(() {
+      selectedPage = 2;
+    });
+  }
+
+  void _ToSignIn() {
+    Navigator.pushNamed(context, '/signIn');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,21 +54,29 @@ class _ProfileState extends State<Profile> {
           ),
         ));
 
-    var loginButton = ElevatedButton(onPressed: () {}, child: Text('Login'));
+    final loginButton = ElevatedButton(onPressed: () {}, child: Text('Login'));
+    final signInButton =
+        ElevatedButton(onPressed: _ToSignIn, child: Text('Aanmelden'));
+
+    final signInLogIn = Center(
+        child: Column(
+      children: [
+        Spacer(),
+        inputUsername,
+        inputPassword,
+        Spacer(),
+        loginButton,
+        Spacer(),
+        signInButton,
+        Spacer(),
+        Spacer(),
+      ],
+    ));
+
+    final List _pages = [signInLogIn];
 
     return Scaffold(
-      body: Center(
-          child: Column(
-        children: [
-          Spacer(),
-          inputUsername,
-          inputPassword,
-          Spacer(),
-          loginButton,
-          Spacer(),
-          Spacer(),
-        ],
-      )),
+      body: Center(child: _pages[selectedPage]),
     );
   }
 }

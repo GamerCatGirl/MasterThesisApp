@@ -4,6 +4,7 @@ import 'package:mathapp/pages/logic.dart';
 import 'package:mathapp/pages/profile.dart';
 import 'package:mathapp/pages/setting.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:mathapp/pages/signIn.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => Home(),
         '/profile': (context) => Profile(),
         '/setting': (context) => Setting(),
+        '/signIn': (context) => Signin(),
       },
     );
   }

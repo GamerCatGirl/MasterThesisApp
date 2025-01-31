@@ -57,7 +57,6 @@ class _LearningPathState extends State<LearningPath> {
         };
 
     VoidCallback conversionCallback = () => {
-          print("On conversion clicked"),
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => ConversionTheory(done: () {}),
