@@ -155,8 +155,22 @@ class _SignInState extends State<Signin> {
           answerQ10 = rating;
         });
 
-    //Button to submit
+    // functions
+    bool validUsername() {
+      //TODO:
+      return true;
+    }
 
+    bool validPassword() {
+      //TODO:
+      return true;
+    }
+
+    void setupBKT() {}
+    void postToDB() {}
+    void redirectToAccountSuccesfullyMade() {}
+
+    //Button to submit
     void submitAnswers() {
       var answers = [
         answerQ1,
@@ -171,14 +185,28 @@ class _SignInState extends State<Signin> {
         answerQ10
       ];
 
+      bool changed = false;
+
       answers.forEach((res) => {
             if (res == 0)
               {
                 setState(() {
+                  changed = true;
                   submitError = "Niet alle vragen zijn beantwoord!";
                 })
               }
           });
+
+      if (!changed) {
+        if (!validUsername()) {
+          //TODO
+        } else if (!validPassword()) {
+        } else {
+          setupBKT();
+          postToDB();
+          redirectToAccountSuccesfullyMade();
+        }
+      }
     }
 
     ;
