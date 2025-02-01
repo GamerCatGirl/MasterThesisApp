@@ -5,6 +5,7 @@ import 'package:mathapp/pages/profile.dart';
 import 'package:mathapp/pages/setting.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mathapp/pages/signIn.dart';
+import 'package:mathapp/pages/viewSkills.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => Profile(),
         '/setting': (context) => Setting(),
         '/signIn': (context) => Signin(),
+        '/skills': (context) => Viewskills(),
       },
     );
   }

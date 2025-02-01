@@ -27,6 +27,24 @@ class _SignInState extends State<Signin> {
   double answerQ9 = 0;
   double answerQ10 = 0;
 
+  var skills = [
+    "OppVierkant",
+    "OppRechthoek",
+    "OppCirkel",
+    "OppDriehoek",
+    "ConversionTableSmaller",
+    "ConversionTableBigger"
+  ];
+  //For each level need to have a value assigned
+  var levels = [
+    "Remeber",
+    "Understand",
+    "Analyze",
+    "Apply",
+    "Evaluate",
+    "Create"
+  ];
+
   final String intro =
       "Om zo goed mogelijk oefeningen aan te bieden op jouw niveau volgt een kleine vragenlijst. De antwoorden worden enkel gebruikt voor oefeningen op maat aan te bieden, de antwoorden zijn niet zichtbaar voor medeleering of leerkracht.";
 

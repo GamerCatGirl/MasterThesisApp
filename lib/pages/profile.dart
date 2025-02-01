@@ -32,6 +32,10 @@ class _ProfileState extends State<Profile> {
     Navigator.pushNamed(context, '/signIn');
   }
 
+  void _ToSkill() {
+    Navigator.pushNamed(context, '/skills');
+  }
+
   @override
   Widget build(BuildContext context) {
     var inputUsername = SizedBox(
@@ -57,6 +61,8 @@ class _ProfileState extends State<Profile> {
     final loginButton = ElevatedButton(onPressed: () {}, child: Text('Login'));
     final signInButton =
         ElevatedButton(onPressed: _ToSignIn, child: Text('Aanmelden'));
+    final skillsButton =
+        ElevatedButton(onPressed: _ToSkill, child: Text('Skills'));
 
     final signInLogIn = Center(
         child: Column(
@@ -69,6 +75,7 @@ class _ProfileState extends State<Profile> {
         Spacer(),
         signInButton,
         Spacer(),
+        skillsButton,
         Spacer(),
       ],
     ));
