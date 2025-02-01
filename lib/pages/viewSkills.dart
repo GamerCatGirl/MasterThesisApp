@@ -36,7 +36,6 @@ class _SkillState extends State<Viewskills> {
 
   @override
   Widget build(BuildContext context) {
-    /*
     final radar = RadarDataSet(
       fillColor: rawDataSet.color.withAlpha(100),
       borderColor: rawDataSet.color,
@@ -44,12 +43,12 @@ class _SkillState extends State<Viewskills> {
       dataEntries: rawDataSet.values.map((e) => RadarEntry(value: e)).toList(),
       borderWidth: 2.3,
     );
-    */
+
     final page = ListView(
       children: [
         Header(title: "View Skills"),
         Text("test"),
-        //RadarChart(RadarChartData(dataSets: [radar])),
+        RadarChart(RadarChartData(dataSets: [radar])),
         Text("Lmao"),
         Text("add"),
       ],
