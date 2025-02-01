@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mathapp/components/rating.dart';
 import 'package:mathapp/components/title.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class Viewskills extends StatefulWidget {
   const Viewskills({super.key});
