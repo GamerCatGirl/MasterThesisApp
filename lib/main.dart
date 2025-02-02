@@ -6,6 +6,7 @@ import 'package:mathapp/pages/setting.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mathapp/pages/signIn.dart';
 import 'package:mathapp/pages/viewSkills.dart';
+//import 'package:fl_chart/fl_chart.dart';
 import 'firebase_options.dart';
 
 void main() async {

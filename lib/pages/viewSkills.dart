@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mathapp/components/title.dart';
 //import 'package:syncfusion_flutter_charts/charts.dart';
 //import 'package:syncfusion_flutter_charts/sparkcharts.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class Viewskills extends StatefulWidget {
   const Viewskills({super.key});
@@ -21,7 +22,8 @@ class _SkillState extends State<Viewskills> {
         Text("test"),
         Text("Lmao"),
         Text("add"),
-        Text("Lol")
+        Text("Lol"),
+        Text("test")
       ],
     );
     final List _pages = [page];
