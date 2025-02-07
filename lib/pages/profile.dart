@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mathapp/components/title.dart';
 import 'package:mathapp/pages/signIn.dart';
 
 class Profile extends StatefulWidget {
@@ -67,6 +68,8 @@ class _ProfileState extends State<Profile> {
     final signInLogIn = Center(
         child: Column(
       children: [
+        Spacer(),
+        Header(title: "Account"),
         Spacer(),
         inputUsername,
         inputPassword,

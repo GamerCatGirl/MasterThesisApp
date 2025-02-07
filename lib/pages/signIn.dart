@@ -14,10 +14,15 @@ class _SignInState extends State<Signin> {
   int selectedPage = 0;
 
   FirebaseFirestore db = FirebaseFirestore.instance;
+  int selectedOption = 1;
 
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
   final TextEditingController repeatPassword = TextEditingController();
+
+  bool learningDisability = false;
+  double pKnown = 0;
+  double pLearn = 0;
 
   double answerQ1 = 0;
   double answerQ2 = 0;
@@ -29,6 +34,9 @@ class _SignInState extends State<Signin> {
   double answerQ8 = 0;
   double answerQ9 = 0;
   double answerQ10 = 0;
+
+  Color iconColorCheck = Colors.grey;
+  Color iconColorWrong = Colors.grey;
 
   var skills = [
     "OppVierkant",
@@ -52,26 +60,16 @@ class _SignInState extends State<Signin> {
       "Om zo goed mogelijk oefeningen aan te bieden op jouw niveau volgt een kleine vragenlijst. De antwoorden worden enkel gebruikt voor oefeningen op maat aan te bieden, de antwoorden zijn niet zichtbaar voor medeleering of leerkracht.";
 
   final String question1 =
-      "Hoe leuk vind je wiskunde? (1 helemaal niet leuk, 3 neutraal, 5 super leuk)";
-  final String question2 =
-      "Hoe nuttig vind je wiskunde (1 helemaal niet nuttig, 3 neutraal, 5 heel nuttig)";
+      "Hoe interesant vind je wiskunde? (1 helemaal niet leuk, 3 neutraal, 5 super leuk)";
+  final String question2 = "Heb je ADHD/ADD/Dyslexie/...?";
   final String question3 =
       "Hoe moeilijk vind je wiskunde? (1 helemaal niet moeilijk, 5 super moeilijk)";
   final String question4 =
-      "Vind je van jezelf dat je goed bent in wiskunde? (1 ik kan het helemaal niet, 3 neutraal, 5 ik kan het heel goed)";
-  final String question5 =
-      "Vind je van jezelf dat je je best doet voor dit vak? (1 ik doe helemaal mijn best niet, 3 neutraal, 5 ik doe heel hard mijn best)";
+      "Hoe zijn je punten voor wiskunde? (1 ik heb altijd buizen, 3 net geslaagd, 4 meer dan 60%, 5 ik heb boven 80%)";
   final String question6 =
       "Zijn je punten zoals je ze verwacht (1 ik kan helemaal mijn score niet inschatten, 3 neutraal, 5 punten zijn wat ik verwacht)";
   final String question7 =
       "Hoe gemotiveerd ben je om goede punten te halen voor wiskunde? (1 mijn punten maken me helemaal niet uit, 3 neutraal, 5 ik wil heel graag goede punten)";
-
-  final String question8 =
-      "Kan je de oppervlakte van figuren berekenen als je de formule gegeven krijgt? (1 ik weet niet hoe ik zou moeten beginnen, 3 neutraal, 5 oppervlakte berekenen is helemaal niet moeilijk)";
-  final String question9 =
-      "Ken je de formules voor de oppervlakte van figuren te bereken? (rechthoek, driehoek, cirkel) (1 ik ken geen formule vanbuiten, 3 ik ken sommige formules, 5 ik ken alle formules van de gegeven figuren)";
-  final String question10 =
-      "Weet je hoe je bovenstaande tabel moet gebruiken om van maateenheid te veranderen? (1 geen idee, 3 half, 5 ik weet hoe ik dit moet gebruiken)";
 
   String submitError = "";
 
@@ -130,11 +128,42 @@ class _SignInState extends State<Signin> {
         onChangeRating: (rating) {
           answerQ1 = rating;
         });
-    final q2 = Rating(
-        question: question2,
-        onChangeRating: (rating) {
-          answerQ2 = rating;
-        });
+    final q2 = Row(
+      children: [
+        Spacer(),
+        Text(question2),
+        Spacer(),
+        Spacer(),
+        Spacer(),
+        IconButton(
+            onPressed: () {
+              answerQ2 = 1;
+              learningDisability = true;
+              setState(() {
+                iconColorWrong = Colors.grey;
+                iconColorCheck = Colors.green;
+              });
+            },
+            icon: Icon(
+              Icons.check,
+              color: iconColorCheck,
+            )),
+        IconButton(
+            onPressed: () {
+              answerQ2 = 1;
+              learningDisability = false;
+              setState(() {
+                iconColorCheck = Colors.grey;
+                iconColorWrong = Colors.red;
+              });
+            },
+            icon: Icon(
+              Icons.close,
+              color: iconColorWrong,
+            )),
+        Spacer()
+      ],
+    );
     final q3 = Rating(
         question: question3,
         onChangeRating: (rating) {
@@ -145,11 +174,6 @@ class _SignInState extends State<Signin> {
         onChangeRating: (rating) {
           answerQ4 = rating;
         });
-    final q5 = Rating(
-        question: question5,
-        onChangeRating: (rating) {
-          answerQ5 = rating;
-        });
     final q6 = Rating(
         question: question6,
         onChangeRating: (rating) {
@@ -159,21 +183,6 @@ class _SignInState extends State<Signin> {
         question: question7,
         onChangeRating: (rating) {
           answerQ7 = rating;
-        });
-    final q8 = Rating(
-        question: question8,
-        onChangeRating: (rating) {
-          answerQ8 = rating;
-        });
-    final q9 = Rating(
-        question: question9,
-        onChangeRating: (rating) {
-          answerQ9 = rating;
-        });
-    final q10 = Rating(
-        question: question10,
-        onChangeRating: (rating) {
-          answerQ10 = rating;
         });
 
     // functions
@@ -217,7 +226,12 @@ class _SignInState extends State<Signin> {
     void makeUser() {
       CollectionReference dbUsers = db.collection("users");
 
-      final doc = {"password": password.text};
+      final doc = {
+        "password": password.text,
+        "learningDisability": learningDisability,
+        "pknow": pKnown,
+        "plearn": pLearn,
+      };
 
       dbUsers.doc(username.text).set(doc).onError((e, _) {
         setState(() {
@@ -230,20 +244,42 @@ class _SignInState extends State<Signin> {
     ;
 
     void setupBKT() {
-      int fun = answerQ1.round();
-      int usefull = answerQ2.round();
+      int interesting = answerQ1.round();
+      int unknown = answerQ2.round();
       int difficulty = answerQ3.round();
-      int score = answerQ4.round();
-      int effort = answerQ5.round();
-      int pointsReflectEffort = answerQ6.round();
+      int grades = answerQ4.round();
+      int selfAssesment = answerQ6.round();
       int motivation = answerQ7.round();
-      int applySurface = answerQ8.round();
-      int rememberSurface = answerQ9.round();
-      int applyTable = answerQ10.round();
+
+      final weigthSelfAssesment = 0.01;
+      final weigthInterest = 0.005;
+      final weigthDifficulty = 0.005;
+      final weigthGrades = 0.03;
+
+      final weigthMotivation = 0.005;
+      final weigthDifficulty2 = 0.008;
+
+      pKnown = 0.4 +
+          (grades * weigthGrades +
+              (6 - difficulty) * weigthDifficulty +
+              selfAssesment * weigthSelfAssesment +
+              interesting * weigthInterest);
+
+      pLearn = 0.52 +
+          ((6 - difficulty) * weigthDifficulty2 +
+              motivation * weigthMotivation +
+              interesting * weigthInterest);
+
+      print("p(known) = " + pKnown.toString());
+      print("p(learn) = " + pLearn.toString());
     }
 
     void postToDB() {}
-    void redirectToAccountSuccesfullyMade() {}
+    void redirectToAccountSuccesfullyMade() {
+      setState(() {
+        selectedPage = 1;
+      });
+    }
 
     //Button to submit
     Future<void> submitAnswers() async {
@@ -252,12 +288,8 @@ class _SignInState extends State<Signin> {
         answerQ2,
         answerQ3,
         answerQ4,
-        answerQ5,
         answerQ6,
         answerQ7,
-        answerQ8,
-        answerQ9,
-        answerQ10
       ];
 
       bool changed = false;
@@ -283,8 +315,8 @@ class _SignInState extends State<Signin> {
             submitError;
           });
         } else {
-          makeUser();
           setupBKT();
+          makeUser();
           redirectToAccountSuccesfullyMade();
         }
       }
@@ -309,6 +341,22 @@ class _SignInState extends State<Signin> {
 
     //
     final signInLogIn = Center(child: Text("Sign In Page"));
+    final accountMadePage = ListView(
+      children: [
+        Header(title: "Account succesfully made!"),
+        Row(
+          children: [
+            Spacer(),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/profile');
+                },
+                child: Text("Login")),
+            Spacer(),
+          ],
+        )
+      ],
+    );
     final page = ListView(
       children: [
         Header(title: "Sign In"),
@@ -316,21 +364,17 @@ class _SignInState extends State<Signin> {
         passwordWidget,
         passwordRepeatWidget,
         Text(intro),
-        q1,
         q2,
+        q1,
         q3,
         q4,
-        q5,
         q6,
         q7,
-        q8,
-        q9,
-        q10,
         upload
       ],
     );
 
-    final List _pages = [page];
+    final List _pages = [page, accountMadePage];
 
     return Scaffold(
       body: Center(child: _pages[selectedPage]),
