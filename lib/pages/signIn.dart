@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mathapp/components/rating.dart';
 import 'package:mathapp/components/title.dart';
 
@@ -11,6 +12,8 @@ class Signin extends StatefulWidget {
 
 class _SignInState extends State<Signin> {
   int selectedPage = 0;
+
+  FirebaseFirestore db = FirebaseFirestore.instance;
 
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
@@ -174,22 +177,76 @@ class _SignInState extends State<Signin> {
         });
 
     // functions
-    bool validUsername() {
-      //TODO:
-      return true;
+    Future<bool> validUsername() async {
+      CollectionReference dbUsers = db.collection("users");
+
+      final docRef = dbUsers.doc(username.text);
+
+      try {
+        DocumentSnapshot doc = await docRef.get();
+        if (doc.exists) {
+          submitError = "Gebruikersnaam bestaat al!";
+          return false;
+        } else {
+          return true;
+        }
+      } catch (e) {
+        submitError = "Interne error met de database, probeer later opnieuw!";
+        return false;
+      }
     }
 
     bool validPassword() {
-      //TODO:
+      String pass = password.text;
+      String passControl = repeatPassword.text;
+
+      if (pass != passControl) {
+        submitError = "Wachtwoord komt niet overeen!";
+        return false;
+      } else if (!pass.contains(RegExp(r'[A-Z]'))) {
+        submitError = "Wachtwoord bevat geen hoofdletter!";
+        return false;
+      } else if (!pass.contains(RegExp(r'[0-9]'))) {
+        submitError = "Wachtwoord bevat geen getal!";
+        return false;
+      }
+
       return true;
     }
 
-    void setupBKT() {}
+    void makeUser() {
+      CollectionReference dbUsers = db.collection("users");
+
+      final doc = {"password": password.text};
+
+      dbUsers.doc(username.text).set(doc).onError((e, _) {
+        setState(() {
+          submitError =
+              "Error met gegevens toe te voegen aan database, probeer later opnieuw!";
+        });
+      });
+    }
+
+    ;
+
+    void setupBKT() {
+      int fun = answerQ1.round();
+      int usefull = answerQ2.round();
+      int difficulty = answerQ3.round();
+      int score = answerQ4.round();
+      int effort = answerQ5.round();
+      int pointsReflectEffort = answerQ6.round();
+      int motivation = answerQ7.round();
+      int applySurface = answerQ8.round();
+      int rememberSurface = answerQ9.round();
+      int applyTable = answerQ10.round();
+    }
+
     void postToDB() {}
     void redirectToAccountSuccesfullyMade() {}
 
     //Button to submit
-    void submitAnswers() {
+    Future<void> submitAnswers() async {
       var answers = [
         answerQ1,
         answerQ2,
@@ -216,12 +273,18 @@ class _SignInState extends State<Signin> {
           });
 
       if (!changed) {
-        if (!validUsername()) {
+        if (!(await validUsername())) {
           //TODO
+          setState(() {
+            submitError;
+          });
         } else if (!validPassword()) {
+          setState(() {
+            submitError;
+          });
         } else {
+          makeUser();
           setupBKT();
-          postToDB();
           redirectToAccountSuccesfullyMade();
         }
       }
