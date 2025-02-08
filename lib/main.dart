@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mathapp/pages/home.dart';
+import 'package:mathapp/pages/learning_path.dart';
 import 'package:mathapp/pages/logic.dart';
 import 'package:mathapp/pages/profile.dart';
 import 'package:mathapp/pages/setting.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
       // TODO: los routing op!!!!
       routes: {
         '/home': (context) => Home(),
+        '/learning-path': (context) => LearningPath(),
         '/profile': (context) => Profile(),
         '/setting': (context) => Setting(),
         '/signIn': (context) => Signin(),

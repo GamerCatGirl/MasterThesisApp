@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mathapp/components/title.dart';
 import 'package:mathapp/pages/signIn.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -12,6 +14,9 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
+  FirebaseFirestore db = FirebaseFirestore.instance;
+
+  String errorLogin = "";
 
   int selectedPage = 0;
 
@@ -37,6 +42,40 @@ class _ProfileState extends State<Profile> {
     Navigator.pushNamed(context, '/skills');
   }
 
+  void login() {
+    var user = username.text;
+    var pass = password.text;
+
+    CollectionReference dbUsers = db.collection("users");
+
+    if (user.isEmpty) {
+      setState(() {
+        errorLogin = "Vul je gebruikersnaam in!";
+      });
+    } else if (pass.isEmpty) {
+      setState(() {
+        errorLogin = "Vull je passwoord in!";
+      });
+    } else {
+      final docRef = dbUsers.doc(username.text);
+      docRef.get().then((doc) {
+        //TODO
+        final data = doc.data() as Map<String, dynamic>;
+        final passCheck = data['password'];
+
+        if (passCheck == pass) {
+          print("logged in");
+        } else {
+          setState(() {
+            errorLogin = "Fout paswoord!";
+          });
+        }
+
+        print(passCheck);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var inputUsername = SizedBox(
@@ -59,7 +98,7 @@ class _ProfileState extends State<Profile> {
           ),
         ));
 
-    final loginButton = ElevatedButton(onPressed: () {}, child: Text('Login'));
+    final loginButton = ElevatedButton(onPressed: login, child: Text('Login'));
     final signInButton =
         ElevatedButton(onPressed: _ToSignIn, child: Text('Aanmelden'));
     final skillsButton =
@@ -74,7 +113,15 @@ class _ProfileState extends State<Profile> {
         inputUsername,
         inputPassword,
         Spacer(),
-        loginButton,
+        Row(
+          children: [
+            Spacer(),
+            loginButton,
+            Spacer(),
+            Text(errorLogin),
+            Spacer()
+          ],
+        ),
         Spacer(),
         signInButton,
         Spacer(),
