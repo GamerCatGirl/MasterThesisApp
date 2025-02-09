@@ -35,11 +35,20 @@ class MyApp extends StatelessWidget {
       // TODO: los routing op!!!!
       routes: {
         '/home': (context) => Home(),
-        '/learning-path': (context) => LearningPath(),
         '/profile': (context) => Profile(),
         '/setting': (context) => Setting(),
         '/signIn': (context) => Signin(),
         '/skills': (context) => Viewskills(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/learning-path') {
+          final args = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+              builder: (context) => LearningPath(
+                  username: args['user'],
+                  path: args['path'],
+                  pathCompletion: args['pathCompletion']));
+        }
       },
     );
   }

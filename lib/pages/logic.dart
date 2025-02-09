@@ -29,7 +29,11 @@ class _LogicState extends State<Logic> {
 
   final List _pages = [
     Home(),
-    LearningPath(),
+    LearningPath(
+      username: 'Preview',
+      path: ['oppervlakte', 'vierkant', 'cirkel'],
+      pathCompletion: [true, false, false],
+    ),
     Profile(),
     Setting(),
   ];

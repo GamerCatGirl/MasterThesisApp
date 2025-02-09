@@ -231,6 +231,8 @@ class _SignInState extends State<Signin> {
         "learningDisability": learningDisability,
         "pknow": pKnown,
         "plearn": pLearn,
+        "path": ["oppervlakte"],
+        "pathCompletion": [false],
       };
 
       dbUsers.doc(username.text).set(doc).onError((e, _) {

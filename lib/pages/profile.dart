@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mathapp/components/title.dart';
 import 'package:mathapp/pages/signIn.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -15,6 +14,10 @@ class _ProfileState extends State<Profile> {
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
   FirebaseFirestore db = FirebaseFirestore.instance;
+  bool loggedIn = false;
+  var userLogged = "";
+  var learningPath = [];
+  var pathCompletion = [];
 
   String errorLogin = "";
 
@@ -59,21 +62,41 @@ class _ProfileState extends State<Profile> {
     } else {
       final docRef = dbUsers.doc(username.text);
       docRef.get().then((doc) {
-        //TODO
-        final data = doc.data() as Map<String, dynamic>;
-        final passCheck = data['password'];
+        print("Doc found...");
+        if (doc.exists) {
+          print("Doc Exists");
+          //TODO
+          final data = doc.data() as Map<String, dynamic>;
+          final passCheck = data['password'];
 
-        if (passCheck == pass) {
-          print("logged in");
-        } else {
-          setState(() {
-            errorLogin = "Fout paswoord!";
-          });
+          if (passCheck == pass) {
+            setState(() {
+              if (data['path'] != null) {
+                learningPath = data['path'];
+              }
+              if (data['pathCompletion'] != null) {
+                pathCompletion = data['pathCompletion'];
+              }
+              userLogged = user;
+              selectedPage = 1;
+              loggedIn = true;
+            });
+          } else {
+            setState(() {
+              errorLogin = "Fout paswoord!";
+            });
+          }
         }
-
-        print(passCheck);
       });
     }
+  }
+
+  void _toLearning() {
+    Navigator.pushNamed(context, '/learning-path', arguments: {
+      'user': userLogged,
+      'path': learningPath,
+      'pathCompletion': pathCompletion
+    });
   }
 
   @override
@@ -104,6 +127,24 @@ class _ProfileState extends State<Profile> {
     final skillsButton =
         ElevatedButton(onPressed: _ToSkill, child: Text('Skills'));
 
+    final loggedInPage = ListView(
+      children: [
+        Header(title: userLogged + ", you are succesfully logged in!"),
+        Row(
+          children: [
+            Spacer(),
+            ElevatedButton(
+                onPressed: () {
+                  //logged();
+                  _toLearning();
+                },
+                child: Text('Leer Pad')),
+            Spacer()
+          ],
+        )
+      ],
+    );
+
     final signInLogIn = Center(
         child: Column(
       children: [
@@ -130,7 +171,7 @@ class _ProfileState extends State<Profile> {
       ],
     ));
 
-    final List _pages = [signInLogIn];
+    final List _pages = [signInLogIn, loggedInPage];
 
     return Scaffold(
       body: Center(child: _pages[selectedPage]),
