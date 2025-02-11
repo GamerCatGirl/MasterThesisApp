@@ -7,11 +7,22 @@ import 'package:mathapp/components/formule_input.dart';
 import 'package:mathapp/components/icon_button_switch.dart';
 import 'package:mathapp/components/row_exercise.dart';
 import 'package:mathapp/components/start_exercise.dart';
+import 'package:mathapp/components/title.dart';
 import 'package:mathapp/components/title_tile.dart';
 
 class OppervlakteTheory extends StatefulWidget {
   final VoidCallback done;
-  const OppervlakteTheory({super.key, required this.done});
+  final String user;
+  final bool solved;
+  final List<dynamic> path;
+  final List<dynamic> pathCompletion;
+  const OppervlakteTheory(
+      {super.key,
+      required this.done,
+      required this.solved,
+      required this.user,
+      required this.path,
+      required this.pathCompletion});
 
   @override
   State<OppervlakteTheory> createState() => new _OppervlakteTheoryState();
@@ -23,18 +34,52 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
   IconData iconCirlceEx = Icons.circle_outlined;
   IconData iconRectangle = Icons.crop_16_9_outlined;
 
-  //FirebaseFirestore db = FirebaseFirestore.instance;
-  //CollectionReference dbExercises = db.collection("MeetkundeResults");
-  //CollectionReference dbExercises = db.collection("MeetkundeResults");
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  int page = 0;
+
+  late bool solvedLocal;
+
+  late List<dynamic> path;
+  late List<dynamic> pathCompletion;
+  bool resPosted = false;
+  bool answPosted = false;
+
+  void loadPath() {
+    CollectionReference dbUsers = db.collection("users");
+
+    dbUsers.doc(widget.user).get().then((doc) {
+      path = doc['path'];
+      pathCompletion = doc['pathCompletion'];
+    });
+  }
+
+  _goPath() {
+    Navigator.pushNamed(context, '/learning-path', arguments: {
+      'user': widget.user,
+      'path': path,
+      'pathCompletion': pathCompletion
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    solvedLocal = widget.solved; // Initialize locally
+    if (widget.solved) {
+      page = 1;
+    }
+
+    path = widget.path;
+    pathCompletion = widget.pathCompletion;
+  }
+
+  //CollectionReference dbExercises = db.collection("exercises");
+
   //TODO: check add_exercise.dart for more info on how to connect with DB
 
-  final meetkundeLevel = <String, dynamic>{
-    "studentID": "Admin",
-  };
+  final meetkundeLevel = <String, dynamic>{};
 
-  final meetkundeResults = <String, dynamic>{
-    "studentID": "Admin",
-  };
+  final meetkundeResults = <String, dynamic>{};
 
   final TextEditingController inputVierkant = TextEditingController();
   final TextEditingController inputRechthoek = TextEditingController();
@@ -45,7 +90,33 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
   final TextEditingController inputDriehoekFormule = TextEditingController();
   final TextEditingController inputCirkelFormule = TextEditingController();
 
+  void checkCompleted() {
+    if (meetkundeLevel.length >= 8) {
+      //TODO: verander naar 9 al driehoek ook is toegevoegd
+      print("postToDB?");
+      CollectionReference dbExercises = db.collection("exercises");
+
+      final docRef = dbExercises.doc(widget.user); //TODO change back to user!
+
+      if (solvedLocal) {
+        //TODO: update array
+      } else {
+        docRef.set({
+          "oppervlakteTheoryResults": [meetkundeLevel]
+        }, SetOptions(merge: true));
+
+        answPosted = true;
+        if (resPosted) {
+          solvedLocal = true;
+        }
+      }
+      print("TODO: clear again");
+    }
+  }
+
   bool showAnswers = false;
+  int tries = 3;
+  String textButton = "Controleer antwoorden!";
 
   String textSucceeded100 =
       "Je hebt alles juist ingevuld, je kan deze theory nu proberen toepassen in het dagelijkse leven!";
@@ -59,7 +130,31 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
       "Geen zorgen als je niet alle antwoorden wist, ik zal je helpen bij het leren van deze formules!";
   String error = "";
   void checkResults() {
-    //TODO:
+    int index = path.indexOf("oppervlakte");
+    bool changed = true;
+
+    if (pathCompletion[index]) {
+      changed = false;
+    }
+
+    pathCompletion[index] = true;
+
+    CollectionReference dbUser = db.collection("users");
+    final docRef = dbUser.doc(widget.user); //TODO change back to user!
+
+    if (changed) {
+      docRef.set({
+        "pathCompletion": pathCompletion,
+      }, SetOptions(merge: true));
+    }
+
+    //TODO: post back to database
+
+    if (tries == 0) {
+      //go automatically back to learningpath after 3 tries
+      _goPath();
+    }
+
     String vierkant = inputVierkant.value.text;
     String rechthoek = inputRechthoek.value.text;
     String driehoek = inputDriehoek.value.text;
@@ -75,13 +170,20 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
         cirkel == "" ||
         vierkantFormule == "" ||
         rechthoekFormule == "" ||
-        driehoekFormule == "" ||
+        //driehoekFormule == "" ||
         cirkelFormule == "") {
       setState(() {
         error =
             "Please fill in all fields, if you don't know the answer fill in '/'";
       });
     } else {
+      tries -= 1;
+
+      if (tries == 0) {
+        textButton = "Ga terug naar leerpad";
+        error = "Geen zorgen, we zullen later opnieuw proberen :)";
+      }
+
       setState(() {
         showAnswers = true;
       });
@@ -90,103 +192,458 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
       var time = DateTime.now();
       meetkundeLevel["date"] = time;
       meetkundeResults["date"] = time;
+      meetkundeResults["vierkantName"] = inputVierkant.text;
+      meetkundeResults["rechthoekName"] = inputRechthoek.text;
+      meetkundeResults["driehoekName"] = inputDriehoek.text;
+      meetkundeResults["cirkelName"] = inputCirkel.text;
+      meetkundeResults["vierkantFormule"] = inputVierkantFormule.text;
+      meetkundeResults["rechthoekFormule"] = inputRechthoekFormule.text;
+      meetkundeResults["cirkelFormule"] = inputCirkelFormule.text;
 
-      print(meetkundeLevel);
+      CollectionReference dbExercises = db.collection("exercises");
+
+      final docRef = dbExercises.doc(widget.user);
+
+      if (solvedLocal) {
+        //TODO: update array
+      } else {
+        docRef.set({
+          "oppervlakteTheory": [meetkundeResults]
+        });
+
+        resPosted = true;
+
+        if (answPosted) {
+          solvedLocal = true;
+        }
+      }
+
+      //docRef.get().then((doc) {
+
+      //TODO: if all correct -> solved = true in DB
     }
+  }
+
+  String answerVierkant = "";
+  bool answerVierkantCorrect = false;
+  String answerRechthoek = "";
+  bool answerRechthoekCorrect = false;
+  String answerCirkel = "";
+  bool answerCirkelCorrect = false;
+  String answerDriehoek = "";
+  bool answerDriehoekCorrect = false;
+
+  String answerVierkantFormule = "";
+  bool answerVierkantFormuleCorrect = false;
+  String answerDriehoekFormule = "";
+  bool answerDriehoekFormuleCorrect = false;
+  String answerCirkelFormule = "";
+  bool answerCirkelFormuleCorrect = false;
+  String answerRechthoekFormule = "";
+  bool answerRechthoekFormuleCorrect = false;
+
+  var colorVierkantNaam = Colors.black;
+  var colorRechthoekNaam = Colors.black;
+  var colorDriehoekNaam = Colors.black;
+  var colorCirkelNaam = Colors.black;
+
+  var colorVierkantFormule = Colors.black;
+  var colorRechthoekFormule = Colors.black;
+  var colorDriehoekFormule = Colors.black;
+  var colorCirkelFormule = Colors.black;
+
+  var score = 7;
+
+  void showPreviousAnswers() {
+    CollectionReference dbExercises = db.collection("exercises");
+
+    final docRef = dbExercises.doc(widget.user);
+    docRef.get().then((doc) {
+      print(doc);
+      var answers = doc['oppervlakteTheory'];
+      var answersCorrection = doc['oppervlakteTheoryResults'];
+
+      int amountAnswers = answers.length;
+      var lastAnswer = answers[amountAnswers - 1];
+      var lastAnswerCor = answersCorrection[amountAnswers - 1];
+
+      answerCirkel = lastAnswer["cirkelName"];
+      answerCirkelFormule = lastAnswer["cirkelFormule"];
+      answerDriehoek = lastAnswer["driehoekName"];
+      answerRechthoek = lastAnswer["rechthoekName"];
+      answerRechthoekFormule = lastAnswer["rechthoekFormule"];
+      answerVierkant = lastAnswer["vierkantName"];
+      answerVierkantFormule = lastAnswer["vierkantFormule"];
+
+      answerCirkelCorrect = lastAnswerCor["cirkelName"];
+      if (!answerCirkelCorrect) {
+        colorCirkelNaam = Colors.red;
+        score -= 1;
+      }
+      answerCirkelFormuleCorrect = lastAnswerCor["cirkelFormule"];
+      if (!answerCirkelFormuleCorrect) {
+        colorCirkelFormule = Colors.red;
+        score -= 1;
+      }
+      answerDriehoekCorrect = lastAnswerCor["driehoekName"];
+      if (!answerDriehoekCorrect) {
+        colorDriehoekNaam = Colors.red;
+        score -= 1;
+      }
+      answerRechthoekCorrect = lastAnswerCor["rechthoekName"];
+      if (!answerRechthoekCorrect) {
+        colorRechthoekNaam = Colors.red;
+        score -= 1;
+      }
+      answerRechthoekFormuleCorrect = lastAnswerCor["rechthoekFormule"];
+      if (!answerRechthoekFormuleCorrect) {
+        colorRechthoekFormule = Colors.red;
+        score -= 1;
+      }
+      answerVierkantCorrect = lastAnswerCor["vierkantName"];
+      if (!answerVierkantCorrect) {
+        colorVierkantNaam = Colors.red;
+        score -= 1;
+      }
+      answerVierkantFormuleCorrect = lastAnswerCor["vierkantFormule"];
+      if (!answerVierkantFormuleCorrect) {
+        colorVierkantFormule = Colors.red;
+        score -= 1;
+      }
+
+      setState(() {
+        page = 2;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Center(
-            child: Column(children: [
-      Text("Oppervlakte"),
-      Spacer(),
+    final title = Header(title: "Oppervlakte");
+    final subTitle = Text("Already made: " + widget.solved.toString());
+
+    final vierkantNameWidget = FigureInputTile(
+        controller: inputVierkant,
+        saveResult: (res) {
+          meetkundeLevel["vierkantName"] = res;
+          checkCompleted();
+        },
+        showAnswers: showAnswers,
+        icon: iconVierkantEx,
+        name: "Vierkant");
+
+    final rechthoekNameWidget = FigureInputTile(
+        controller: inputRechthoek,
+        saveResult: (res) {
+          meetkundeLevel["rechthoekName"] = res;
+          checkCompleted();
+          meetkundeResults["rechthoekName"] = inputRechthoek.text;
+        },
+        showAnswers: showAnswers,
+        icon: iconRectangle,
+        name: "Rechthoek");
+
+    final driehoekNameWidget = FigureInputTile(
+        controller: inputDriehoek,
+        saveResult: (res) {
+          meetkundeLevel["driehoekName"] = res;
+          checkCompleted();
+          meetkundeResults["driehoekName"] = inputDriehoek.text;
+        },
+        showAnswers: showAnswers,
+        icon: iconTriangleEx,
+        name: "Driehoek");
+
+    final cirkelNameWidget = FigureInputTile(
+        controller: inputCirkel,
+        saveResult: (res) {
+          meetkundeLevel["cirkelName"] = res;
+          checkCompleted();
+          meetkundeResults["cirkelName"] = inputCirkel.text;
+        },
+        showAnswers: showAnswers,
+        icon: iconCirlceEx,
+        name: "Cirkel");
+
+    final vierkantFormuleWidget = FormuleInputTile(
+        controller: inputVierkantFormule,
+        saveResult: (res) {
+          meetkundeLevel["vierkantFormule"] = res;
+          checkCompleted();
+          meetkundeResults["vierkantFormule"] = inputVierkantFormule.text;
+        },
+        showAnswers: showAnswers,
+        icon: iconVierkantEx,
+        name: "Vierkant");
+
+    final rechthoekFormuleWidget = FormuleInputTile(
+        controller: inputRechthoekFormule,
+        saveResult: (res) {
+          meetkundeLevel["rechthoekFormule"] = res;
+          checkCompleted();
+          meetkundeResults["rechthoekFormule"] = inputRechthoekFormule.text;
+        },
+        showAnswers: showAnswers,
+        icon: iconRectangle,
+        name: "Rechthoek");
+
+    final driehoekFormuleWidget = FormuleInputTile(
+        controller: inputDriehoekFormule,
+        saveResult: (res) {
+          meetkundeLevel["driehoekFormule"] = res;
+          //meetkundeResults["driehoekFomule"] = inputDriehoekFormule.text;
+          checkCompleted();
+        },
+        showAnswers: showAnswers,
+        icon: iconTriangleEx,
+        name: "Driehoek");
+
+    final cirkelFormuleWidget = FormuleInputTile(
+        controller: inputCirkelFormule,
+        saveResult: (res) {
+          meetkundeLevel["cirkelFormule"] = res;
+          //meetkundeResults["cirkelFormule"] = inputCirkelFormule.text;
+          checkCompleted();
+        },
+        showAnswers: showAnswers,
+        icon: iconCirlceEx,
+        name: "Cirkel");
+
+    final buttonViewRes = SizedBox(
+        height: 100,
+        child: Row(
+          children: [
+            Spacer(),
+            ElevatedButton(
+                onPressed: showPreviousAnswers,
+                child: Text("Beijk vorige antwoorden!")),
+            Spacer()
+          ],
+        ));
+
+    var showPreviousAnswersButton = SizedBox(
+      height: 10,
+    );
+
+    if (widget.solved) {
+      showPreviousAnswersButton = buttonViewRes;
+    }
+
+    final buttonLeerpad = SizedBox(
+        height: 100,
+        child: Row(
+          children: [
+            Spacer(),
+            ElevatedButton(
+                onPressed: () {
+                  //TODO: get path and path completion from db
+
+                  Navigator.pushNamed(context, '/learning-path', arguments: {
+                    'user': widget.user,
+                    'path': path,
+                    'pathCompletion': pathCompletion
+                  });
+                },
+                child: Text("Ga terug naar leerpad")),
+            Spacer()
+          ],
+        ));
+
+    final exerciseWidgets = [
+      title,
+      subTitle,
       Text("Ken je alle onderstaande figuren?"),
-      FigureInputTile(
-          controller: inputVierkant,
-          saveResult: (res) {
-            meetkundeLevel["vierkantName"] = res;
-            meetkundeResults["vierkantName"] = inputVierkant.text;
-          },
-          showAnswers: showAnswers,
-          icon: iconVierkantEx,
-          name: "Vierkant"),
-      FigureInputTile(
-          controller: inputRechthoek,
-          saveResult: (res) {
-            meetkundeLevel["rechthoekName"] = res;
-            meetkundeResults["rechthoekName"] = inputRechthoek.text;
-          },
-          showAnswers: showAnswers,
-          icon: iconRectangle,
-          name: "Rechthoek"),
-      FigureInputTile(
-          controller: inputDriehoek,
-          saveResult: (res) {
-            meetkundeLevel["driehoekName"] = res;
-            meetkundeResults["driehoekName"] = inputDriehoek.text;
-          },
-          showAnswers: showAnswers,
-          icon: iconTriangleEx,
-          name: "Driehoek"),
-      FigureInputTile(
-          controller: inputCirkel,
-          saveResult: (res) {
-            meetkundeLevel["cirkelName"] = res;
-            meetkundeResults["cirkelName"] = inputCirkel.text;
-          },
-          showAnswers: showAnswers,
-          icon: iconCirlceEx,
-          name: "Cirkel"),
-      Spacer(),
+      vierkantNameWidget,
+      rechthoekNameWidget,
+      driehoekNameWidget,
+      cirkelNameWidget,
       Text("Welke formules ken je nog voor de oppervlakte?"),
-      FormuleInputTile(
-          controller: inputVierkantFormule,
-          saveResult: (res) {
-            meetkundeLevel["vierkantFormule"] = res;
-            meetkundeResults["vierkantFormule"] = inputVierkantFormule.text;
-          },
-          showAnswers: showAnswers,
-          icon: iconVierkantEx,
-          name: "Vierkant"),
-      FormuleInputTile(
-          controller: inputRechthoekFormule,
-          saveResult: (res) {
-            meetkundeLevel["rechthoekFormule"] = res;
-            meetkundeResults["rechthoekFormule"] = inputRechthoekFormule.text;
-          },
-          showAnswers: showAnswers,
-          icon: iconRectangle,
-          name: "Rechthoek"),
-      FormuleInputTile(
-          controller: inputDriehoekFormule,
-          saveResult: (res) {
-            //meetkundeLevel["driehoekFormule"] = res;
-            //meetkundeResults["driehoekFormule"] = inputDriehoekFormule.text;
-          },
-          showAnswers: showAnswers,
-          icon: iconTriangleEx,
-          name: "Driehoek"),
-      FormuleInputTile(
-          controller: inputCirkelFormule,
-          saveResult: (res) {
-            meetkundeLevel["cirkelFormule"] = res;
-            meetkundeResults["cirkelFormule"] = inputCirkelFormule.text;
-            print(meetkundeLevel);
-            print(meetkundeResults);
-          },
-          showAnswers: showAnswers,
-          icon: iconCirlceEx,
-          name: "Cirkel"),
-      Spacer(),
+      vierkantFormuleWidget,
+      rechthoekFormuleWidget,
+      // driehoekFormuleWidget,
+      cirkelFormuleWidget,
       Text(
           "Geen zorgen als je niet alle antwoorden wist, ik zal je helpen bij het leren van deze formules!"),
-      Spacer(),
-      ElevatedButton(
-          onPressed: checkResults, child: Text('Controleer Antwoorden')),
+      Row(
+        children: [
+          Spacer(),
+          ElevatedButton(onPressed: checkResults, child: Text(textButton)),
+          Spacer()
+        ],
+      ),
       Text(error, style: TextStyle(color: Colors.red)),
+      showPreviousAnswersButton,
+      buttonLeerpad,
+    ];
+
+    final buttonMakeAgain = SizedBox(
+        height: 100,
+        child: Row(
+          children: [
+            Spacer(),
+            ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    page = 0;
+                  });
+                },
+                child: Text("Maak opnieuw!")),
+            Spacer()
+          ],
+        ));
+
+    final sub2 =
+        Text("Je hebt deze oefening al gemaakt :) Wat wilt u graag doen?");
+    final exercisesMade = [
+      title,
+      sub2,
+      buttonViewRes,
+      buttonMakeAgain,
+      buttonLeerpad,
+    ];
+
+    final iconVierkant = Icon(
+      iconVierkantEx,
+      size: 40,
+    );
+
+    final iconRechthoek = Icon(
+      iconRectangle,
+      size: 40,
+    );
+    final iconDriehoek = Icon(
+      iconTriangleEx,
+      size: 40,
+    );
+    final iconCirkel = Icon(
+      iconCirlceEx,
+      size: 40,
+    );
+
+    final textNaam = Text(
+      "Naam figuur: ",
+      style: TextStyle(fontWeight: FontWeight.bold),
+    );
+    final textVierkant = Text(
+      answerVierkant,
+      style: TextStyle(color: colorVierkantNaam),
+    );
+    final textRechthoek = Text(
+      answerRechthoek,
+      style: TextStyle(color: colorVierkantNaam),
+    );
+    final textDriehoek = Text(
+      answerDriehoek,
+      style: TextStyle(color: colorDriehoekNaam),
+    );
+    final textCirkel = Text(
+      answerCirkel,
+      style: TextStyle(color: colorCirkelNaam),
+    );
+    final textFormule = Text(
+      "Formule oppervlate: ",
+      style: TextStyle(fontWeight: FontWeight.bold),
+    );
+    final textVierkantFormule = Text(
+      answerVierkantFormule,
+      style: TextStyle(color: colorVierkantFormule),
+    );
+    final textRechthoekFormule = Text(
+      answerRechthoekFormule,
+      style: TextStyle(color: colorRechthoekFormule),
+    );
+    final textDriehoekFormule = Text(
+      answerDriehoekFormule,
+      style: TextStyle(color: colorDriehoekFormule),
+    );
+    final textCirkelFormule = Text(
+      answerCirkelFormule,
+      style: TextStyle(color: colorCirkelFormule),
+    );
+
+    final textScore = Row(children: [
       Spacer(),
-    ])));
+      Text(
+        "Score: " + score.toString() + "/7",
+        style: TextStyle(fontSize: 30),
+      ),
+      Spacer(),
+    ]);
+
+    final vierkantWidget = Row(
+      children: [
+        Spacer(),
+        iconVierkant,
+        Spacer(),
+        textNaam,
+        textVierkant,
+        Spacer(),
+        textFormule,
+        textVierkantFormule,
+        Spacer()
+      ],
+    );
+
+    final rechthoekWidget = Row(
+      children: [
+        Spacer(),
+        iconRechthoek,
+        Spacer(),
+        textNaam,
+        textRechthoek,
+        Spacer(),
+        textFormule,
+        textRechthoekFormule,
+        Spacer()
+      ],
+    );
+
+    final driehoekWidget = Row(
+      children: [
+        Spacer(),
+        iconDriehoek,
+        Spacer(),
+        textNaam,
+        textDriehoek,
+        Spacer(),
+        textFormule,
+        textDriehoekFormule,
+        Spacer()
+      ],
+    );
+
+    final cirkelWidget = Row(
+      children: [
+        Spacer(),
+        iconCirkel,
+        Spacer(),
+        textNaam,
+        textCirkel,
+        Spacer(),
+        textFormule,
+        textCirkelFormule,
+        Spacer()
+      ],
+    );
+
+    final solution = [
+      Header(title: "Vorige Antwoorden: "),
+      vierkantWidget,
+      rechthoekWidget,
+      driehoekWidget,
+      cirkelWidget,
+      textScore,
+      buttonMakeAgain,
+      buttonLeerpad
+    ];
+
+    final pages = [exerciseWidgets, exercisesMade, solution];
+
+    //return Scaffold(body: Center(child: Column(children: exerciseWidgets)));
+
+    return Scaffold(
+        body: ListView(
+      children: pages[page],
+    ));
   }
 }

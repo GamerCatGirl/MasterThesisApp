@@ -32,7 +32,7 @@ class LearningPath extends StatefulWidget {
 
 class _LearningPathState extends State<LearningPath> {
   int selectedPage = 0;
-  FirebaseFirestore db = FirebaseFirestore.instance;
+  bool theoryDoneOppervlakte = false;
 
   void _routeToAddExercise() {
     //TODO
@@ -57,7 +57,13 @@ class _LearningPathState extends State<LearningPath> {
   void theoryCallback() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => OppervlakteTheory(done: () {}),
+        builder: (context) => OppervlakteTheory(
+          done: () {},
+          solved: theoryDoneOppervlakte,
+          user: widget.username,
+          path: widget.path,
+          pathCompletion: widget.pathCompletion,
+        ),
       ),
     );
   }
@@ -92,8 +98,8 @@ class _LearningPathState extends State<LearningPath> {
     //final vierkant = Learningpathtilemid(
     //    onTileClicked: theoryCallback, icon: iconVierkantEx);
 
-    final cirkel = Learningpathtileright(
-        onTileClicked: theoryCallback, icon: iconCirlceEx);
+    //final cirkel = Learningpathtileright(
+    //    onTileClicked: theoryCallback, icon: iconCirlceEx);
 
     void addCustoms() {
       List<dynamic> path = widget.path;
@@ -113,6 +119,7 @@ class _LearningPathState extends State<LearningPath> {
         }
 
         if (element == "oppervlakte") {
+          theoryDoneOppervlakte = completed;
           var oppervlakte = Learningpathtile(
               onTileClicked: theoryCallback,
               position: position,
@@ -136,6 +143,14 @@ class _LearningPathState extends State<LearningPath> {
           pathWidgets.add(pathTiles[current]);
           current += 1;
         } else if (element == "cirkel") {
+          var cirkel = Learningpathtile(
+            onTileClicked: theoryCallback,
+            icon: iconCirlceEx,
+            position: position,
+            completed: completed,
+            enabeled: enabeled,
+            userID: widget.username,
+          );
           pathWidgets.add(cirkel);
           pathWidgets.add(pathTiles[current]);
           current += 1;

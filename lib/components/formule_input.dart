@@ -57,6 +57,8 @@ class _FormuleInputTileState extends State<FormuleInputTile> {
     var input = widget.controller.text;
     var inputWithoutSpaces = input.replaceAll(' ', '');
 
+    //TODO: post if results are correct false so we do not need to check it again later
+
     if (widget.name.toLowerCase() == "vierkant") {
       formule = formuleVierkant;
       formule2 = formuleVierkant;
@@ -134,8 +136,10 @@ class _FormuleInputTileState extends State<FormuleInputTile> {
         showHint = false;
         iconHintPlacer = SizedBox(child: Text(""));
         showHintText = Text("");
+        print(widget.name);
         widget.saveResult(true);
       } else {
+        widget.saveResult(false);
         answer = SizedBox(
             child: Icon(
           iconWrong,
