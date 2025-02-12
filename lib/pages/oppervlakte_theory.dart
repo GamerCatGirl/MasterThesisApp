@@ -33,8 +33,16 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
   IconData iconTriangleEx = Icons.change_history_sharp;
   IconData iconCirlceEx = Icons.circle_outlined;
   IconData iconRectangle = Icons.crop_16_9_outlined;
+  final pGuessInit = 0.3;
+  final pSlippInit = 0.1;
+  final pLearningInfluence = 0.02;
 
   FirebaseFirestore db = FirebaseFirestore.instance;
+  var pKnow = 0.5;
+  var pLearn = 0.5;
+  bool learningDissability = false;
+  bool fetchInfoFromDB = false;
+
   int page = 0;
 
   late bool solvedLocal;
@@ -73,10 +81,6 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
     pathCompletion = widget.pathCompletion;
   }
 
-  //CollectionReference dbExercises = db.collection("exercises");
-
-  //TODO: check add_exercise.dart for more info on how to connect with DB
-
   final meetkundeLevel = <String, dynamic>{};
 
   final meetkundeResults = <String, dynamic>{};
@@ -96,21 +100,19 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
       print("postToDB?");
       CollectionReference dbExercises = db.collection("exercises");
 
-      final docRef = dbExercises.doc(widget.user); //TODO change back to user!
+      final docRef = dbExercises.doc(widget.user);
 
-      if (solvedLocal) {
-        //TODO: update array
-      } else {
-        docRef.set({
-          "oppervlakteTheoryResults": [meetkundeLevel]
-        }, SetOptions(merge: true));
+      //Houd enkel laatste antwoord bij -> aanpassen als je list append wilt doen!
+      docRef.set({
+        "oppervlakteTheoryResults": [meetkundeLevel]
+      }, SetOptions(merge: true));
 
-        answPosted = true;
-        if (resPosted) {
-          solvedLocal = true;
-        }
+      answPosted = true;
+      if (resPosted) {
+        solvedLocal = true;
+        resPosted = false;
+        answPosted = false;
       }
-      print("TODO: clear again");
     }
   }
 
@@ -140,7 +142,17 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
     pathCompletion[index] = true;
 
     CollectionReference dbUser = db.collection("users");
-    final docRef = dbUser.doc(widget.user); //TODO change back to user!
+    final docRef = dbUser.doc(widget.user);
+
+    /*
+    docRef.get().then((doc) {
+      if (doc.exists) {
+        pKnow = doc['pknow'];
+        pLearn = doc['plearn'];
+        learningDissability = doc['learningDisability'];
+      }
+    });
+    */
 
     if (changed) {
       docRef.set({
@@ -206,6 +218,9 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
 
       if (solvedLocal) {
         //TODO: update array
+        docRef.set({
+          "oppervlakteTheory": [meetkundeResults]
+        }, SetOptions(merge: true));
       } else {
         docRef.set({
           "oppervlakteTheory": [meetkundeResults]
@@ -317,6 +332,84 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
     });
   }
 
+  double newPknow(double pKnow, double pWillLearn, double pGuess, double pSlipp,
+      bool correct) {
+    double pLEARNEDn_1 = 0;
+    if (correct) {
+      pLEARNEDn_1 = (pKnow * (1 - pSlipp)) /
+          (pKnow * (1 - pSlipp) + (1 - pKnow) * pGuess);
+    } else {
+      pLEARNEDn_1 =
+          (pKnow * pSlipp) / (pKnow * pSlipp + (1 - pKnow) * (1 - pGuess));
+    }
+
+    var pLearned =
+        pLEARNEDn_1 + (1 - pLEARNEDn_1) * pLearn; //New value for pKnown
+
+    return pLearned;
+  }
+
+  void updateSkill(bool correct, List<String> skills, String difficulty) {
+    //TODO: Only update skill if value is changed from before!
+    String user = widget.user;
+    String skillsString = skills.join('-') + '-' + difficulty;
+    String infoID = skillsString;
+
+    final docRef = db.collection("users").doc(user);
+
+    docRef.get().then((doc) {
+      Map<String, dynamic> document = doc.data() as Map<String, dynamic>;
+
+      var pKnow = document['pknow'];
+      var pLearn = document['plearn'];
+      var pSlipp = pSlippInit;
+      var pGuess = pGuessInit;
+      bool learningDisability = document['learningDisability'];
+      if (learningDissability) {
+        pSlipp += pLearningInfluence;
+        pGuess += pLearningInfluence;
+      }
+
+      if (document[skillsString] != null) {
+        var bkt = document[skillsString] as Map<String, dynamic>;
+        pLearn = bkt['plearn'];
+        pKnow = bkt['pknow'];
+      }
+
+      var pLEARNEDn_1 = 0.0;
+      if (correct) {
+        pLEARNEDn_1 = (pKnow * (1 - pSlipp)) /
+            (pKnow * (1 - pSlipp) + (1 - pKnow) * pGuess);
+      } else {
+        pLEARNEDn_1 =
+            (pKnow * pSlipp) / (pKnow * pSlipp + (1 - pKnow) * (1 - pGuess));
+      }
+
+      var pLearned =
+          pLEARNEDn_1 + (1 - pLEARNEDn_1) * pLearn; //New value for pKnown
+
+      var newDoc = {"pknow": pLearned, "plearn": pLearn};
+
+      docRef.set({skillsString: newDoc}, SetOptions(merge: true));
+
+      //TODO: update Learningpath!!!
+      //if pknow > 0.
+    });
+  }
+
+  void backToLearningPath() {
+    if (answerCirkelCorrect &&
+        answerDriehoekCorrect &&
+        answerVierkantCorrect &&
+        answerRechthoekCorrect &&
+        answerCirkelFormuleCorrect &&
+        //answerDriehoekFormuleCorrect &&
+        answerRechthoekFormuleCorrect &&
+        answerVierkantFormuleCorrect) {
+      _goPath();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final title = Header(title: "Oppervlakte");
@@ -327,6 +420,7 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
         saveResult: (res) {
           meetkundeLevel["vierkantName"] = res;
           checkCompleted();
+          updateSkill(res, ["figuur", "vierkant"], "remember");
         },
         showAnswers: showAnswers,
         icon: iconVierkantEx,
@@ -338,6 +432,7 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
           meetkundeLevel["rechthoekName"] = res;
           checkCompleted();
           meetkundeResults["rechthoekName"] = inputRechthoek.text;
+          updateSkill(res, ["figuur", "rechthoek"], "remember");
         },
         showAnswers: showAnswers,
         icon: iconRectangle,
@@ -349,6 +444,7 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
           meetkundeLevel["driehoekName"] = res;
           checkCompleted();
           meetkundeResults["driehoekName"] = inputDriehoek.text;
+          updateSkill(res, ["figuur", "driehoek"], "remember");
         },
         showAnswers: showAnswers,
         icon: iconTriangleEx,
@@ -360,6 +456,7 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
           meetkundeLevel["cirkelName"] = res;
           checkCompleted();
           meetkundeResults["cirkelName"] = inputCirkel.text;
+          updateSkill(res, ["figuur", "cirkel"], "remember");
         },
         showAnswers: showAnswers,
         icon: iconCirlceEx,
@@ -371,6 +468,7 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
           meetkundeLevel["vierkantFormule"] = res;
           checkCompleted();
           meetkundeResults["vierkantFormule"] = inputVierkantFormule.text;
+          updateSkill(res, ["oppervlakte", "vierkant"], "remember");
         },
         showAnswers: showAnswers,
         icon: iconVierkantEx,
@@ -382,6 +480,7 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
           meetkundeLevel["rechthoekFormule"] = res;
           checkCompleted();
           meetkundeResults["rechthoekFormule"] = inputRechthoekFormule.text;
+          updateSkill(res, ["oppervlakte", "rechthoek"], "remember");
         },
         showAnswers: showAnswers,
         icon: iconRectangle,
@@ -393,6 +492,7 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
           meetkundeLevel["driehoekFormule"] = res;
           //meetkundeResults["driehoekFomule"] = inputDriehoekFormule.text;
           checkCompleted();
+          updateSkill(res, ["oppervlakte", "driehoek"], "remember");
         },
         showAnswers: showAnswers,
         icon: iconTriangleEx,
@@ -402,8 +502,8 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
         controller: inputCirkelFormule,
         saveResult: (res) {
           meetkundeLevel["cirkelFormule"] = res;
-          //meetkundeResults["cirkelFormule"] = inputCirkelFormule.text;
           checkCompleted();
+          updateSkill(res, ["oppervlakte", "cirkel"], "remember");
         },
         showAnswers: showAnswers,
         icon: iconCirlceEx,
@@ -436,8 +536,6 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
             Spacer(),
             ElevatedButton(
                 onPressed: () {
-                  //TODO: get path and path completion from db
-
                   Navigator.pushNamed(context, '/learning-path', arguments: {
                     'user': widget.user,
                     'path': path,
