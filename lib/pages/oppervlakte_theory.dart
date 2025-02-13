@@ -160,8 +160,6 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
       }, SetOptions(merge: true));
     }
 
-    //TODO: post back to database
-
     if (tries == 0) {
       //go automatically back to learningpath after 3 tries
       _goPath();
@@ -389,11 +387,17 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
           pLEARNEDn_1 + (1 - pLEARNEDn_1) * pLearn; //New value for pKnown
 
       var newDoc = {"pknow": pLearned, "plearn": pLearn};
+      Map<String, dynamic> entries = {skillsString: newDoc};
+      var figure = skills[1];
 
-      docRef.set({skillsString: newDoc}, SetOptions(merge: true));
+      if (!path.contains(figure)) {
+        path.add(figure);
+        pathCompletion.add(false);
 
-      //TODO: update Learningpath!!!
-      //if pknow > 0.
+        entries.addAll({"path": path, "pathCompletion": pathCompletion});
+      }
+
+      docRef.set(entries, SetOptions(merge: true));
     });
   }
 

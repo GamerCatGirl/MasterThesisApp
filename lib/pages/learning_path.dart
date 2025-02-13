@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mathapp/components/exercise_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mathapp/components/learningPathTile.dart';
-import 'package:mathapp/components/learningPathTileLeft.dart';
-import 'package:mathapp/components/learningPathTileMid.dart';
-import 'package:mathapp/components/learningPathTileRight.dart';
 import 'package:mathapp/components/row_exercise.dart';
 import 'package:mathapp/components/title.dart';
 import 'package:mathapp/components/title_tile.dart';
@@ -39,6 +36,14 @@ class _LearningPathState extends State<LearningPath> {
     setState(() {
       selectedPage = 1;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    print(widget.path);
+    print(widget.pathCompletion);
+    //update db?
   }
 
   IconData theory = Icons.article_outlined;
@@ -107,11 +112,12 @@ class _LearningPathState extends State<LearningPath> {
       List<Widget> pathTiles = [leftToMid, midToRight, rightToMid, midToLeft];
       List<String> positions = ["left", "mid", "right", "mid"];
       int current = 0;
+      int currentTiles = 0;
       int indexCompleted = 0;
 
       path.forEach((element) {
         var completed = pathCompletion[current] as bool;
-        var position = positions[current];
+        var position = positions[currentTiles];
         var enabeled = true;
 
         if (indexCompleted < current) {
@@ -128,8 +134,9 @@ class _LearningPathState extends State<LearningPath> {
               enabeled: enabeled,
               userID: widget.username);
           pathWidgets.add(oppervlakte);
-          pathWidgets.add(pathTiles[current]);
+          pathWidgets.add(pathTiles[currentTiles]);
           current += 1;
+          currentTiles += 1;
         } else if (element == "vierkant") {
           var vierkant = Learningpathtile(
             onTileClicked: theoryCallback,
@@ -140,8 +147,9 @@ class _LearningPathState extends State<LearningPath> {
             userID: widget.username,
           );
           pathWidgets.add(vierkant);
-          pathWidgets.add(pathTiles[current]);
+          pathWidgets.add(pathTiles[currentTiles]);
           current += 1;
+          currentTiles += 1;
         } else if (element == "cirkel") {
           var cirkel = Learningpathtile(
             onTileClicked: theoryCallback,
@@ -152,11 +160,38 @@ class _LearningPathState extends State<LearningPath> {
             userID: widget.username,
           );
           pathWidgets.add(cirkel);
-          pathWidgets.add(pathTiles[current]);
+          pathWidgets.add(pathTiles[currentTiles]);
           current += 1;
+          currentTiles += 1;
+        } else if (element == "rechthoek") {
+          var rechthoek = Learningpathtile(
+            onTileClicked: theoryCallback,
+            icon: iconRectangle,
+            position: position,
+            completed: completed,
+            enabeled: enabeled,
+            userID: widget.username,
+          );
+          pathWidgets.add(rechthoek);
+          pathWidgets.add(pathTiles[currentTiles]);
+          current += 1;
+          currentTiles += 1;
+        } else if (element == "driehoek") {
+          var driehoek = Learningpathtile(
+            onTileClicked: theoryCallback,
+            icon: iconTriangleEx,
+            position: position,
+            completed: completed,
+            enabeled: enabeled,
+            userID: widget.username,
+          );
+          pathWidgets.add(driehoek);
+          pathWidgets.add(pathTiles[currentTiles]);
+          current += 1;
+          currentTiles += 1;
         }
-        if (current > 3) {
-          current = 0;
+        if (currentTiles > 3) {
+          currentTiles = 0;
         }
         if (completed) {
           indexCompleted += 1;
