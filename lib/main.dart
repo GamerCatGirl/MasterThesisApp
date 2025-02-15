@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mathapp/pages/home.dart';
 import 'package:mathapp/pages/learning_path.dart';
 import 'package:mathapp/pages/logic.dart';
+import 'package:mathapp/pages/meetkunde_ex.dart';
 import 'package:mathapp/pages/profile.dart';
 import 'package:mathapp/pages/setting.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -41,13 +42,22 @@ class MyApp extends StatelessWidget {
         '/skills': (context) => Viewskills(),
       },
       onGenerateRoute: (settings) {
+        final args = settings.arguments as Map<String, dynamic>;
         if (settings.name == '/learning-path') {
-          final args = settings.arguments as Map<String, dynamic>;
           return MaterialPageRoute(
               builder: (context) => LearningPath(
                   username: args['user'],
                   path: args['path'],
                   pathCompletion: args['pathCompletion']));
+        } else if (settings.name == '/vierkant-exercises') {
+          return MaterialPageRoute(
+              builder: (context) => MeetkundeEx(
+                  z: args['z'],
+                  figure: args['figure'],
+                  currentExercise: args['current'],
+                  amountExercises: args['amount'],
+                  image: args['image'],
+                  callback: args['callback']));
         }
       },
     );

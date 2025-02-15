@@ -7,7 +7,7 @@ import 'package:mathapp/components/row_exercise.dart';
 import 'package:mathapp/components/start_exercise.dart';
 import 'package:mathapp/components/title_tile.dart';
 
-class MeetkundeEx extends StatefulWidget {
+class CompetitiveEx extends StatefulWidget {
   final VoidCallback callback;
   final int z;
   final int amountExercises;
@@ -15,7 +15,7 @@ class MeetkundeEx extends StatefulWidget {
   final String image;
   final String figure;
 
-  const MeetkundeEx(
+  const CompetitiveEx(
       {super.key,
       required this.z,
       required this.currentExercise,
@@ -25,10 +25,10 @@ class MeetkundeEx extends StatefulWidget {
       required this.callback});
 
   @override
-  State<MeetkundeEx> createState() => new _MeetkundeExState();
+  State<CompetitiveEx> createState() => new _CompetitiveState();
 }
 
-class _MeetkundeExState extends State<MeetkundeEx> {
+class _CompetitiveState extends State<CompetitiveEx> {
   final _show_start_exercise = true;
   int size = Random().nextInt(98) + 2; //number between 2 and 100
   String errorCode = "";
@@ -114,55 +114,51 @@ class _MeetkundeExState extends State<MeetkundeEx> {
     }
 
     // TODO: implement build
-    return Scaffold(
-      body: Center(
-        child: Column(children: [
-          Row(
-            children: [
-              Spacer(),
-              Text("Exercise " +
-                  widget.currentExercise.toString() +
-                  " out of " +
-                  widget.amountExercises.toString()),
-              Spacer(),
-            ],
-          ),
-          Row(
-            children: [Spacer(), vierkant, Spacer()],
-          ),
-          storyText,
-          vars,
-          Row(children: [
-            Spacer(),
-            SizedBox(width: 40, child: input1Field),
-            Text("m"),
-            Text("  X  "),
-            SizedBox(
-              width: 40,
-              child: input2Field,
-            ),
-            Text("m"),
-            Text("  =  "),
-            SizedBox(
-              width: 50,
-              child: input3Field,
-            ),
-            Text("m\u00B2"),
-            Spacer(),
-            IconButton(
-                onPressed: () {
-                  checkResult();
-                },
-                icon: Icon(Icons.done)),
-            Spacer()
-          ]),
-          Text(
-            errorCode,
-            style: TextStyle(color: Colors.red),
-          ),
-          //])
-        ]),
+    return Column(children: [
+      Row(
+        children: [
+          Spacer(),
+          Text("Exercise " +
+              widget.currentExercise.toString() +
+              " out of " +
+              widget.amountExercises.toString()),
+          Spacer(),
+        ],
       ),
-    );
+      Row(
+        children: [Spacer(), vierkant, Spacer()],
+      ),
+      storyText,
+      vars,
+      Row(children: [
+        Spacer(),
+        SizedBox(width: 40, child: input1Field),
+        Text("m"),
+        Text("  X  "),
+        SizedBox(
+          width: 40,
+          child: input2Field,
+        ),
+        Text("m"),
+        Text("  =  "),
+        SizedBox(
+          width: 50,
+          child: input3Field,
+        ),
+        Text("m\u00B2"),
+        Spacer(),
+        IconButton(
+            onPressed: () {
+              checkResult();
+            },
+            icon: Icon(Icons.done)),
+        Spacer()
+      ]),
+      Text(
+        errorCode,
+        style: TextStyle(color: Colors.red),
+      ),
+      //])
+    ]);
   }
 }

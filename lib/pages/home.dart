@@ -124,6 +124,7 @@ class _HomeState extends State<Home> {
           z: random,
           callback: newExercise,
           image: pathImage,
+          figure: 'vierkant',
           amountExercises: amountExercises,
           currentExercise: this.currentExercise,
         ));
@@ -170,6 +171,7 @@ class _HomeState extends State<Home> {
               onStartClicked: (amount) {
                 _pages.add(new MeetkundeEx(
                   z: Random().nextInt(98) + 2,
+                  figure: 'vierkant',
                   image: path_easy_square,
                   callback: newExercise,
                   amountExercises: amount,

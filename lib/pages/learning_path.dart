@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:mathapp/components/exercise_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,8 +9,9 @@ import 'package:mathapp/components/title.dart';
 import 'package:mathapp/components/title_tile.dart';
 import 'package:mathapp/pages/add_exercise.dart';
 import 'package:mathapp/pages/conversion_theory.dart';
+import 'package:mathapp/pages/meetkunde_ex.dart';
 import 'package:mathapp/pages/oppervlakte_theory.dart';
-import 'package:mathapp/pages/square_theory.dart';
+import 'package:mathapp/pages/figure_theory.dart';
 
 //TODO: add floating add button
 
@@ -30,6 +33,7 @@ class LearningPath extends StatefulWidget {
 class _LearningPathState extends State<LearningPath> {
   int selectedPage = 0;
   bool theoryDoneOppervlakte = false;
+  FirebaseFirestore db = FirebaseFirestore.instance;
 
   void _routeToAddExercise() {
     //TODO
@@ -73,6 +77,57 @@ class _LearningPathState extends State<LearningPath> {
     );
   }
 
+  void makeCompEx() {
+    //todo: add user
+    //todo: add component
+    //todo: elo current player
+    //todo: matchID for link?
+
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => FigureTheory(
+              amountExercises: 10,
+              opponent: "bot1",
+            )));
+  }
+
+  void vierkantCallback() {
+    //TODO: get all possible values needed from database to get custom exercises
+    CollectionReference dbUsers = db.collection("users");
+
+    dbUsers.doc(widget.username).get().then((doc) {
+      var document = doc.data() as Map<String, dynamic>;
+      //TODO get needed info
+
+      var figureRemember = document['figuur-vierkant-remember'];
+      var oppervlakteRemember = document['oppervlakte-vierkant-remember'];
+
+      var oppervlakteApply = {
+        "pknow": document['pknow'],
+        "plearn": document['plearn']
+      };
+
+      if (document['oppervlakte-vierkant-apply'] != null) {
+        //TODO:
+        oppervlakteApply = document['oppervlakte-vierkant-apply'];
+      }
+
+      var eloVierkant = 2800 * oppervlakteApply['pknow'];
+      var eloSpeed = 1500;
+
+      if (document['elo-vierkant'] != null) {
+        //TODO:
+        eloVierkant = document['elo-vierkant'];
+      }
+
+      if (document['elo-speed'] != null) {
+        //TODO:
+        eloVierkant = document['elo-speed'];
+      }
+
+      makeCompEx();
+    });
+  }
+
   void conversionCallback() {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -99,12 +154,6 @@ class _LearningPathState extends State<LearningPath> {
       Header(title: "H5: Oppervlakte"),
       Text("Leerpad van " + widget.username),
     ];
-
-    //final vierkant = Learningpathtilemid(
-    //    onTileClicked: theoryCallback, icon: iconVierkantEx);
-
-    //final cirkel = Learningpathtileright(
-    //    onTileClicked: theoryCallback, icon: iconCirlceEx);
 
     void addCustoms() {
       List<dynamic> path = widget.path;
@@ -139,7 +188,7 @@ class _LearningPathState extends State<LearningPath> {
           currentTiles += 1;
         } else if (element == "vierkant") {
           var vierkant = Learningpathtile(
-            onTileClicked: theoryCallback,
+            onTileClicked: vierkantCallback,
             icon: iconVierkantEx,
             position: position,
             completed: completed,

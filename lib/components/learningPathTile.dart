@@ -21,6 +21,12 @@ class Learningpathtile extends StatelessWidget {
   Widget build(BuildContext context) {
     Color color = Colors.black;
 
+    var callback = onTileClicked;
+
+    if (!enabeled) {
+      callback = () {};
+    }
+
     if (completed) {
       color = Colors.green;
     } else if (!enabeled) {
@@ -28,7 +34,7 @@ class Learningpathtile extends StatelessWidget {
     }
 
     IconButton tileButton = IconButton(
-        onPressed: onTileClicked,
+        onPressed: callback,
         icon: Icon(
           icon,
           color: color,
