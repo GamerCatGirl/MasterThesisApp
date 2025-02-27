@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mathapp/Utils/consts.dart';
 import 'package:mathapp/Utils/elo.dart';
 import 'package:mathapp/components/exercise_tile.dart';
 import 'package:mathapp/components/icon_button_switch.dart';
@@ -43,7 +44,20 @@ class _FigureState extends State<FigureTheory> {
   bool hasOpponent = false;
   List<dynamic>? progressionOpponent;
 
-  List<String> imagesVierkant = [];
+  List<String> imagesVierkant = [
+    "Bakery.jpg",
+    "Bar.jpg",
+    "Beautysalon_.jpg",
+    "IceShop.jpg",
+    "Lobby.jpg",
+    "Painrstudio2.jpg",
+    "Paintstudio.jpg",
+    "Room.jpg",
+    "Room2.jpg",
+    "Room3.jpg",
+    "Room4.jpg",
+    "Room5.jpg"
+  ];
   List<String> imagesCirkel = [];
   List<String> imagesRechthoek = [];
   List<String> imagesDriehoek = [];
@@ -51,22 +65,50 @@ class _FigureState extends State<FigureTheory> {
   List<dynamic> harderExercises = [];
   List<dynamic> easierExercises = [];
 
+  List<dynamic> generatedToPost = [];
+
   String image = "assets/images/Vierkant_Easy.jpg";
   String figure = "vierkant";
+  int eloExercise = 0;
+  double tExercise = Elo.initT;
+  String idExercise = "";
+  bool generated = false;
+  int exerciseTook = 0;
   int z = 2;
+  int speed = 10;
+  double speedInterval = 0.5;
   bool showFormule = false;
 
   List<dynamic>? generatedPlayed;
-  double elo = Elo.initElo;
-  double? t;
+  int elo = Elo.initElo;
+  double t = Elo.initT;
   double? eloOpponent;
   double? tOpponent;
 
   bool foundLower = false;
   bool foundHigher = false;
+  bool wonCurrent = false;
+
+  int timeLastEx = 0;
+
+  List<int> speeds = [];
   ValueNotifier<bool> startExercise = ValueNotifier(false);
 
-  //TODO: finding opponent loading sequence
+  void generateSpeedInfo() {
+    var document;
+    for (document in easierExercises) {
+      var data = document.data() as Map<String, dynamic>;
+      var speedMaybe = data['speed'];
+      speeds.add(speedMaybe as int);
+    }
+    for (document in harderExercises) {
+      var data = document.data() as Map<String, dynamic>;
+      var speedMaybe = data['speed'];
+      speeds.add(speedMaybe as int);
+    }
+
+    speeds.sort();
+  }
 
   void generateExercisesBot() {
     //get exercises already played
@@ -100,10 +142,7 @@ class _FigureState extends State<FigureTheory> {
         t = Elo.initT;
       }
 
-      print(elo);
-      print(t);
-
-      //TODO: look if there are exercises for current user to play against
+      //look if there are exercises for current user to play against
       int upperbound = elo.toInt() + Elo.thresholdElo;
       int lowerbound = elo.toInt() - Elo.thresholdElo;
       dbEx
@@ -117,7 +156,9 @@ class _FigureState extends State<FigureTheory> {
         foundHigher = true;
 
         if (foundLower) {
+          generateSpeedInfo();
           newExercise();
+          startTimer();
           startExercise.value = true;
         }
       });
@@ -132,7 +173,9 @@ class _FigureState extends State<FigureTheory> {
         easierExercises = docs;
         foundLower = true;
         if (foundHigher) {
+          generateSpeedInfo();
           newExercise();
+          startTimer();
           startExercise.value = true;
         }
       });
@@ -142,7 +185,6 @@ class _FigureState extends State<FigureTheory> {
   @override
   void initState() {
     super.initState();
-    startTimer();
 
     if (widget.opponent == "") {
       hasOpponent = false;
@@ -163,11 +205,70 @@ class _FigureState extends State<FigureTheory> {
     });
   }
 
+  void generateExercise() {
+    //TODO: make more general now just vierkant
+    int maxIDX = imagesVierkant.length;
+    int idx = Random().nextInt(maxIDX);
+    String imageChosen = imagesVierkant[idx];
+
+    image = "assets/images/vierkant/" + imageChosen;
+    z = Random()
+        .nextInt(Consts().maxMultiplyByHead + 1); //TODO: hou rekening met elo
+    speed = Random().nextInt(16) +
+        5; //tussen 5 en 20 seconden //TODO: hou rekening met elo
+    generated = true;
+    eloExercise = elo.floor();
+    return;
+  }
+
   void newExercise() {
+    bool easierExercise = Random().nextBool();
+    List<dynamic> toChooseFrom =
+        easierExercise ? easierExercises : harderExercises;
+
+    int amountToChooseFrom = toChooseFrom.length;
+
+    if (amountToChooseFrom == 0) {
+      //make new exercise
+      generateExercise();
+      return;
+    }
+    generated = false;
+    int randomExerciseIdx = Random().nextInt(amountToChooseFrom);
+
+    var doc = toChooseFrom[randomExerciseIdx];
+    var idExercise = doc.id;
     //TODO:
+    //generatedPlayed?.map(
+    //    (e) => {print("check if player has not already had this ex before")});
+
+    var data = doc.data();
+
+    image = data['image'];
+    eloExercise = data['elo'];
+    z = data['z'];
+    speed = data['speed'];
+
+    toChooseFrom.remove(doc);
   }
 
   void announceWinner() {
+    print("Announcing a winner :)");
+    print(generatedToPost);
+    //TODO: post generated exercises
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    String exerciseID = "oppervlakte-" + widget.skills.join("-");
+    String tableID = "generated-" + exerciseID;
+
+    CollectionReference dbComp = db.collection(tableID);
+
+    for (var data in generatedToPost) {
+      DocumentReference reference = dbComp.doc();
+      batch.set(reference, data);
+    }
+
+    batch.commit();
+
     //TODO: update Elo-skills
 
     //TODO: update Elo-speed
@@ -202,14 +303,74 @@ class _FigureState extends State<FigureTheory> {
     });
   }
 
+  void updateElo() {
+    //TODO:
+    print(elo);
+    print(eloExercise);
+
+    //TODO: how long did my exercise take?
+    int time = seconds.value;
+    exerciseTook = time - timeLastEx;
+    timeLastEx = time;
+
+    print(exerciseTook);
+    speeds.add(exerciseTook);
+    speeds.sort();
+
+    if (exerciseTook > speed) {
+      wonCurrent = false;
+    } else {
+      wonCurrent = true;
+    }
+
+    int current = speeds.indexOf(exerciseTook) + 1;
+    int totalSpeeds = speeds.length;
+
+    speedInterval = current / totalSpeeds;
+
+    List<dynamic> newInfo =
+        Elo.updateElo(elo, eloExercise, wonCurrent, t, speedInterval);
+
+    print(newInfo);
+    elo = newInfo[0];
+    t = newInfo[1];
+
+    speeds.add(speed);
+    speeds.sort();
+
+    current = speeds.indexOf(speed) + 1;
+    totalSpeeds = speeds.length;
+
+    List<dynamic> newInfoExercise =
+        Elo.updateElo(1500, elo, !wonCurrent, tExercise, current / totalSpeeds);
+    //speeds.reduce(combine)
+    speeds.removeAt(current - 1);
+
+    //TODO: update directly if exercise was already existing
+    //(chances exist that some writes get lost when the whole class is playing at the same time)
+
+    if (generated) {
+      var newDoc = {
+        'elo': newInfoExercise[0],
+        't': newInfoExercise[1],
+        'image': image,
+        'speed': speed,
+        'z': z,
+        'showFormule': true,
+      };
+      generatedToPost.add(newDoc);
+    } else {
+      //TODO: update directly
+    }
+  }
+
   void exerciseSolved() {
-    //TODO: new image
+    //update Elo
+    updateElo();
 
-    //TODO: new value for z
+    //TODO: lastWon?
 
-    //TODO: new bool to ask for formule?
-
-    //TODO: new skill?
+    newExercise();
 
     ownProgress.value++;
     if (hasOpponent) {
@@ -235,7 +396,8 @@ class _FigureState extends State<FigureTheory> {
       children: [
         Spacer(),
         Text("Finding opponent ..."),
-        LoadingAnimationWidget.inkDrop(color: Colors.purple, size: 200),
+        LoadingAnimationWidget.threeRotatingDots(
+            color: Colors.purple, size: 200),
         Spacer()
       ],
     );

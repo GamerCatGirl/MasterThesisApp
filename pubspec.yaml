@@ -76,6 +76,7 @@ flutter:
     - assets/images/example_img.jpg
     - assets/images/Vierkant_Easy.jpg
     - assets/images/Vierkant_Harder.jpg
+    - assets/images/vierkant/
     - assets/images/vierkant/easy/
     - assets/images/vierkant/medium/
     - assets/images/vierkant/hard/

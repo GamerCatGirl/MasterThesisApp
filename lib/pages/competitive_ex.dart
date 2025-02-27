@@ -45,8 +45,12 @@ class _CompetitiveState extends State<CompetitiveEx> {
   @override
   Widget build(BuildContext context) {
     //Widget iconButton = IconButton(onPressed: (){}), icon: icon);
-    final vierkant =
-        Image(fit: BoxFit.fitWidth, image: AssetImage(widget.image));
+    double width = MediaQuery.of(context).size.width;
+
+    double widthImage = width / 3 * 2;
+
+    final vierkant = Image(
+        fit: BoxFit.cover, width: widthImage, image: AssetImage(widget.image));
 
     String story = //TODO: make this dynamic depending on image!
         "We willen de oppervlakte van de vloer van ons nieuw kapsalon berekenen. \nWe weten dat 1 zijde " +
