@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mathapp/Utils/elo.dart';
 import 'package:mathapp/components/exercise_tile.dart';
 import 'package:mathapp/components/icon_button_switch.dart';
 import 'package:mathapp/components/row_exercise.dart';
@@ -14,9 +15,17 @@ import 'package:mathapp/pages/meetkunde_ex.dart';
 class FigureTheory extends StatefulWidget {
   final int amountExercises;
   final String opponent;
+  final String user;
+  final List<String> skills;
+  final bool synced;
 
   const FigureTheory(
-      {super.key, required this.amountExercises, required this.opponent});
+      {super.key,
+      required this.user,
+      required this.amountExercises,
+      required this.opponent,
+      required this.synced,
+      required this.skills});
 
   @override
   State<FigureTheory> createState() => new _FigureState();
@@ -27,11 +36,97 @@ class _FigureState extends State<FigureTheory> {
   ValueNotifier<int> ownProgress = ValueNotifier(0);
   ValueNotifier<int> opponentProgress = ValueNotifier(0);
   FirebaseFirestore db = FirebaseFirestore.instance;
-  //Color colorBar = Colors.orange;
+
   ValueNotifier<Color> colorBar = ValueNotifier(Colors.orange);
   Timer? stopWatch;
   bool hasOpponent = false;
   List<dynamic>? progressionOpponent;
+
+  List<String> imagesVierkant = [];
+  List<String> imagesCirkel = [];
+  List<String> imagesRechthoek = [];
+  List<String> imagesDriehoek = [];
+
+  List<dynamic> harderExercises = [];
+  List<dynamic> easierExercises = [];
+
+  String image = "assets/images/Vierkant_Easy.jpg";
+  String figure = "vierkant";
+  int z = 2;
+  bool showFormule = false;
+
+  List<dynamic>? generatedPlayed;
+  double elo = Elo.initElo;
+  double? t;
+  double? eloOpponent;
+  double? tOpponent;
+
+  bool foundLower = false;
+  bool foundHigher = false;
+
+  //TODO: finding opponent loading sequence
+
+  void generateExercisesBot() {
+    //get exercises already played
+    String exerciseID = "oppervlakte-" + widget.skills.join("-");
+    String tableID = "generated-" + exerciseID;
+
+    CollectionReference dbComp = db.collection("exercises");
+    CollectionReference dbEx = db.collection(tableID);
+
+    dbComp.doc(widget.user).get().then((doc) {
+      var document = doc.data() as Map<String, dynamic>;
+      var elos = document['elo'] as Map<String, dynamic>;
+      var generatedPlayedGenaral =
+          document['generatedPlayed'] as Map<String, dynamic>;
+
+      var alreadyPlayed = generatedPlayedGenaral[exerciseID];
+      var eloInfo = elos[exerciseID];
+
+      if (alreadyPlayed != null) {
+        print(alreadyPlayed.runtimeType);
+        generatedPlayed = alreadyPlayed;
+      } else {
+        generatedPlayed = [];
+      }
+
+      if (eloInfo != null) {
+        elo = eloInfo["elo"];
+        t = eloInfo["t"];
+      } else {
+        elo = Elo.initElo;
+        t = Elo.initT;
+      }
+
+      print(elo);
+      print(t);
+
+      //TODO: look if there are exercises for current user to play against
+      int upperbound = elo.toInt() + Elo.thresholdElo;
+      int lowerbound = elo.toInt() - Elo.thresholdElo;
+      dbEx
+          .where("elo", isGreaterThanOrEqualTo: elo)
+          .where("elo", isLessThan: upperbound)
+          .orderBy("elo", descending: false)
+          .get()
+          .then((doc) {
+        var docs = doc.docs as List<dynamic>;
+        harderExercises = docs;
+        foundHigher = true;
+      });
+
+      dbEx
+          .where("elo", isLessThan: elo)
+          .where("elo", isGreaterThan: lowerbound)
+          .orderBy("elo", descending: true)
+          .get()
+          .then((doc) {
+        var docs = doc.docs;
+        easierExercises = docs;
+        foundLower = true;
+      });
+    });
+  }
 
   @override
   void initState() {
@@ -44,6 +139,10 @@ class _FigureState extends State<FigureTheory> {
       hasOpponent = true;
     }
 
+    if (widget.opponent == "bot") {
+      generateExercisesBot();
+    }
+
     CollectionReference dbComp = db.collection("competition");
 
     dbComp.doc("eloVec").get().then((doc) {
@@ -54,7 +153,11 @@ class _FigureState extends State<FigureTheory> {
   }
 
   void announceWinner() {
-    //TODO:
+    //TODO: update Elo-skills
+
+    //TODO: update Elo-speed
+
+    //TODO: also update Elo opponent?
   }
 
   void startTimer() {
@@ -85,6 +188,14 @@ class _FigureState extends State<FigureTheory> {
   }
 
   void exerciseSolved() {
+    //TODO: new image
+
+    //TODO: new value for z
+
+    //TODO: new bool to ask for formule?
+
+    //TODO: new skill?
+
     ownProgress.value++;
     if (hasOpponent) {
       if (opponentProgress.value > ownProgress.value) {
@@ -95,7 +206,6 @@ class _FigureState extends State<FigureTheory> {
         colorBar.value = Colors.orange;
       }
     }
-
     if (ownProgress.value == widget.amountExercises) {
       announceWinner();
     }
@@ -105,6 +215,8 @@ class _FigureState extends State<FigureTheory> {
   Widget build(BuildContext context) {
     var winner = SizedBox(width: 100, child: Text("Gewonnen"));
     var loser = SizedBox(width: 100, child: Text("Verloren"));
+
+    var loading = SizedBox();
 
     return Scaffold(
         body: Center(
@@ -162,13 +274,18 @@ class _FigureState extends State<FigureTheory> {
             )
           : Text(''),
       Spacer(),
-      CompetitiveEx(
-          z: 2,
-          currentExercise: 1,
-          amountExercises: 10,
-          image: "assets/images/Vierkant_Easy.jpg",
-          figure: 'vierkant',
-          callback: exerciseSolved),
+      ValueListenableBuilder(
+          valueListenable: ownProgress,
+          builder: (context, value, child) {
+            return CompetitiveEx(
+                showFormule: showFormule,
+                z: z,
+                currentExercise: value + 1,
+                amountExercises: 10,
+                image: image,
+                figure: figure,
+                callback: exerciseSolved);
+          }),
       Spacer(),
     ])));
   }

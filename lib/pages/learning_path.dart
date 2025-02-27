@@ -77,16 +77,17 @@ class _LearningPathState extends State<LearningPath> {
     );
   }
 
-  void makeCompEx() {
-    //todo: add user
-    //todo: add component
+  void makeCompEx(String figure) {
     //todo: elo current player
-    //todo: matchID for link?
+    //TODO: matchID for link?
 
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => FigureTheory(
+              synced: false,
               amountExercises: 10,
-              opponent: "bot1",
+              user: widget.username,
+              skills: [figure],
+              opponent: "bot",
             )));
   }
 
@@ -124,7 +125,45 @@ class _LearningPathState extends State<LearningPath> {
         eloVierkant = document['elo-speed'];
       }
 
-      makeCompEx();
+      makeCompEx('vierkant');
+    });
+  }
+
+  void rechthoekCallback() {
+    //TODO: get all possible values needed from database to get custom exercises
+    CollectionReference dbUsers = db.collection("users");
+
+    dbUsers.doc(widget.username).get().then((doc) {
+      var document = doc.data() as Map<String, dynamic>;
+      //TODO get needed info
+
+      var figureRemember = document['figuur-rechthoek-remember'];
+      var oppervlakteRemember = document['oppervlakte-rechthoek-remember'];
+
+      var oppervlakteApply = {
+        "pknow": document['pknow'],
+        "plearn": document['plearn']
+      };
+
+      if (document['oppervlakte-rechthoek-apply'] != null) {
+        //TODO:
+        oppervlakteApply = document['oppervlakte-rechthoek-apply'];
+      }
+
+      var eloVierkant = 2800 * oppervlakteApply['pknow'];
+      var eloSpeed = 1500;
+
+      if (document['elo-rechthoek'] != null) {
+        //TODO:
+        eloVierkant = document['elo-rechthoek'];
+      }
+
+      if (document['elo-speed'] != null) {
+        //TODO:
+        eloVierkant = document['elo-speed'];
+      }
+
+      makeCompEx('rechthoek');
     });
   }
 
@@ -214,7 +253,7 @@ class _LearningPathState extends State<LearningPath> {
           currentTiles += 1;
         } else if (element == "rechthoek") {
           var rechthoek = Learningpathtile(
-            onTileClicked: theoryCallback,
+            onTileClicked: rechthoekCallback,
             icon: iconRectangle,
             position: position,
             completed: completed,

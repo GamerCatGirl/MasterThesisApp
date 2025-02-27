@@ -12,11 +12,13 @@ class CompetitiveEx extends StatefulWidget {
   final int z;
   final int amountExercises;
   final int currentExercise;
+  final bool showFormule;
   final String image;
   final String figure;
 
   const CompetitiveEx(
       {super.key,
+      required this.showFormule,
       required this.z,
       required this.currentExercise,
       required this.amountExercises,
@@ -37,13 +39,16 @@ class _CompetitiveState extends State<CompetitiveEx> {
   final TextEditingController oppervlakte = TextEditingController();
   //TODO: hou een lijst bij van de exercises
 
+  late String label1;
+  late String label2;
+
   @override
   Widget build(BuildContext context) {
     //Widget iconButton = IconButton(onPressed: (){}), icon: icon);
     final vierkant =
         Image(fit: BoxFit.fitWidth, image: AssetImage(widget.image));
 
-    String story =
+    String story = //TODO: make this dynamic depending on image!
         "We willen de oppervlakte van de vloer van ons nieuw kapsalon berekenen. \nWe weten dat 1 zijde " +
             widget.z.toString() +
             "m lang is, hoeveel is dan de oppervlakte van onze vloer?";
