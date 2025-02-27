@@ -11,6 +11,7 @@ import 'package:mathapp/components/start_exercise.dart';
 import 'package:mathapp/components/title_tile.dart';
 import 'package:mathapp/pages/competitive_ex.dart';
 import 'package:mathapp/pages/meetkunde_ex.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class FigureTheory extends StatefulWidget {
   final int amountExercises;
@@ -63,6 +64,7 @@ class _FigureState extends State<FigureTheory> {
 
   bool foundLower = false;
   bool foundHigher = false;
+  ValueNotifier<bool> startExercise = ValueNotifier(false);
 
   //TODO: finding opponent loading sequence
 
@@ -113,6 +115,11 @@ class _FigureState extends State<FigureTheory> {
         var docs = doc.docs as List<dynamic>;
         harderExercises = docs;
         foundHigher = true;
+
+        if (foundLower) {
+          newExercise();
+          startExercise.value = true;
+        }
       });
 
       dbEx
@@ -124,6 +131,10 @@ class _FigureState extends State<FigureTheory> {
         var docs = doc.docs;
         easierExercises = docs;
         foundLower = true;
+        if (foundHigher) {
+          newExercise();
+          startExercise.value = true;
+        }
       });
     });
   }
@@ -150,6 +161,10 @@ class _FigureState extends State<FigureTheory> {
       progressionOpponent = document['progression'] as List<dynamic>;
       print(progressionOpponent);
     });
+  }
+
+  void newExercise() {
+    //TODO:
   }
 
   void announceWinner() {
@@ -216,77 +231,91 @@ class _FigureState extends State<FigureTheory> {
     var winner = SizedBox(width: 100, child: Text("Gewonnen"));
     var loser = SizedBox(width: 100, child: Text("Verloren"));
 
-    var loading = SizedBox();
+    var loading = Column(
+      children: [
+        Spacer(),
+        Text("Finding opponent ..."),
+        LoadingAnimationWidget.inkDrop(color: Colors.purple, size: 200),
+        Spacer()
+      ],
+    );
+
+    var exercise = Column(
+      children: [
+        Text("Oppervlakte"),
+        Spacer(),
+        ValueListenableBuilder<int>(
+          valueListenable: ownProgress,
+          builder: (context, value, child) {
+            double progress = value / widget.amountExercises;
+            return Row(
+              children: [
+                Spacer(),
+                SizedBox(
+                  width: 100,
+                  child: Text("your progress: "),
+                ),
+                SizedBox(
+                    width: 300,
+                    child: ValueListenableBuilder<Color>(
+                        valueListenable: colorBar,
+                        builder: (context, color, child) {
+                          return LinearProgressIndicator(
+                            value: progress,
+                            color: color,
+                          );
+                        })),
+                Spacer()
+              ],
+            );
+          },
+        ),
+        hasOpponent
+            ? ValueListenableBuilder<int>(
+                valueListenable: opponentProgress,
+                builder: (context, value, child) {
+                  double progress = value / widget.amountExercises;
+                  return Row(
+                    children: [
+                      Spacer(),
+                      SizedBox(
+                        width: 100,
+                        child: Text(widget.opponent + ": "),
+                      ),
+                      SizedBox(
+                        width: 300,
+                        child: LinearProgressIndicator(
+                          value: progress,
+                        ),
+                      ),
+                      Spacer()
+                    ],
+                  );
+                },
+              )
+            : Text(''),
+        Spacer(),
+        ValueListenableBuilder(
+            valueListenable: ownProgress,
+            builder: (context, value, child) {
+              return CompetitiveEx(
+                  showFormule: showFormule,
+                  z: z,
+                  currentExercise: value + 1,
+                  amountExercises: 10,
+                  image: image,
+                  figure: figure,
+                  callback: exerciseSolved);
+            }),
+        Spacer(),
+      ],
+    );
 
     return Scaffold(
         body: Center(
-            child: Column(children: [
-      Text("Oppervlakte"),
-      Spacer(),
-      ValueListenableBuilder<int>(
-        valueListenable: ownProgress,
-        builder: (context, value, child) {
-          double progress = value / widget.amountExercises;
-          return Row(
-            children: [
-              Spacer(),
-              SizedBox(
-                width: 100,
-                child: Text("your progress: "),
-              ),
-              SizedBox(
-                  width: 300,
-                  child: ValueListenableBuilder<Color>(
-                      valueListenable: colorBar,
-                      builder: (context, color, child) {
-                        return LinearProgressIndicator(
-                          value: progress,
-                          color: color,
-                        );
-                      })),
-              Spacer()
-            ],
-          );
-        },
-      ),
-      hasOpponent
-          ? ValueListenableBuilder<int>(
-              valueListenable: opponentProgress,
-              builder: (context, value, child) {
-                double progress = value / widget.amountExercises;
-                return Row(
-                  children: [
-                    Spacer(),
-                    SizedBox(
-                      width: 100,
-                      child: Text(widget.opponent + ": "),
-                    ),
-                    SizedBox(
-                      width: 300,
-                      child: LinearProgressIndicator(
-                        value: progress,
-                      ),
-                    ),
-                    Spacer()
-                  ],
-                );
-              },
-            )
-          : Text(''),
-      Spacer(),
-      ValueListenableBuilder(
-          valueListenable: ownProgress,
-          builder: (context, value, child) {
-            return CompetitiveEx(
-                showFormule: showFormule,
-                z: z,
-                currentExercise: value + 1,
-                amountExercises: 10,
-                image: image,
-                figure: figure,
-                callback: exerciseSolved);
-          }),
-      Spacer(),
-    ])));
+            child: ValueListenableBuilder(
+                valueListenable: startExercise,
+                builder: (context, value, child) =>
+                    value ? exercise : loading)));
   }
 }
