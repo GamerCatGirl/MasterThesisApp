@@ -88,6 +88,7 @@ class _LearningPathState extends State<LearningPath> {
               user: widget.username,
               skills: [figure],
               opponent: "bot",
+              exerciseName: "vierkant",
             )));
   }
 

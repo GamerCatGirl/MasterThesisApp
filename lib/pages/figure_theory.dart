@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mathapp/Utils/consts.dart';
 import 'package:mathapp/Utils/elo.dart';
+import 'package:mathapp/Utils/redirections.dart';
 import 'package:mathapp/components/exercise_tile.dart';
 import 'package:mathapp/components/icon_button_switch.dart';
 import 'package:mathapp/components/row_exercise.dart';
@@ -20,11 +21,13 @@ class FigureTheory extends StatefulWidget {
   final String user;
   final List<String> skills;
   final bool synced;
+  final String exerciseName;
 
   const FigureTheory(
       {super.key,
       required this.user,
       required this.amountExercises,
+      required this.exerciseName,
       required this.opponent,
       required this.synced,
       required this.skills});
@@ -43,6 +46,9 @@ class _FigureState extends State<FigureTheory> {
   Timer? stopWatch;
   bool hasOpponent = false;
   List<dynamic>? progressionOpponent;
+
+  List<dynamic> path = [];
+  List<dynamic> pathCompletion = [];
 
   List<String> imagesVierkant = [
     "Bakery.jpg",
@@ -78,6 +84,8 @@ class _FigureState extends State<FigureTheory> {
   int speed = 10;
   double speedInterval = 0.5;
   bool showFormule = false;
+  ValueNotifier<bool> completed = ValueNotifier(false);
+  ValueNotifier<bool> won = ValueNotifier(false);
 
   List<dynamic>? generatedPlayed;
   int elo = Elo.initElo;
@@ -93,6 +101,10 @@ class _FigureState extends State<FigureTheory> {
 
   List<int> speeds = [];
   ValueNotifier<bool> startExercise = ValueNotifier(false);
+
+  Map<String, dynamic> generatedPlayedGenaral = {};
+
+  var elos = {};
 
   void generateSpeedInfo() {
     var document;
@@ -120,8 +132,8 @@ class _FigureState extends State<FigureTheory> {
 
     dbComp.doc(widget.user).get().then((doc) {
       var document = doc.data() as Map<String, dynamic>;
-      var elos = document['elo'] as Map<String, dynamic>;
-      var generatedPlayedGenaral =
+      elos = document['elo'] as Map<String, dynamic>;
+      generatedPlayedGenaral =
           document['generatedPlayed'] as Map<String, dynamic>;
 
       var alreadyPlayed = generatedPlayedGenaral[exerciseID];
@@ -132,6 +144,7 @@ class _FigureState extends State<FigureTheory> {
         generatedPlayed = alreadyPlayed;
       } else {
         generatedPlayed = [];
+        generatedPlayedGenaral[exerciseID] = [];
       }
 
       if (eloInfo != null) {
@@ -203,6 +216,13 @@ class _FigureState extends State<FigureTheory> {
       progressionOpponent = document['progression'] as List<dynamic>;
       print(progressionOpponent);
     });
+
+    CollectionReference dbUser = db.collection("users");
+    dbUser.doc(widget.user).get().then((doc) {
+      var document = doc.data() as Map<String, dynamic>;
+      path = document['path'];
+      pathCompletion = document['pathCompletion'];
+    });
   }
 
   void generateExercise() {
@@ -215,7 +235,7 @@ class _FigureState extends State<FigureTheory> {
     z = Random()
         .nextInt(Consts().maxMultiplyByHead + 1); //TODO: hou rekening met elo
     speed = Random().nextInt(16) +
-        5; //tussen 5 en 20 seconden //TODO: hou rekening met elo
+        2; //tussen 5 en 20 seconden //TODO: hou rekening met elo
     generated = true;
     eloExercise = elo.floor();
     return;
@@ -264,16 +284,43 @@ class _FigureState extends State<FigureTheory> {
 
     for (var data in generatedToPost) {
       DocumentReference reference = dbComp.doc();
+      //see if you can id's of the matches
+      generatedPlayed?.add(reference.id);
+
       batch.set(reference, data);
     }
 
     batch.commit();
 
-    //TODO: update Elo-skills
+    //update Info of the match
+    var skillString = "oppervlakte-" + widget.skills.join("-");
 
-    //TODO: update Elo-speed
+    var idxPath = path.indexOf(widget.exerciseName);
+    pathCompletion[idxPath] = true;
 
-    //TODO: also update Elo opponent?
+    generatedPlayedGenaral[skillString] = generatedPlayed;
+
+    CollectionReference dbUser = db.collection("users");
+    dbUser
+        .doc(widget.user)
+        .set({"pathCompletion": pathCompletion}, SetOptions(merge: true));
+
+    //post to DB
+    //post matchIDs played
+
+    CollectionReference dbEx = db.collection("exercises");
+
+    elos[skillString] = {"elo": elo, "t": t};
+
+    dbEx.doc(widget.user).set(
+        {"elo": elos, "generatedPlayed": generatedPlayedGenaral},
+        SetOptions(merge: true));
+
+    if (opponentProgress.value > ownProgress.value) {
+      won.value = false;
+    } else {
+      won.value = true;
+    }
   }
 
   void startTimer() {
@@ -296,9 +343,13 @@ class _FigureState extends State<FigureTheory> {
           colorBar.value = Colors.orange;
         }
 
-        if (opponentProgress.value == widget.amountExercises) {
+        /*
+        if (ownProgress.value == widget.amountExercises) {
           announceWinner();
+          stopWatch?.cancel();
+          completed.value = true;
         }
+        */
       }
     });
   }
@@ -346,7 +397,7 @@ class _FigureState extends State<FigureTheory> {
     //speeds.reduce(combine)
     speeds.removeAt(current - 1);
 
-    //TODO: update directly if exercise was already existing
+    // update directly if exercise was already existing
     //(chances exist that some writes get lost when the whole class is playing at the same time)
 
     if (generated) {
@@ -384,6 +435,8 @@ class _FigureState extends State<FigureTheory> {
     }
     if (ownProgress.value == widget.amountExercises) {
       announceWinner();
+      stopWatch?.cancel();
+      completed.value = true;
     }
   }
 
@@ -392,6 +445,17 @@ class _FigureState extends State<FigureTheory> {
     var winner = SizedBox(width: 100, child: Text("Gewonnen"));
     var loser = SizedBox(width: 100, child: Text("Verloren"));
 
+    var viewAnswersButton =
+        ElevatedButton(onPressed: () {}, child: Text("Bekijk mijn oefeningen"));
+    var viewProgressButton = ElevatedButton(
+        onPressed: () {}, child: Text("Bekijk mijn vooruitgang!"));
+    var learningPathButton = ElevatedButton(
+        onPressed: () {
+          Functions()
+              .toLearningPatch(widget.user, path, pathCompletion, context);
+        },
+        child: Text("Ga terug naar leerpad!"));
+
     var loading = Column(
       children: [
         Spacer(),
@@ -399,6 +463,28 @@ class _FigureState extends State<FigureTheory> {
         LoadingAnimationWidget.threeRotatingDots(
             color: Colors.purple, size: 200),
         Spacer()
+      ],
+    );
+
+    var done = Column(
+      children: [
+        Spacer(),
+        ValueListenableBuilder(
+            valueListenable: won,
+            builder: (context, value, child) => value ? winner : loser),
+        SizedBox(
+          height: 200,
+          child: viewAnswersButton,
+        ),
+        SizedBox(
+          height: 200,
+          child: viewProgressButton,
+        ),
+        SizedBox(
+          height: 200,
+          child: learningPathButton,
+        ),
+        Spacer(),
       ],
     );
 
@@ -473,11 +559,14 @@ class _FigureState extends State<FigureTheory> {
       ],
     );
 
+    var exercisesOrLoading = ValueListenableBuilder(
+        valueListenable: startExercise,
+        builder: (context, value, child) => value ? exercise : loading);
+
     return Scaffold(
         body: Center(
             child: ValueListenableBuilder(
-                valueListenable: startExercise,
-                builder: (context, value, child) =>
-                    value ? exercise : loading)));
+                valueListenable: completed,
+                builder: (context, value, child) => value ? done : exercise)));
   }
 }

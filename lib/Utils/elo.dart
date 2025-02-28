@@ -5,7 +5,7 @@ class Elo {
   static int initElo = 1500;
   static double weigthSpeed = 0.0;
   static double weigthAccuracy = 0.0;
-  static double initT = 20;
+  static double initT = 10;
   static double alpha = 0.05;
   static int maxK = 40;
   static int thresholdElo = 100;
