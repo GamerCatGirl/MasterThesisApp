@@ -38,6 +38,9 @@ class _CompetitiveState extends State<CompetitiveEx> {
   final TextEditingController zijde2 = TextEditingController();
   final TextEditingController oppervlakte = TextEditingController();
   //TODO: hou een lijst bij van de exercises
+  final TextEditingController straal1 = TextEditingController();
+  final TextEditingController straal2 = TextEditingController();
+  final TextEditingController pi = TextEditingController();
 
   late String label1;
   late String label2;
@@ -79,7 +82,39 @@ class _CompetitiveState extends State<CompetitiveEx> {
       ),
     );
 
-    String varAssign = "z = " + widget.z.toString() + "m";
+    var input1FieldCirkel = TextFormField(
+      controller: straal1,
+      decoration: const InputDecoration(
+        border: UnderlineInputBorder(),
+        labelText: 'straal',
+      ),
+    );
+
+    var input2FieldCirkel = TextFormField(
+      controller: straal2,
+      decoration: const InputDecoration(
+        border: UnderlineInputBorder(),
+        labelText: 'straal',
+      ),
+    );
+
+    var input3FieldCirkel = TextFormField(
+      controller: pi,
+      decoration: const InputDecoration(
+        border: UnderlineInputBorder(),
+        labelText: 'pi',
+      ),
+    );
+
+    String varAssignVierkant = "z = " + widget.z.toString() + "m";
+
+    String varAssignCirkel = "straal = " + widget.z.toString() + "m";
+
+    String varAssign = (widget.figure == "vierkant")
+        ? varAssignVierkant
+        : (widget.figure == "cirkel")
+            ? varAssignCirkel
+            : varAssignVierkant;
 
     Widget storyText = Text(story);
     Widget vars = Text(
@@ -87,7 +122,57 @@ class _CompetitiveState extends State<CompetitiveEx> {
       style: TextStyle(fontWeight: FontWeight.bold),
     );
 
-    bool checkResult() {
+    bool checkResultCirkel() {
+      if (straal1.text != widget.z.toString()) {
+        setState(() {
+          errorCode =
+              "de ingevulde straal (r) komt niet overeen met de werkelijke straal (input 1)";
+        });
+        return false;
+      } else if (straal2.text != widget.z.toString()) {
+        setState(() {
+          errorCode =
+              "de ingevulde straal (r) komt niet overeen met de werkelijke straal (input 2)";
+        });
+        return false;
+      } else if (pi.text != "3,14" && pi.text != "3.14") {
+        setState(() {
+          errorCode =
+              "de ingevulde constante (pi) komt niet overeen met de werkelijke waarde (input 3)";
+        });
+        return false;
+      } else {
+        double oppervlakteVal = widget.z * widget.z * 3.14;
+        String oppervlakteNumber = oppervlakte.text.replaceAll(",", ".");
+        double oppervlakteFilledin = double.parse(oppervlakteNumber);
+
+        var rounded1 = (oppervlakteVal * 100).round();
+        var rounded2 = (oppervlakteFilledin * 100).round();
+
+        if (rounded1 != rounded2) {
+          setState(() {
+            errorCode =
+                "de oppervlakte is niet juist berekend, maar de straal en constante kloppen, probeer opnieuw, je bent er bijna :)";
+          });
+          return false;
+        }
+      }
+
+      setState(() {
+        errorCode = "";
+      });
+      //TODO: callback to make new ex
+      widget.callback();
+      setState(() {
+        straal1.text = "";
+        straal2.text = "";
+        pi.text = "";
+        oppervlakte.text = "";
+      });
+      return true;
+    }
+
+    bool checkResultVierkant() {
       if (zijde1.text != widget.z.toString()) {
         setState(() {
           errorCode =
@@ -122,6 +207,80 @@ class _CompetitiveState extends State<CompetitiveEx> {
       return true;
     }
 
+    bool checkResult() {
+      if (widget.figure == "vierkant") {
+        return checkResultVierkant();
+      } else if (widget.figure == "cirkel") {
+        return checkResultCirkel();
+      } else {
+        return false;
+      }
+    }
+
+    var rowVierkant = [
+      Spacer(),
+      SizedBox(width: 40, child: input1Field),
+      Text("m"),
+      Text("  X  "),
+      SizedBox(
+        width: 40,
+        child: input2Field,
+      ),
+      Text("m"),
+      Text("  =  "),
+      SizedBox(
+        width: 50,
+        child: input3Field,
+      ),
+      Text("m\u00B2"),
+      Spacer(),
+      IconButton(
+          onPressed: () {
+            checkResult();
+          },
+          icon: Icon(Icons.done)),
+      Spacer()
+    ];
+
+    var rowCirkel = [
+      Spacer(),
+      SizedBox(
+        width: 60,
+        child: input1FieldCirkel,
+      ),
+      Text("m"),
+      Text("  X  "),
+      SizedBox(
+        width: 60,
+        child: input2FieldCirkel,
+      ),
+      Text("m"),
+      Text("  X  "),
+      SizedBox(
+        width: 40,
+        child: input3FieldCirkel,
+      ),
+      Text("  =  "),
+      SizedBox(
+        width: 50,
+        child: input3Field,
+      ),
+      Text("m\u00B2"),
+      Spacer(),
+      IconButton(
+          onPressed: () {
+            checkResult();
+          },
+          icon: Icon(Icons.done)),
+      Spacer()
+    ];
+
+    var row = (widget.figure == "vierkant")
+        ? rowVierkant
+        : (widget.figure == "cirkel")
+            ? rowCirkel
+            : rowVierkant;
+
     // TODO: implement build
     return Column(children: [
       Row(
@@ -139,30 +298,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
       ),
       storyText,
       vars,
-      Row(children: [
-        Spacer(),
-        SizedBox(width: 40, child: input1Field),
-        Text("m"),
-        Text("  X  "),
-        SizedBox(
-          width: 40,
-          child: input2Field,
-        ),
-        Text("m"),
-        Text("  =  "),
-        SizedBox(
-          width: 50,
-          child: input3Field,
-        ),
-        Text("m\u00B2"),
-        Spacer(),
-        IconButton(
-            onPressed: () {
-              checkResult();
-            },
-            icon: Icon(Icons.done)),
-        Spacer()
-      ]),
+      Row(children: row),
       Text(
         errorCode,
         style: TextStyle(color: Colors.red),

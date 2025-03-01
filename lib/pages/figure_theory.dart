@@ -64,7 +64,20 @@ class _FigureState extends State<FigureTheory> {
     "Room4.jpg",
     "Room5.jpg"
   ];
-  List<String> imagesCirkel = [];
+  List<String> imagesCirkel = [
+    "bench.JPG",
+    "books.JPG",
+    "books2.JPG",
+    "logo.JPG",
+    "logo2.JPG",
+    "mario.JPG",
+    "painting.JPG",
+    "sitting.JPG",
+    "sitting2.JPG",
+    "sitting3.JPG",
+    "sitting4.JPG",
+    "stairs.JPG"
+  ];
   List<String> imagesRechthoek = [];
   List<String> imagesDriehoek = [];
 
@@ -199,6 +212,8 @@ class _FigureState extends State<FigureTheory> {
   void initState() {
     super.initState();
 
+    figure = widget.exerciseName;
+
     if (widget.opponent == "") {
       hasOpponent = false;
     } else {
@@ -226,12 +241,20 @@ class _FigureState extends State<FigureTheory> {
   }
 
   void generateExercise() {
+    print("in generate exercise");
     //TODO: make more general now just vierkant
     int maxIDX = imagesVierkant.length;
     int idx = Random().nextInt(maxIDX);
     String imageChosen = imagesVierkant[idx];
+    String pathImage = "assets/images/vierkant/";
 
-    image = "assets/images/vierkant/" + imageChosen;
+    print(figure);
+    if (figure == "cirkel") {
+      imageChosen = imagesCirkel[idx];
+      pathImage = "assets/images/cirkel/";
+    }
+
+    image = pathImage + imageChosen;
     z = Random()
         .nextInt(Consts().maxMultiplyByHead + 1); //TODO: hou rekening met elo
     speed = Random().nextInt(16) +
@@ -242,6 +265,7 @@ class _FigureState extends State<FigureTheory> {
   }
 
   void newExercise() {
+    print("in new exercise");
     bool easierExercise = Random().nextBool();
     List<dynamic> toChooseFrom =
         easierExercise ? easierExercises : harderExercises;
@@ -488,39 +512,15 @@ class _FigureState extends State<FigureTheory> {
       ],
     );
 
-    var exercise = Column(
-      children: [
-        Text("Oppervlakte"),
-        Spacer(),
-        ValueListenableBuilder<int>(
-          valueListenable: ownProgress,
-          builder: (context, value, child) {
-            double progress = value / widget.amountExercises;
-            return Row(
-              children: [
-                Spacer(),
-                SizedBox(
-                  width: 100,
-                  child: Text("your progress: "),
-                ),
-                SizedBox(
-                    width: 300,
-                    child: ValueListenableBuilder<Color>(
-                        valueListenable: colorBar,
-                        builder: (context, color, child) {
-                          return LinearProgressIndicator(
-                            value: progress,
-                            color: color,
-                          );
-                        })),
-                Spacer()
-              ],
-            );
-          },
-        ),
-        hasOpponent
-            ? ValueListenableBuilder<int>(
-                valueListenable: opponentProgress,
+    var exercisesOrLoading = ValueListenableBuilder(
+        valueListenable: startExercise,
+        builder: (context, value, child) {
+          var exercise = Column(
+            children: [
+              Text("Oppervlakte"),
+              Spacer(),
+              ValueListenableBuilder<int>(
+                valueListenable: ownProgress,
                 builder: (context, value, child) {
                   double progress = value / widget.amountExercises;
                   return Row(
@@ -528,45 +528,75 @@ class _FigureState extends State<FigureTheory> {
                       Spacer(),
                       SizedBox(
                         width: 100,
-                        child: Text(widget.opponent + ": "),
+                        child: Text("your progress: "),
                       ),
                       SizedBox(
-                        width: 300,
-                        child: LinearProgressIndicator(
-                          value: progress,
-                        ),
-                      ),
+                          width: 300,
+                          child: ValueListenableBuilder<Color>(
+                              valueListenable: colorBar,
+                              builder: (context, color, child) {
+                                return LinearProgressIndicator(
+                                  value: progress,
+                                  color: color,
+                                );
+                              })),
                       Spacer()
                     ],
                   );
                 },
-              )
-            : Text(''),
-        Spacer(),
-        ValueListenableBuilder(
-            valueListenable: ownProgress,
-            builder: (context, value, child) {
-              return CompetitiveEx(
-                  showFormule: showFormule,
-                  z: z,
-                  currentExercise: value + 1,
-                  amountExercises: 10,
-                  image: image,
-                  figure: figure,
-                  callback: exerciseSolved);
-            }),
-        Spacer(),
-      ],
-    );
-
-    var exercisesOrLoading = ValueListenableBuilder(
-        valueListenable: startExercise,
-        builder: (context, value, child) => value ? exercise : loading);
+              ),
+              hasOpponent
+                  ? ValueListenableBuilder<int>(
+                      valueListenable: opponentProgress,
+                      builder: (context, value, child) {
+                        double progress = value / widget.amountExercises;
+                        return Row(
+                          children: [
+                            Spacer(),
+                            SizedBox(
+                              width: 100,
+                              child: Text(widget.opponent + ": "),
+                            ),
+                            SizedBox(
+                              width: 300,
+                              child: LinearProgressIndicator(
+                                value: progress,
+                              ),
+                            ),
+                            Spacer()
+                          ],
+                        );
+                      },
+                    )
+                  : Text(''),
+              Spacer(),
+              ValueListenableBuilder(
+                  valueListenable: ownProgress,
+                  builder: (context, value, child) {
+                    return CompetitiveEx(
+                        showFormule: showFormule,
+                        z: z,
+                        currentExercise: value + 1,
+                        amountExercises: 10,
+                        image: image,
+                        figure: figure,
+                        callback: exerciseSolved);
+                  }),
+              Spacer(),
+            ],
+          );
+          if (value) {
+            return exercise;
+          } else {
+            return loading;
+          }
+        });
 
     return Scaffold(
         body: Center(
             child: ValueListenableBuilder(
                 valueListenable: completed,
-                builder: (context, value, child) => value ? done : exercise)));
+                builder: (context, value, child) =>
+                    value ? done : exercisesOrLoading)));
   }
 }

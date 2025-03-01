@@ -32,7 +32,7 @@ class _LogicState extends State<Logic> {
     LearningPath(
       username: 'Preview',
       path: ['oppervlakte', 'vierkant', 'cirkel', 'rechthoek', 'driehoek'],
-      pathCompletion: [true, false, false, false, false],
+      pathCompletion: [true, true, false, false, false],
     ),
     Profile(),
     Setting(),

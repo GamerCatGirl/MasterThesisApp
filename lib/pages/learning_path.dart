@@ -88,7 +88,7 @@ class _LearningPathState extends State<LearningPath> {
               user: widget.username,
               skills: [figure],
               opponent: "bot",
-              exerciseName: "vierkant",
+              exerciseName: figure,
             )));
   }
 
@@ -127,6 +127,39 @@ class _LearningPathState extends State<LearningPath> {
       }
 
       makeCompEx('vierkant');
+    });
+  }
+
+  void cirkelCallback() {
+    //TODO: get all possible values needed from database to get custom exercises
+    CollectionReference dbUsers = db.collection("users");
+
+    dbUsers.doc(widget.username).get().then((doc) {
+      var document = doc.data() as Map<String, dynamic>;
+      //TODO get needed info
+
+      var figureRemember = document['figuur-cirkel-remember'];
+      var oppervlakteRemember = document['oppervlakte-cirkel-remember'];
+
+      var oppervlakteApply = {
+        "pknow": document['pknow'],
+        "plearn": document['plearn']
+      };
+
+      if (document['oppervlakte-cirkel-apply'] != null) {
+        //TODO:
+        oppervlakteApply = document['oppervlakte-cirkel-apply'];
+      }
+
+      var eloVierkant = 2800 * oppervlakteApply['pknow'];
+      var eloSpeed = 1500;
+
+      if (document['elo-cirkel'] != null) {
+        //TODO:
+        eloVierkant = document['elo-cirkel'];
+      }
+
+      makeCompEx('cirkel');
     });
   }
 
@@ -241,7 +274,7 @@ class _LearningPathState extends State<LearningPath> {
           currentTiles += 1;
         } else if (element == "cirkel") {
           var cirkel = Learningpathtile(
-            onTileClicked: theoryCallback,
+            onTileClicked: cirkelCallback,
             icon: iconCirlceEx,
             position: position,
             completed: completed,
