@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
 import 'package:mathapp/components/exercise_tile.dart';
 import 'package:mathapp/components/icon_button_switch.dart';
 import 'package:mathapp/components/row_exercise.dart';
@@ -13,6 +14,8 @@ class Home extends StatefulWidget {
   @override
   State<Home> createState() => _HomeState();
 }
+
+enum Topics { vierkant, rechthoek, cirkel, driehoek, recommended }
 
 class _HomeState extends State<Home> {
   bool _show_start_exercise = true;
@@ -50,11 +53,23 @@ class _HomeState extends State<Home> {
   List _pages = [];
   int currentRandom = 0;
 
+  final TextEditingController opponent1 = TextEditingController();
+  final TextEditingController opponent2 = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     //print(imageIdx.toString() + "\n");
     List<String> images = [path_easy_square, path_harder_square];
     int amountDifficulties = Difficulties.length;
+
+    final topicsSelect = MultiSelectContainer(items: [
+      MultiSelectCard(value: 'Vierkant', label: 'Vierkant'),
+      MultiSelectCard(value: 'Rechthoek', label: 'Rechthoek'),
+      MultiSelectCard(value: 'Driehoek', label: 'Driehoek'),
+      MultiSelectCard(value: 'Cirkel', label: 'Cirkel'),
+      MultiSelectCard(value: 'All', label: 'All'),
+      MultiSelectCard(value: 'Recommended', label: 'Recommended'),
+    ], onChange: (allSelectedItems, selectedItem) {});
 
     final List _exercises = [
       ExerciseTile(nameExercise: "Exercise 1"),
@@ -184,13 +199,109 @@ class _HomeState extends State<Home> {
               },
             ),
             visible: _show_start_exercise,
-          )
+          ),
         ]),
       ),
     );
 
+    final home = ListView(
+      children: [
+        SizedBox(
+          height: 20,
+        ),
+        Center(
+            child: Text(
+          "Wat wil je oefenen?",
+          style: TextStyle(fontSize: 30),
+        )),
+        Center(
+          child: topicsSelect,
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Row(
+          children: [
+            Spacer(),
+            SizedBox(
+              width: 250,
+              child: ElevatedButton(
+                  onPressed: () {}, child: Text("Random Opponent (Async)")),
+            ),
+            Spacer()
+          ],
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Row(
+          children: [
+            Spacer(),
+            SizedBox(
+              width: 250,
+              child: ElevatedButton(
+                  onPressed: () {}, child: Text("Oefen tegen bot!")),
+            ),
+            Spacer()
+          ],
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Center(
+            child: Text(
+          "Speel tegen een vriend!",
+          style: TextStyle(fontSize: 30),
+        )),
+        Row(
+          children: [
+            Spacer(),
+            SizedBox(
+              width: 250,
+              child: ElevatedButton(
+                  onPressed: () {}, child: Text("Play Against Friend (Async)")),
+            ),
+            Spacer()
+          ],
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Row(
+          children: [
+            Spacer(),
+            SizedBox(
+              width: 250,
+              child: ElevatedButton(
+                  onPressed: () {}, child: Text("Play Against Friend (Sync)")),
+            ),
+            Spacer()
+          ],
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Center(
+            child: Text(
+          "Maak een party aan!",
+          style: TextStyle(fontSize: 30),
+        )),
+        Row(
+          children: [
+            Spacer(),
+            SizedBox(
+              width: 250,
+              child: ElevatedButton(
+                  onPressed: () {}, child: Text("Play In Party (Sync)")),
+            ),
+            Spacer()
+          ],
+        ),
+      ],
+    );
+
     if (_pages.isEmpty) {
-      _pages.add(homePage);
+      _pages.add(home);
     }
     // TODO: implement build
     return Scaffold(

@@ -98,6 +98,7 @@ class _SignInState extends State<Signin> {
         SizedBox(
             width: 300,
             child: TextFormField(
+              obscureText: true,
               controller: password,
               decoration: const InputDecoration(
                 border: UnderlineInputBorder(),
@@ -114,6 +115,7 @@ class _SignInState extends State<Signin> {
             width: 300,
             child: TextFormField(
               controller: repeatPassword,
+              obscureText: true,
               decoration: const InputDecoration(
                 border: UnderlineInputBorder(),
                 labelText: 'Herhaal Wachtwoord',

@@ -115,6 +115,7 @@ class _ProfileState extends State<Profile> {
         width: 300,
         child: TextFormField(
           controller: password,
+          obscureText: true,
           decoration: const InputDecoration(
             border: UnderlineInputBorder(),
             labelText: 'Password',

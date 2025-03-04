@@ -43,6 +43,7 @@ dependencies:
   syncfusion_flutter_charts: ^28.2.3
   shared_preferences: ^2.5.1
   loading_animation_widget: ^1.3.0
+  flutter_multi_select_items: ^0.4.3
 
 dev_dependencies:
   flutter_test:
@@ -78,6 +79,8 @@ flutter:
     - assets/images/Vierkant_Harder.jpg
     - assets/images/vierkant/
     - assets/images/cirkel/
+    - assets/images/rechthoek/
+    - assets/images/driehoek/
     - assets/images/vierkant/easy/
     - assets/images/vierkant/medium/
     - assets/images/vierkant/hard/

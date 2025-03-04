@@ -78,8 +78,31 @@ class _FigureState extends State<FigureTheory> {
     "sitting4.JPG",
     "stairs.JPG"
   ];
-  List<String> imagesRechthoek = [];
-  List<String> imagesDriehoek = [];
+  List<String> imagesRechthoek = [
+    "casette1.JPG",
+    "casette2.JPG",
+    "casette3.JPG",
+    "painting.JPG",
+    "painting2.JPG",
+    "painting3.JPG",
+    "painting4.JPG",
+    "painting5.JPG",
+    "painting6.JPG",
+    "painting7.JPG",
+    "painting8.JPG",
+    "painting9.JPG",
+    "painting10.JPG"
+  ];
+  List<String> imagesDriehoek = [
+    "painting.JPG",
+    "painting2.JPG",
+    "painting3.JPG",
+    "plants.JPG",
+    "wall.JPG",
+    "wall2.JPG",
+    "wall3.JPG",
+    "wall4.JPG"
+  ];
 
   List<dynamic> harderExercises = [];
   List<dynamic> easierExercises = [];
@@ -94,11 +117,17 @@ class _FigureState extends State<FigureTheory> {
   bool generated = false;
   int exerciseTook = 0;
   int z = 2;
+  int hoogte = 0;
+  int breedte = 0;
   int speed = 10;
   double speedInterval = 0.5;
   bool showFormule = false;
   ValueNotifier<bool> completed = ValueNotifier(false);
   ValueNotifier<bool> won = ValueNotifier(false);
+
+  //TODO: save progression
+  //TODO: ex: db and id
+  //TODO: ex: [10, 20, 40, 30, ....]
 
   List<dynamic>? generatedPlayed;
   int elo = Elo.initElo;
@@ -241,17 +270,30 @@ class _FigureState extends State<FigureTheory> {
   }
 
   void generateExercise() {
-    print("in generate exercise");
     //TODO: make more general now just vierkant
     int maxIDX = imagesVierkant.length;
     int idx = Random().nextInt(maxIDX);
     String imageChosen = imagesVierkant[idx];
     String pathImage = "assets/images/vierkant/";
 
-    print(figure);
     if (figure == "cirkel") {
+      maxIDX = imagesCirkel.length;
+      idx = Random().nextInt(maxIDX);
       imageChosen = imagesCirkel[idx];
       pathImage = "assets/images/cirkel/";
+      //TODO: give more time per exercise, need calculator!!!!
+    } else if (figure == "rechthoek") {
+      maxIDX = imagesRechthoek.length;
+      idx = Random().nextInt(maxIDX);
+      imageChosen = imagesRechthoek[idx];
+      pathImage = "assets/images/rechthoek/";
+      breedte = Random().nextInt(Consts().maxMultiplyByHead + 1);
+    } else if (figure == "driehoek") {
+      maxIDX = imagesDriehoek.length;
+      idx = Random().nextInt(maxIDX);
+      imageChosen = imagesDriehoek[idx];
+      pathImage = "assets/images/driehoek/";
+      hoogte = Random().nextInt(Consts().maxMultiplyByHead + 1);
     }
 
     image = pathImage + imageChosen;
@@ -265,7 +307,6 @@ class _FigureState extends State<FigureTheory> {
   }
 
   void newExercise() {
-    print("in new exercise");
     bool easierExercise = Random().nextBool();
     List<dynamic> toChooseFrom =
         easierExercise ? easierExercises : harderExercises;
@@ -425,6 +466,7 @@ class _FigureState extends State<FigureTheory> {
     //(chances exist that some writes get lost when the whole class is playing at the same time)
 
     if (generated) {
+      //TODO: also post timeStamp to see progression over time
       var newDoc = {
         'elo': newInfoExercise[0],
         't': newInfoExercise[1],
@@ -433,6 +475,19 @@ class _FigureState extends State<FigureTheory> {
         'z': z,
         'showFormule': true,
       };
+
+      //TODO: setup page for teacher to see engagement!
+
+      if (widget.exerciseName == "cirkel") {
+        newDoc['straal'] = z;
+      } else if (widget.exerciseName == "rechthoek") {
+        newDoc['lengte'] = z;
+        newDoc['breedte'] = breedte;
+      } else if (widget.exerciseName == "driehoek") {
+        newDoc['basis'] = z;
+        newDoc['hoogte'] = hoogte;
+      }
+
       generatedToPost.add(newDoc);
     } else {
       //TODO: update directly
@@ -576,6 +631,8 @@ class _FigureState extends State<FigureTheory> {
                     return CompetitiveEx(
                         showFormule: showFormule,
                         z: z,
+                        b: breedte,
+                        h: hoogte,
                         currentExercise: value + 1,
                         amountExercises: 10,
                         image: image,

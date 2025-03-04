@@ -209,6 +209,44 @@ class _LearningPathState extends State<LearningPath> {
     );
   }
 
+  void driehoekCallback() {
+    //TODO: get all possible values needed from database to get custom exercises
+    CollectionReference dbUsers = db.collection("users");
+
+    dbUsers.doc(widget.username).get().then((doc) {
+      var document = doc.data() as Map<String, dynamic>;
+      //TODO get needed info
+
+      var figureRemember = document['figuur-driehoek-remember'];
+      var oppervlakteRemember = document['oppervlakte-driehoek-remember'];
+
+      var oppervlakteApply = {
+        "pknow": document['pknow'],
+        "plearn": document['plearn']
+      };
+
+      if (document['oppervlakte-driehoek-apply'] != null) {
+        //TODO:
+        oppervlakteApply = document['oppervlakte-driehoek-apply'];
+      }
+
+      var eloVierkant = 2800 * oppervlakteApply['pknow'];
+      var eloSpeed = 1500;
+
+      if (document['elo-driehoek'] != null) {
+        //TODO:
+        eloVierkant = document['elo-driehoek'];
+      }
+
+      if (document['elo-speed'] != null) {
+        //TODO:
+        eloVierkant = document['elo-speed'];
+      }
+
+      makeCompEx('driehoek');
+    });
+  }
+
   final leftToMid = Image(
       fit: BoxFit.fitWidth, image: AssetImage("assets/images/paths/LtoM.jpg"));
 
@@ -300,7 +338,7 @@ class _LearningPathState extends State<LearningPath> {
           currentTiles += 1;
         } else if (element == "driehoek") {
           var driehoek = Learningpathtile(
-            onTileClicked: theoryCallback,
+            onTileClicked: driehoekCallback,
             icon: iconTriangleEx,
             position: position,
             completed: completed,
