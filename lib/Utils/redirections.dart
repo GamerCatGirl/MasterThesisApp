@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mathapp/pages/competitive_party.dart';
 import 'package:mathapp/pages/learning_path.dart';
 
 class Functions {
@@ -7,5 +8,14 @@ class Functions {
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => LearningPath(
             username: user, path: path, pathCompletion: pathCompletion)));
+  }
+
+  static void toCompExercise(BuildContext context, String partyName) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+          builder: (context) => CompetitiveParty(
+                partyName: partyName,
+              )),
+    );
   }
 }

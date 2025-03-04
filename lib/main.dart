@@ -35,7 +35,9 @@ class MyApp extends StatelessWidget {
       home: Logic(),
       // TODO: los routing op!!!!
       routes: {
-        '/home': (context) => Home(),
+        '/home': (context) => Home(
+              user: "Preview",
+            ),
         '/profile': (context) => Profile(),
         '/setting': (context) => Setting(),
         '/signIn': (context) => Signin(),

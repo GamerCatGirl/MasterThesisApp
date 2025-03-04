@@ -50,59 +50,10 @@ class _FigureState extends State<FigureTheory> {
   List<dynamic> path = [];
   List<dynamic> pathCompletion = [];
 
-  List<String> imagesVierkant = [
-    "Bakery.jpg",
-    "Bar.jpg",
-    "Beautysalon_.jpg",
-    "IceShop.jpg",
-    "Lobby.jpg",
-    "Painrstudio2.jpg",
-    "Paintstudio.jpg",
-    "Room.jpg",
-    "Room2.jpg",
-    "Room3.jpg",
-    "Room4.jpg",
-    "Room5.jpg"
-  ];
-  List<String> imagesCirkel = [
-    "bench.JPG",
-    "books.JPG",
-    "books2.JPG",
-    "logo.JPG",
-    "logo2.JPG",
-    "mario.JPG",
-    "painting.JPG",
-    "sitting.JPG",
-    "sitting2.JPG",
-    "sitting3.JPG",
-    "sitting4.JPG",
-    "stairs.JPG"
-  ];
-  List<String> imagesRechthoek = [
-    "casette1.JPG",
-    "casette2.JPG",
-    "casette3.JPG",
-    "painting.JPG",
-    "painting2.JPG",
-    "painting3.JPG",
-    "painting4.JPG",
-    "painting5.JPG",
-    "painting6.JPG",
-    "painting7.JPG",
-    "painting8.JPG",
-    "painting9.JPG",
-    "painting10.JPG"
-  ];
-  List<String> imagesDriehoek = [
-    "painting.JPG",
-    "painting2.JPG",
-    "painting3.JPG",
-    "plants.JPG",
-    "wall.JPG",
-    "wall2.JPG",
-    "wall3.JPG",
-    "wall4.JPG"
-  ];
+  List<String> imagesVierkant = Consts.imagesVierkant;
+  List<String> imagesCirkel = Consts.imagesCirkel;
+  List<String> imagesRechthoek = Consts.imagesRechthoek;
+  List<String> imagesDriehoek = Consts.imagesDriehoek;
 
   List<dynamic> harderExercises = [];
   List<dynamic> easierExercises = [];

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
+import 'package:mathapp/Utils/database.dart';
+import 'package:mathapp/Utils/redirections.dart';
 import 'package:mathapp/components/exercise_tile.dart';
 import 'package:mathapp/components/icon_button_switch.dart';
 import 'package:mathapp/components/row_exercise.dart';
@@ -9,7 +11,9 @@ import 'package:mathapp/pages/meetkunde_ex.dart';
 import 'dart:math';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  final String user;
+
+  const Home({super.key, required this.user});
 
   @override
   State<Home> createState() => _HomeState();
@@ -53,8 +57,14 @@ class _HomeState extends State<Home> {
   List _pages = [];
   int currentRandom = 0;
 
-  final TextEditingController opponent1 = TextEditingController();
-  final TextEditingController opponent2 = TextEditingController();
+  final TextEditingController opponent = TextEditingController();
+  final TextEditingController partyMake = TextEditingController();
+  final TextEditingController partyJoin = TextEditingController();
+
+  ValueNotifier<String> errorSelect = ValueNotifier("");
+  ValueNotifier<String> errorFriend = ValueNotifier("");
+  ValueNotifier<String> errorParty1 = ValueNotifier("");
+  ValueNotifier<String> errorParty2 = ValueNotifier("");
 
   @override
   Widget build(BuildContext context) {
@@ -62,14 +72,24 @@ class _HomeState extends State<Home> {
     List<String> images = [path_easy_square, path_harder_square];
     int amountDifficulties = Difficulties.length;
 
-    final topicsSelect = MultiSelectContainer(items: [
-      MultiSelectCard(value: 'Vierkant', label: 'Vierkant'),
-      MultiSelectCard(value: 'Rechthoek', label: 'Rechthoek'),
-      MultiSelectCard(value: 'Driehoek', label: 'Driehoek'),
-      MultiSelectCard(value: 'Cirkel', label: 'Cirkel'),
-      MultiSelectCard(value: 'All', label: 'All'),
-      MultiSelectCard(value: 'Recommended', label: 'Recommended'),
-    ], onChange: (allSelectedItems, selectedItem) {});
+    List<String> selectedItems = [];
+
+    final topicsSelect = MultiSelectContainer(
+        items: [
+          MultiSelectCard(value: 'vierkant', label: 'Vierkant'),
+          MultiSelectCard(value: 'rechthoek', label: 'Rechthoek'),
+          MultiSelectCard(value: 'driehoek', label: 'Driehoek'),
+          MultiSelectCard(value: 'cirkel', label: 'Cirkel'),
+          MultiSelectCard(value: 'All', label: 'All'),
+          MultiSelectCard(value: 'Recommended', label: 'Recommended'),
+        ],
+        onChange: (allSelectedItems, selectedItem) {
+          selectedItems = allSelectedItems;
+
+          if (selectedItems.length > 0) {
+            errorSelect.value = "";
+          }
+        });
 
     final List _exercises = [
       ExerciseTile(nameExercise: "Exercise 1"),
@@ -152,6 +172,59 @@ class _HomeState extends State<Home> {
       }
     });
 
+    final opponentField = SizedBox(
+        width: 330,
+        child: TextFormField(
+          controller: opponent,
+          onChanged: (value) => errorFriend.value = "",
+          decoration: const InputDecoration(
+            border: UnderlineInputBorder(),
+            labelText: 'Gebruikersnaam vriend (CAPS sensitive!)',
+          ),
+        ));
+
+    final partyMakeField = SizedBox(
+        width: 300,
+        child: TextFormField(
+          controller: partyMake,
+          onChanged: (value) => errorParty1.value = "",
+          decoration: const InputDecoration(
+            border: UnderlineInputBorder(),
+            labelText: 'Naam Party',
+          ),
+        ));
+
+    final partyJoinField = SizedBox(
+        width: 300,
+        child: TextFormField(
+          controller: partyJoin,
+          onChanged: (value) => errorParty2.value = "",
+          decoration: const InputDecoration(
+            border: UnderlineInputBorder(),
+            labelText: 'Naam Party',
+          ),
+        ));
+
+    Widget returnError(context, value, child) {
+      return Center(
+          child: Text(
+        value,
+        style: TextStyle(color: Colors.red),
+      ));
+    }
+
+    final errorSelectListener = ValueListenableBuilder<String>(
+        valueListenable: errorSelect, builder: returnError);
+
+    final errorFriendListener = ValueListenableBuilder<String>(
+        valueListenable: errorFriend, builder: returnError);
+
+    final errorParty1Listener = ValueListenableBuilder<String>(
+        valueListenable: errorParty1, builder: returnError);
+
+    final errorParty2Listener = ValueListenableBuilder<String>(
+        valueListenable: errorParty2, builder: returnError);
+
     IconButtonSwitch meetkunde = IconButtonSwitch(
       key: tileKey1,
       nameExercise: "Meetkunde",
@@ -204,11 +277,99 @@ class _HomeState extends State<Home> {
       ),
     );
 
+    bool checkSelect() {
+      if (selectedItems.length == 0) {
+        errorSelect.value = "Selecteer wat je wil oefenen (bovenaan de pagina)";
+      }
+      return (selectedItems.length > 0);
+    }
+
+    Future<bool> checkInput(TextEditingController field,
+        ValueNotifier<String> error, String nameField) async {
+      if (field.text == "") {
+        error.value = "Vul '" + nameField + "' in!";
+        return false;
+      } else if (nameField == "Gebruikersnaam vriend") {
+        bool userExists = await Database.userExists(field.text);
+
+        if (!userExists) {
+          error.value = "Gebruiker bestaat niet";
+        }
+
+        return userExists;
+      } else if (nameField == "Naam Party") {
+        bool partyExists = await Database.partyExists(field.text);
+
+        if (!partyExists) {
+          error.value = "Party bestaat niet";
+        }
+        return partyExists;
+      } else {
+        return false;
+      }
+    }
+
+    void playRandom() {
+      if (checkSelect()) {}
+    }
+
+    void playBot() {
+      if (checkSelect()) {}
+    }
+
+    void playFriendAsync() {
+      if (checkSelect()) {
+        checkInput(opponent, errorFriend, "Gebruikersnaam vriend").then((val) {
+          if (val) {}
+        });
+      }
+    }
+
+    void playFriendSync() {
+      if (checkSelect()) {
+        checkInput(opponent, errorFriend, "Gebruikersnaam vriend").then((val) {
+          if (val) {
+            //TODO: redirect
+            String you = widget.user;
+            String opponentName = opponent.text;
+
+            List<String> partyUsers = [you, opponentName];
+            partyUsers.sort();
+
+            String partyName = partyUsers.join("%%");
+
+            //TODO: check if party exists -> join
+            Database.partyExists(partyName).then((exists) {
+              if (exists) {
+                //TODO: join
+              } else {
+                Database.makeParty(partyName, partyUsers, selectedItems);
+
+                Functions.toCompExercise(context, partyName);
+              }
+
+              //ELSE: waiting page for opponent
+            });
+          }
+        });
+      }
+    }
+
+    void makeParty() {
+      if (checkSelect()) {}
+    }
+
+    void joinParty() {
+      if (checkSelect()) {}
+    }
+
+    final widthSpacer = SizedBox(
+      height: 20,
+    );
+
     final home = ListView(
       children: [
-        SizedBox(
-          height: 20,
-        ),
+        widthSpacer,
         Center(
             child: Text(
           "Wat wil je oefenen?",
@@ -217,82 +378,102 @@ class _HomeState extends State<Home> {
         Center(
           child: topicsSelect,
         ),
-        SizedBox(
-          height: 20,
-        ),
+        errorSelectListener,
+        widthSpacer,
         Row(
           children: [
             Spacer(),
             SizedBox(
               width: 250,
               child: ElevatedButton(
-                  onPressed: () {}, child: Text("Random Opponent (Async)")),
+                  onPressed: playRandom,
+                  child: Text("Random Opponent (Async)")),
             ),
             Spacer()
           ],
         ),
-        SizedBox(
-          height: 20,
-        ),
+        widthSpacer,
         Row(
           children: [
             Spacer(),
             SizedBox(
               width: 250,
               child: ElevatedButton(
-                  onPressed: () {}, child: Text("Oefen tegen bot!")),
+                  onPressed: playBot, child: Text("Oefen tegen bot!")),
             ),
             Spacer()
           ],
         ),
-        SizedBox(
-          height: 20,
-        ),
+        widthSpacer,
         Center(
             child: Text(
           "Speel tegen een vriend!",
           style: TextStyle(fontSize: 30),
         )),
+        Center(child: opponentField),
+        errorFriendListener,
+        widthSpacer,
         Row(
           children: [
             Spacer(),
             SizedBox(
               width: 250,
               child: ElevatedButton(
-                  onPressed: () {}, child: Text("Play Against Friend (Async)")),
+                  onPressed: playFriendAsync,
+                  child: Text("Play Against Friend (Async)")),
             ),
             Spacer()
           ],
         ),
-        SizedBox(
-          height: 20,
-        ),
+        widthSpacer,
         Row(
           children: [
             Spacer(),
             SizedBox(
               width: 250,
               child: ElevatedButton(
-                  onPressed: () {}, child: Text("Play Against Friend (Sync)")),
+                  onPressed: playFriendSync,
+                  child: Text("Play Against Friend (Sync)")),
             ),
             Spacer()
           ],
         ),
-        SizedBox(
-          height: 20,
-        ),
+        widthSpacer,
         Center(
             child: Text(
           "Maak een party aan!",
           style: TextStyle(fontSize: 30),
         )),
+        Center(child: partyMakeField),
+        errorParty1Listener,
+        widthSpacer,
         Row(
           children: [
             Spacer(),
             SizedBox(
               width: 250,
               child: ElevatedButton(
-                  onPressed: () {}, child: Text("Play In Party (Sync)")),
+                  onPressed: makeParty, child: Text("Maak een party!")),
+            ),
+            Spacer()
+          ],
+        ),
+        widthSpacer,
+        Center(
+            child: Text(
+          "Neem deel aan een party!",
+          style: TextStyle(fontSize: 30),
+        )),
+        Center(child: partyJoinField),
+        errorParty2Listener,
+        widthSpacer,
+        Row(
+          children: [
+            Spacer(),
+            SizedBox(
+              width: 250,
+              child: ElevatedButton(
+                  onPressed: joinParty, child: Text("Play In Party (Sync)")),
             ),
             Spacer()
           ],
