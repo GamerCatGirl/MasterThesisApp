@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:mathapp/Utils/redirections.dart';
 import 'package:mathapp/components/exercise_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mathapp/components/learningPathTile.dart';
@@ -264,6 +265,14 @@ class _LearningPathState extends State<LearningPath> {
     List<Widget> pathWidgets = [
       Header(title: "H5: Oppervlakte"),
       Text("Leerpad van " + widget.username),
+      Center(
+        child: SizedBox(
+            width: 200,
+            child: ElevatedButton(
+                onPressed: () =>
+                    Functions.toStartMatch(context, widget.username),
+                child: Text("Play"))),
+      )
     ];
 
     void addCustoms() {

@@ -289,7 +289,8 @@ class _HomeState extends State<Home> {
       if (field.text == "") {
         error.value = "Vul '" + nameField + "' in!";
         return false;
-      } else if (nameField == "Gebruikersnaam vriend") {
+      } else if (nameField == "Gebruikersnaam vriend" &&
+          field.text != widget.user) {
         bool userExists = await Database.userExists(field.text);
 
         if (!userExists) {
@@ -341,11 +342,11 @@ class _HomeState extends State<Home> {
             //TODO: check if party exists -> join
             Database.partyExists(partyName).then((exists) {
               if (exists) {
-                //TODO: join
+                Functions.toCompExercise(context, partyName, widget.user);
               } else {
                 Database.makeParty(partyName, partyUsers, selectedItems);
 
-                Functions.toCompExercise(context, partyName);
+                Functions.toCompExercise(context, partyName, widget.user);
               }
 
               //ELSE: waiting page for opponent

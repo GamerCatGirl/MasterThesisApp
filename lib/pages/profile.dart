@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mathapp/Utils/database.dart';
 import 'package:mathapp/components/title.dart';
 import 'package:mathapp/pages/signIn.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -81,6 +82,8 @@ class _ProfileState extends State<Profile> {
               selectedPage = 1;
               loggedIn = true;
             });
+
+            Database.login(user);
           } else {
             setState(() {
               errorLogin = "Fout paswoord!";

@@ -32,8 +32,54 @@ class Database {
     }
   }
 
+  static void login(String user) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference usersDB = db.collection("activePlayers");
+    usersDB.doc(user).set({"active": true}, SetOptions(merge: true));
+  }
+
+  static void joinParty(String partyName, String userName) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference partiesDB = db.collection("activeParties");
+    CollectionReference usersDB = db.collection("activePlayers");
+
+    usersDB.doc(userName).set({"party": partyName}, SetOptions(merge: true));
+
+    //TODO: check if partyExists
+  }
+
+  static void updateProgress(String userName, double progress) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference partiesDB = db.collection("activeParties");
+    CollectionReference usersDB = db.collection("activePlayers");
+
+    usersDB.doc(userName).set({"progress": progress}, SetOptions(merge: true));
+  }
+
   static Future<bool> partyExists(String partyName) async {
-    return false;
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference partiesDB = db.collection("activeParties");
+
+    var doc = await partiesDB.doc(partyName).get();
+
+    if (doc.exists) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  static Future<Map<String, dynamic>> getPartyInfo(String partyName) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference partiesDB = db.collection("activeParties");
+    var doc = await partiesDB.doc(partyName).get();
+
+    if (doc.exists) {
+      var docData = doc.data() as Map<String, dynamic>;
+      return docData;
+    } else {
+      throw ArgumentError("Invalid partyID: $partyName");
+    }
   }
 
   static void makeParty(
