@@ -46,11 +46,22 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
 
   bool done = false;
 
+  List<StreamSubscription> listeners = [];
+
   ValueNotifier<bool> loading = ValueNotifier(true);
   ValueNotifier<List<String>> activePlayers = ValueNotifier([]);
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   List<String> rankings = [];
+
+  @override
+  void dispose() {
+    for (var listener in listeners) {
+      listener.cancel();
+    }
+    Database.leaveParty(partyID, widget.user);
+    super.dispose();
+  }
 
   void playerInfoChanged(Map<String, dynamic> doc, String user) {
     if (loading.value) {
@@ -98,13 +109,13 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
       //String
       CollectionReference activeDB = db.collection("activePlayers");
       DocumentReference docRef = activeDB.doc(opponent);
-      docRef.snapshots().listen(
+      listeners.add(docRef.snapshots().listen(
         (event) {
           var data = event.data() as Map<String, dynamic>;
           playerInfoChanged(data, opponent);
         },
         onError: (error) => print("Listen failed: $error"),
-      );
+      ));
     }
 
     activePlayers.value.add("you");
@@ -118,20 +129,35 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
       exercises = data["exercises"] as List<dynamic>;
       stepSize = 1 / exercises.length;
 
-      amountPlayers = data["amountPlayers"];
-
       List<dynamic> players = data["player"] as List<dynamic>;
+      amountPlayers = players.length;
       print(players);
 
       for (String player in players) {
         progression[player] = ValueNotifier(0);
       }
 
-      print("Progression:" + progression.toString());
+      CollectionReference activeDB = db.collection("activePlayers");
+
+      if (!partyName.contains("%%")) {
+        for (var player in players) {
+          if (player != widget.user) {
+            DocumentReference docRef = activeDB.doc(player);
+            listeners.add(docRef.snapshots().listen(
+              (event) {
+                var data = event.data() as Map<String, dynamic>;
+                playerInfoChanged(data, player);
+              },
+              onError: (error) => print("Listen failed: $error"),
+            ));
+          }
+        }
+      }
 
       setupExercise(yourProgress.value);
 
       if (activePlayers.value.length == amountPlayers) {
+        print(activePlayers.value);
         setState(() {
           loading.value = false;
           progression;

@@ -56,6 +56,45 @@ class Database {
     });
   }
 
+  static void changeLeader(String partyName) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference partiesDB = db.collection("activeParties");
+
+    partiesDB.doc(partyName).update({
+      "changeHost": true // Add "newTag" to the array
+    });
+  }
+
+  static void deleteParty(String partyName) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference partiesDB = db.collection("activeParties");
+
+    partiesDB.doc(partyName).delete();
+  }
+
+  static void leaderChanged(String partyName) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference partiesDB = db.collection("activeParties");
+
+    partiesDB.doc(partyName).update({
+      "changeHost": false // Add "newTag" to the array
+    });
+  }
+
+  static Future<bool> startParty(String partyName) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference partiesDB = db.collection("activeParties");
+
+    try {
+      await partiesDB.doc(partyName).update({
+        "start": true // Add "newTag" to the array
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   static void joinParty(String partyName, String userName) {
     FirebaseFirestore db = FirebaseFirestore.instance;
     CollectionReference partiesDB = db.collection("activeParties");
@@ -66,6 +105,16 @@ class Database {
         .set({"party": partyName, "progress": 0}, SetOptions(merge: true));
 
     //TODO: check if partyExists
+  }
+
+  static void leaveParty(String partyName, String userName) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference partiesDB = db.collection("activeParties");
+    CollectionReference usersDB = db.collection("activePlayers");
+
+    usersDB
+        .doc(userName)
+        .set({"party": "", "progress": 0}, SetOptions(merge: true));
   }
 
   static void updateProgress(String userName, double progress) {

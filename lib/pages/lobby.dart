@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:mathapp/Utils/database.dart';
+import 'package:mathapp/Utils/redirections.dart';
 import 'package:mathapp/components/title.dart';
 
 class Lobby extends StatefulWidget {
@@ -20,23 +23,39 @@ class _LobbyState extends State<Lobby> {
   String? lobbyControler;
   ValueNotifier<List> players = ValueNotifier([]);
   FirebaseFirestore db = FirebaseFirestore.instance;
+  late StreamSubscription listener;
 
   void partyInfoChanged(data) {
     players.value = data["player"];
+    var oldLeader = lobbyControler;
+    lobbyControler = players.value[0];
 
     bool? start = data["start"];
 
     if (start != null && start) {
-      //TODO: start exercise
+      // start exercise
+      Functions.toCompExercise(context, partyName, widget.user);
+    }
+
+    print(lobbyControler);
+    print(widget.user);
+    if ((lobbyControler != oldLeader) && (lobbyControler == widget.user)) {
+      setState(() {
+        lobbyControler;
+      });
     }
   }
 
+  //TODO: houd geen rekening met een reload van een pagina!
   @override
   void dispose() {
-    //TODO: check if partyHead leaves -> new head next in lobby
-
-    //TODO: if no one left -> distroy party
+    listener.cancel();
     Database.leaveLobby(partyName, widget.user);
+    //if no one left -> distroy party
+    if (players.value.length == 1) {
+      Database.deleteParty(partyName);
+    }
+
     super.dispose();
   }
 
@@ -59,13 +78,21 @@ class _LobbyState extends State<Lobby> {
     CollectionReference activeDB = db.collection("activeParties");
     DocumentReference docRef = activeDB.doc(partyName);
 
-    docRef.snapshots().listen(
+    listener = docRef.snapshots().listen(
       (event) {
         var data = event.data() as Map<String, dynamic>;
         partyInfoChanged(data);
       },
       onError: (error) => print("Listen failed: $error"),
     );
+  }
+
+  void startParty() async {
+    bool done = await Database.startParty(partyName);
+
+    if (done) {
+      Functions.toCompExercise(context, partyName, widget.user);
+    }
   }
 
   @override
@@ -98,7 +125,7 @@ class _LobbyState extends State<Lobby> {
     var startButton = Center(
       child: SizedBox(
         width: 200,
-        child: ElevatedButton(onPressed: () {}, child: Text("Start")),
+        child: ElevatedButton(onPressed: startParty, child: Text("Start")),
       ),
     );
 

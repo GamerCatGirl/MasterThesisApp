@@ -336,33 +336,30 @@ class _HomeState extends State<Home> {
     }
 
     void playFriendSync() {
-      if (checkSelect()) {
-        checkInput(opponent, errorFriend, "Gebruikersnaam vriend").then((val) {
-          if (val) {
-            //TODO: redirect
-            String you = widget.user;
-            String opponentName = opponent.text;
+      checkInput(opponent, errorFriend, "Gebruikersnaam vriend").then((val) {
+        if (val) {
+          //TODO: redirect
+          String you = widget.user;
+          String opponentName = opponent.text;
 
-            List<String> partyUsers = [you, opponentName];
-            partyUsers.sort();
+          List<String> partyUsers = [you, opponentName];
+          partyUsers.sort();
 
-            String partyName = partyUsers.join("%%");
+          String partyName = partyUsers.join("%%");
 
-            //TODO: check if party exists -> join
-            Database.partyExists(partyName).then((exists) {
-              if (exists) {
-                Functions.toCompExercise(context, partyName, widget.user);
-              } else {
-                Database.makeParty(partyName, partyUsers, selectedItems);
+          //TODO: check if party exists -> join
+          Database.partyExists(partyName).then((exists) {
+            if (exists) {
+              Functions.toCompExercise(context, partyName, widget.user);
+            } else if (checkSelect()) {
+              Database.makeParty(partyName, partyUsers, selectedItems);
+              Functions.toCompExercise(context, partyName, widget.user);
+            }
 
-                Functions.toCompExercise(context, partyName, widget.user);
-              }
-
-              //ELSE: waiting page for opponent
-            });
-          }
-        });
-      }
+            //ELSE: waiting page for opponent
+          });
+        }
+      });
     }
 
     void makeParty() {
@@ -379,17 +376,14 @@ class _HomeState extends State<Home> {
     }
 
     void joinParty() {
-      if (checkSelect()) {
-        checkInput(partyJoin, errorParty2, "Naam Party").then((val) {
-          print("Trying to join party");
-          if (val) {
-            String you = widget.user;
-            String party = partyJoin.text;
+      checkInput(partyJoin, errorParty2, "Naam Party").then((val) {
+        if (val) {
+          String you = widget.user;
+          String party = partyJoin.text;
 
-            Functions.toLobby(context, party, you);
-          }
-        });
-      }
+          Functions.toLobby(context, party, you);
+        }
+      });
     }
 
     final widthSpacer = SizedBox(
