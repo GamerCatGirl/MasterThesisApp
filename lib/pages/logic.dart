@@ -84,7 +84,6 @@ class _LogicState extends State<Logic> {
               icon: _iconsPages[2],
               label: _pagesNames[2],
             ),
-            //BottomNavigationBarItem(icon: _iconsPages[3], label: _pagesNames[3],),
           ],
         ),
         body: _pages[selectedPage]);

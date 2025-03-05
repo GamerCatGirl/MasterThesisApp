@@ -174,28 +174,33 @@ class _ProfileState extends State<Profile> {
     );
 
     final signInLogIn = Center(
-        child: Column(
+        child: ListView(
       children: [
-        Spacer(),
-        Header(title: "Account"),
-        Spacer(),
-        inputUsername,
-        inputPassword,
-        Spacer(),
-        Row(
-          children: [
-            Spacer(),
-            loginButton,
-            Spacer(),
-            Text(errorLogin),
-            Spacer()
-          ],
+        spacer,
+        Center(
+          child: Header(title: "Account"),
         ),
-        Spacer(),
-        signInButton,
-        Spacer(),
-        skillsButton,
-        Spacer(),
+        spacer,
+        Center(
+          child: inputUsername,
+        ),
+        Center(
+          child: inputPassword,
+        ),
+        spacer,
+        Center(child: loginButton),
+        Text(
+          errorLogin,
+          style: TextStyle(color: Colors.red),
+        ),
+        spacer,
+        Center(
+          child: signInButton,
+        ),
+        spacer,
+        Center(
+          child: skillsButton,
+        ),
       ],
     ));
 
