@@ -379,7 +379,17 @@ class _HomeState extends State<Home> {
     }
 
     void joinParty() {
-      if (checkSelect()) {}
+      if (checkSelect()) {
+        checkInput(partyJoin, errorParty2, "Naam Party").then((val) {
+          print("Trying to join party");
+          if (val) {
+            String you = widget.user;
+            String party = partyJoin.text;
+
+            Functions.toLobby(context, party, you);
+          }
+        });
+      }
     }
 
     final widthSpacer = SizedBox(

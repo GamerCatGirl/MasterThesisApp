@@ -38,12 +38,32 @@ class Database {
     usersDB.doc(user).set({"active": true}, SetOptions(merge: true));
   }
 
+  static void joinLobby(String partyName, String userName) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference partiesDB = db.collection("activeParties");
+
+    partiesDB.doc(partyName).update({
+      "player": FieldValue.arrayUnion([userName]) // Add "newTag" to the array
+    });
+  }
+
+  static void leaveLobby(String partyName, String userName) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference partiesDB = db.collection("activeParties");
+
+    partiesDB.doc(partyName).update({
+      "player": FieldValue.arrayRemove([userName]) // Add "newTag" to the array
+    });
+  }
+
   static void joinParty(String partyName, String userName) {
     FirebaseFirestore db = FirebaseFirestore.instance;
     CollectionReference partiesDB = db.collection("activeParties");
     CollectionReference usersDB = db.collection("activePlayers");
 
-    usersDB.doc(userName).set({"party": partyName}, SetOptions(merge: true));
+    usersDB
+        .doc(userName)
+        .set({"party": partyName, "progress": 0}, SetOptions(merge: true));
 
     //TODO: check if partyExists
   }

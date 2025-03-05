@@ -32,6 +32,15 @@ class _LobbyState extends State<Lobby> {
   }
 
   @override
+  void dispose() {
+    //TODO: check if partyHead leaves -> new head next in lobby
+
+    //TODO: if no one left -> distroy party
+    Database.leaveLobby(partyName, widget.user);
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     partyName = widget.partyName;
@@ -41,12 +50,15 @@ class _LobbyState extends State<Lobby> {
       setState(() {
         lobbyControler = head;
       });
-    });
 
-    Database.joinParty(partyName, widget.user);
+      if (head != widget.user) {
+        Database.joinLobby(partyName, widget.user);
+      }
+    });
 
     CollectionReference activeDB = db.collection("activeParties");
     DocumentReference docRef = activeDB.doc(partyName);
+
     docRef.snapshots().listen(
       (event) {
         var data = event.data() as Map<String, dynamic>;
