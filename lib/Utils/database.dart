@@ -69,6 +69,22 @@ class Database {
     }
   }
 
+  static Future<String> partyHead(String partyName) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference partiesDB = db.collection("activeParties");
+
+    var doc = await partiesDB.doc(partyName).get();
+
+    if (doc.exists) {
+      var data = doc.data() as Map<String, dynamic>;
+      var players = data["player"];
+      var head = players[0];
+      return head;
+    } else {
+      return throw ArgumentError("Invalid partyname: $partyName");
+    }
+  }
+
   static Future<Map<String, dynamic>> getPartyInfo(String partyName) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
     CollectionReference partiesDB = db.collection("activeParties");

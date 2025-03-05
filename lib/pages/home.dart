@@ -298,6 +298,15 @@ class _HomeState extends State<Home> {
         }
 
         return userExists;
+      } else if (field == partyMake) {
+        bool partyExists = await Database.partyExists(field.text);
+        if (partyExists) {
+          error.value = "Party bestaat al";
+          return false;
+        } else {
+          Database.makeParty(field.text, [widget.user], selectedItems);
+          return true;
+        }
       } else if (nameField == "Naam Party") {
         bool partyExists = await Database.partyExists(field.text);
 
@@ -357,7 +366,16 @@ class _HomeState extends State<Home> {
     }
 
     void makeParty() {
-      if (checkSelect()) {}
+      if (checkSelect()) {
+        checkInput(partyMake, errorParty1, "Naam Party").then((val) {
+          if (val) {
+            String you = widget.user;
+            String party = partyMake.text;
+
+            Functions.toLobby(context, party, you);
+          }
+        });
+      }
     }
 
     void joinParty() {

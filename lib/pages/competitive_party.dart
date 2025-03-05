@@ -30,6 +30,7 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
 
   List<dynamic> exercises = [];
   int amountPlayers = 2;
+  int placing = 0;
 
   int z = 0;
   int breedte = 0;
@@ -43,9 +44,13 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
   ValueNotifier<int> yourProgress = ValueNotifier(0);
   double stepSize = 0;
 
+  bool done = false;
+
   ValueNotifier<bool> loading = ValueNotifier(true);
   ValueNotifier<List<String>> activePlayers = ValueNotifier([]);
   FirebaseFirestore db = FirebaseFirestore.instance;
+
+  List<String> rankings = [];
 
   void playerInfoChanged(Map<String, dynamic> doc, String user) {
     if (loading.value) {
@@ -62,10 +67,18 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
         }
       }
     } else {
-      //TODO: progression view
-      print("progress changed of player...");
+      //progression view
       double progressPlayer = doc["progress"];
       progression[user]?.value = progressPlayer;
+
+      if (progressPlayer >= 1) {
+        if (done) {
+          progression.remove(user);
+        } else {
+          placing += 1;
+        }
+        rankings.add(user);
+      }
     }
   }
 
@@ -128,6 +141,10 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
   }
 
   void setupExercise(int idx) {
+    if (idx == exercises.length) {
+      return;
+    }
+
     Map<String, dynamic> exercise = exercises[idx];
     figure = exercise["figure"];
     image = exercise["image"];
@@ -155,9 +172,17 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
     print(progress);
     Database.updateProgress(widget.user, progress);
 
-    //TODO: post progress to db
     setupExercise(newProgress);
     yourProgress.value = newProgress;
+
+    //TODO: Ranking
+    if (newProgress == amountExercises) {
+      progression.remove(widget.user);
+      setState(() {
+        placing += 1;
+        done = true;
+      });
+    }
   }
 
   @override
@@ -207,33 +232,6 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
             });
       }).toList(),
     );
-
-    /*
-    var progressionBars = !loading.value
-        ? ValueListenableBuilder(
-            valueListenable: progression,
-            builder: (context, value, child) {
-              return Column(
-                children: value.entries.map((entry) {
-                  print(entry.value);
-                  return Row(
-                    children: [
-                      Spacer(),
-                      Text(entry.key + ": "),
-                      SizedBox(
-                        width: 300,
-                        child: LinearProgressIndicator(
-                          value: entry.value,
-                          color: Colors.amber,
-                        ),
-                      ),
-                      Spacer(),
-                    ],
-                  );
-                }).toList(),
-              );
-            })
-        : Text(""); */
 
     var exerciseBody = Column(
       children: [
