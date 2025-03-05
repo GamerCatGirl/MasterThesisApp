@@ -38,6 +38,13 @@ class Database {
     usersDB.doc(user).set({"active": true}, SetOptions(merge: true));
   }
 
+  static void logout(String user) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference usersDB = db.collection("activePlayers");
+    usersDB.doc(user).delete();
+    Consts.logout();
+  }
+
   static void joinLobby(String partyName, String userName) {
     FirebaseFirestore db = FirebaseFirestore.instance;
     CollectionReference partiesDB = db.collection("activeParties");

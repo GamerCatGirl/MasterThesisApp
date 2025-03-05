@@ -23,9 +23,12 @@ class Functions {
     );
   }
 
+  static void toLogin(BuildContext context) {
+    Navigator.pushNamed(context, '/login');
+  }
+
   static void toStartMatch(BuildContext context, String user) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => Home(user: user)));
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => Home()));
   }
 
   static void toLobby(BuildContext context, String party, String user) {

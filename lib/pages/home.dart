@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
+import 'package:mathapp/Utils/consts.dart';
 import 'package:mathapp/Utils/database.dart';
 import 'package:mathapp/Utils/redirections.dart';
 import 'package:mathapp/components/exercise_tile.dart';
@@ -11,9 +12,7 @@ import 'package:mathapp/pages/meetkunde_ex.dart';
 import 'dart:math';
 
 class Home extends StatefulWidget {
-  final String user;
-
-  const Home({super.key, required this.user});
+  const Home({super.key});
 
   @override
   State<Home> createState() => _HomeState();
@@ -56,6 +55,7 @@ class _HomeState extends State<Home> {
   int amountExercises = 0;
   List _pages = [];
   int currentRandom = 0;
+  late String user;
 
   final TextEditingController opponent = TextEditingController();
   final TextEditingController partyMake = TextEditingController();
@@ -65,6 +65,15 @@ class _HomeState extends State<Home> {
   ValueNotifier<String> errorFriend = ValueNotifier("");
   ValueNotifier<String> errorParty1 = ValueNotifier("");
   ValueNotifier<String> errorParty2 = ValueNotifier("");
+
+  @override
+  void initState() {
+    bool loggedIn = Consts.loggedIn();
+
+    if (loggedIn) {
+      user = Consts.getLoggedInUser();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -289,8 +298,7 @@ class _HomeState extends State<Home> {
       if (field.text == "") {
         error.value = "Vul '" + nameField + "' in!";
         return false;
-      } else if (nameField == "Gebruikersnaam vriend" &&
-          field.text != widget.user) {
+      } else if (nameField == "Gebruikersnaam vriend" && field.text != user) {
         bool userExists = await Database.userExists(field.text);
 
         if (!userExists) {
@@ -304,7 +312,7 @@ class _HomeState extends State<Home> {
           error.value = "Party bestaat al";
           return false;
         } else {
-          Database.makeParty(field.text, [widget.user], selectedItems);
+          Database.makeParty(field.text, [user], selectedItems);
           return true;
         }
       } else if (nameField == "Naam Party") {
@@ -339,7 +347,7 @@ class _HomeState extends State<Home> {
       checkInput(opponent, errorFriend, "Gebruikersnaam vriend").then((val) {
         if (val) {
           //TODO: redirect
-          String you = widget.user;
+          String you = user;
           String opponentName = opponent.text;
 
           List<String> partyUsers = [you, opponentName];
@@ -350,10 +358,10 @@ class _HomeState extends State<Home> {
           //TODO: check if party exists -> join
           Database.partyExists(partyName).then((exists) {
             if (exists) {
-              Functions.toCompExercise(context, partyName, widget.user);
+              Functions.toCompExercise(context, partyName, user);
             } else if (checkSelect()) {
               Database.makeParty(partyName, partyUsers, selectedItems);
-              Functions.toCompExercise(context, partyName, widget.user);
+              Functions.toCompExercise(context, partyName, user);
             }
 
             //ELSE: waiting page for opponent
@@ -366,7 +374,7 @@ class _HomeState extends State<Home> {
       if (checkSelect()) {
         checkInput(partyMake, errorParty1, "Naam Party").then((val) {
           if (val) {
-            String you = widget.user;
+            String you = user;
             String party = partyMake.text;
 
             Functions.toLobby(context, party, you);
@@ -378,10 +386,9 @@ class _HomeState extends State<Home> {
     void joinParty() {
       checkInput(partyJoin, errorParty2, "Naam Party").then((val) {
         if (val) {
-          String you = widget.user;
           String party = partyJoin.text;
 
-          Functions.toLobby(context, party, you);
+          Functions.toLobby(context, party, user);
         }
       });
     }

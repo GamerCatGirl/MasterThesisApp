@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:html' as html;
 
 class Consts {
   int maxMultiplyByHead = 12;
@@ -68,6 +69,40 @@ class Consts {
     "wall3.JPG",
     "wall4.JPG"
   ];
+
+  static void logout() {
+    html.window.localStorage.remove("loggedInAs");
+  }
+
+  static bool loggedIn() {
+    String? user = html.window.localStorage["loggedInAs"];
+    if (user != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  static String getLoggedInUser() {
+    String? user = html.window.localStorage["loggedInAs"];
+    if (user != null) {
+      return user;
+    } else {
+      throw ArgumentError("No logged in user!");
+    }
+  }
+
+  static void saveToCookies(String key, dynamic value) {
+    html.window.localStorage[key] = value;
+  }
+
+  static void deleteCookie(String key) {
+    html.window.localStorage.remove(key);
+  }
+
+  static dynamic retrieveFromCookies(String key) {
+    html.window.localStorage[key];
+  }
 
   static Map<String, dynamic> generateVars(String figure) {
     if (!skills.contains(figure)) {

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:mathapp/Utils/consts.dart';
 import 'package:mathapp/pages/exercises.dart';
 import 'package:mathapp/pages/home.dart';
 import 'package:mathapp/pages/learning_path.dart';
@@ -16,7 +17,9 @@ class Logic extends StatefulWidget {
 
 class _LogicState extends State<Logic> {
   // VARIABLES
-  int selectedPage = 0;
+  late int selectedPage;
+
+  String user = "Preview";
 
   final List _pagesNames = ["Exercises", "LearningPath", "Profile", "Settings"];
 
@@ -27,18 +30,17 @@ class _LogicState extends State<Logic> {
     Icon(Icons.settings),
   ];
 
-  final List _pages = [
-    Home(
-      user: 'Preview',
-    ),
-    LearningPath(
-      username: 'Preview',
-      path: ['oppervlakte', 'vierkant', 'cirkel', 'rechthoek', 'driehoek'],
-      pathCompletion: [true, true, true, true, false],
-    ),
-    Profile(),
-    Setting(),
-  ];
+  @override
+  void initState() {
+    bool loggedIn = Consts.loggedIn();
+
+    if (loggedIn) {
+      selectedPage = 0;
+      user = Consts.getLoggedInUser();
+    } else {
+      selectedPage = 2;
+    }
+  }
 
   void _navigateBottomBar(int index) {
     setState(() {
@@ -48,6 +50,17 @@ class _LogicState extends State<Logic> {
 
   @override
   Widget build(BuildContext context) {
+    final List _pages = [
+      Home(),
+      LearningPath(
+        username: user,
+        path: ['oppervlakte', 'vierkant', 'cirkel', 'rechthoek', 'driehoek'],
+        pathCompletion: [true, true, true, true, false],
+      ),
+      Profile(),
+      Setting(),
+    ];
+
     return Scaffold(
         appBar: AppBar(
           title: Text(_pagesNames[selectedPage]),

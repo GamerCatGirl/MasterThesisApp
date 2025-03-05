@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mathapp/Utils/consts.dart';
 import 'package:mathapp/Utils/database.dart';
+import 'package:mathapp/Utils/redirections.dart';
 import 'package:mathapp/components/title.dart';
 import 'package:mathapp/pages/signIn.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,10 +26,20 @@ class _ProfileState extends State<Profile> {
 
   int selectedPage = 0;
 
+  @override
+  void initState() {
+    loggedIn = Consts.loggedIn();
+
+    if (loggedIn) {
+      userLogged = Consts.getLoggedInUser();
+      selectedPage = 1;
+    }
+  }
+
   void _routeToLogin() {
     //TODO
     setState(() {
-      selectedPage = 1;
+      selectedPage = 0;
     });
   }
 
@@ -44,6 +56,11 @@ class _ProfileState extends State<Profile> {
 
   void _ToSkill() {
     Navigator.pushNamed(context, '/skills');
+  }
+
+  void logout() {
+    Database.logout(userLogged);
+    _routeToLogin();
   }
 
   void login() {
@@ -82,7 +99,7 @@ class _ProfileState extends State<Profile> {
               selectedPage = 1;
               loggedIn = true;
             });
-
+            Consts.saveToCookies("loggedInAs", user);
             Database.login(user);
           } else {
             setState(() {
@@ -130,21 +147,28 @@ class _ProfileState extends State<Profile> {
         ElevatedButton(onPressed: _ToSignIn, child: Text('Aanmelden'));
     final skillsButton =
         ElevatedButton(onPressed: _ToSkill, child: Text('Skills'));
+    final logoutButton =
+        ElevatedButton(onPressed: logout, child: Text('Uitloggen'));
+
+    final learningPathButton =
+        ElevatedButton(onPressed: _toLearning, child: Text('Leer Pad'));
+
+    final spacer = SizedBox(
+      height: 20,
+    );
 
     final loggedInPage = ListView(
       children: [
-        Header(title: userLogged + ", you are succesfully logged in!"),
-        Row(
-          children: [
-            Spacer(),
-            ElevatedButton(
-                onPressed: () {
-                  //logged();
-                  _toLearning();
-                },
-                child: Text('Leer Pad')),
-            Spacer()
-          ],
+        Center(
+          child: Header(title: "Ingelogd als " + userLogged),
+        ),
+        spacer,
+        Center(
+          child: skillsButton,
+        ),
+        spacer,
+        Center(
+          child: logoutButton,
         )
       ],
     );
