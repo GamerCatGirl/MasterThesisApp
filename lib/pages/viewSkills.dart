@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mathapp/Utils/consts.dart';
+import 'package:mathapp/Utils/database.dart';
 import 'package:mathapp/components/title.dart';
-//import 'package:syncfusion_flutter_charts/charts.dart';
-//import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class Viewskills extends StatefulWidget {
@@ -26,33 +26,55 @@ class RawDataSet {
 class _SkillState extends State<Viewskills> {
   int selectedPage = 0;
 
-  List<RawDataSet> rawDataSets() {
-    return [
-      RawDataSet(
-        title: 'Skills',
-        color: Colors.blue,
-        values: [75, 50, 25, 30],
-      ),
-    ];
+  ValueNotifier<List<RawDataSet>> eloDataset = ValueNotifier([]);
+  ValueNotifier<List<RawDataSet>> effortDataset = ValueNotifier([]);
+
+  ValueNotifier<bool> loading = ValueNotifier(true);
+
+  late String user;
+
+  @override
+  void initState() {
+    var loggedIn = Consts.loggedIn();
+
+    if (loggedIn) {
+      user = Consts.getLoggedInUser();
+
+      Database.getElo(user).then((val) {
+        if (val.isNotEmpty) {
+          var dataset =
+              RawDataSet(title: 'Skills', color: Colors.blue, values: val);
+          eloDataset.value.add(dataset);
+          //loading.value = false;
+        }
+      });
+
+      Database.getAllElo().then((val) => {
+            eloDataset.value.add(
+              RawDataSet(title: 'Skills', color: Colors.grey, values: val),
+            ),
+            loading.value = false
+          });
+    }
+
+    //TODO: get Elo
   }
 
-  List<RawDataSet> rawDataSets2() {
-    return [
-      RawDataSet(
-        title: 'Bloom',
-        color: Colors.blue,
-        values: [75, 50, 25, 30, 40, 20],
-      ),
-      RawDataSet(
-        title: 'Bloom',
-        color: Colors.purple,
-        values: [60, 40, 90, 20, 60, 30],
-      ),
-    ];
-  }
+  List<RawDataSet> rawDataSets2 = [
+    RawDataSet(
+      title: 'Bloom',
+      color: Colors.purple,
+      values: [75, 50, 25, 30, 40],
+    ),
+    RawDataSet(
+      title: 'Bloom',
+      color: Colors.grey,
+      values: [60, 40, 90, 20, 60],
+    ),
+  ];
 
   List<RadarDataSet> showingDataSets() {
-    return rawDataSets().asMap().entries.map((entry) {
+    return eloDataset.value.asMap().entries.map((entry) {
       final index = entry.key;
       final rawDataSet = entry.value;
 
@@ -74,7 +96,7 @@ class _SkillState extends State<Viewskills> {
   }
 
   List<RadarDataSet> showingDataSets2() {
-    return rawDataSets2().asMap().entries.map((entry) {
+    return rawDataSets2.asMap().entries.map((entry) {
       final index = entry.key;
       final rawDataSet = entry.value;
 
@@ -97,52 +119,118 @@ class _SkillState extends State<Viewskills> {
 
   @override
   Widget build(BuildContext context) {
+    final space = SizedBox(
+      height: 20,
+    );
+
+    final title = Center(child: Header(title: "Logged in as " + user));
+
+    final h1 = Center(
+      child: Text(
+        "Performance",
+        style: TextStyle(fontSize: 25),
+      ),
+    );
+    final subH1 = Center(
+      child: Text(
+        "Dit is gebaseerd op hoe goed je oefeningen oplost tegenover je klasgenoten.",
+      ),
+    );
+
+    final h2 = Center(
+      child: Text(
+        "Inzet",
+        style: TextStyle(fontSize: 25),
+      ),
+    );
+
+    final subH2 = Center(
+      child: Text(
+        "Dit is gebaseerd op hoe veel oefeningen je maakt tegenover je klasgenoten.",
+      ),
+    );
+
+    final list = [
+      Text("Progress"),
+      Text("Your skills significantly improved for x topics"),
+      Text("Long time that you have practiced y topic, refresh your knowledge"),
+      Text("Advise"),
+      Text("Practice these (link) exercises: (Personalised Feedback)"),
+      Text("Analyse"),
+      Text("Low Knowledge: oppervlakte cirkel"),
+      Text("Medium Knowledge: oppervlakte driehoek"),
+      Text("Good Knowledge: Oppervlakte rechthoek"),
+      Text("Pro Knowledge: oppervlakte vierkant")
+    ];
+
+    final loadingPage = 0; //TODO:
+
+    SizedBox loadRadar1() {
+      return SizedBox(
+        height: 300,
+        child: RadarChart(RadarChartData(
+          dataSets: showingDataSets(),
+          radarBackgroundColor: Colors.transparent,
+          borderData: FlBorderData(show: false),
+          titleTextStyle: TextStyle(color: Colors.black, fontSize: 14),
+          getTitle: (index, angle) {
+            final usedAngle = angle;
+            switch (index) {
+              case 0:
+                return RadarChartTitle(
+                  text: 'Opp. vierkant',
+                  angle: usedAngle,
+                );
+              case 2:
+                return RadarChartTitle(
+                  text: 'Opp. rechthoek',
+                  angle: usedAngle,
+                );
+              case 1:
+                return RadarChartTitle(text: 'Opp. Cirkel', angle: usedAngle);
+              case 3:
+                return RadarChartTitle(text: 'Opp. Driehoek', angle: usedAngle);
+              case 4:
+                return RadarChartTitle(
+                    text: 'Conversion Tabel', angle: usedAngle);
+              default:
+                return const RadarChartTitle(text: '');
+            }
+          },
+          titlePositionPercentageOffset: 0.2,
+          tickBorderData: const BorderSide(color: Colors.transparent),
+          gridBorderData: BorderSide(color: Colors.orange, width: 2),
+          ticksTextStyle:
+              const TextStyle(color: Colors.transparent, fontSize: 10),
+          radarBorderData:
+              const BorderSide(color: Colors.transparent), //buitenste cirkel
+        )),
+      );
+    }
+
+    var radar = ValueListenableBuilder(
+        valueListenable: loading,
+        builder: (x, val, y) {
+          if (val) {
+            return Text("loading");
+          } else {
+            return loadRadar1();
+          }
+        });
+
     final page = ListView(
       children: [
-        Header(title: "View Skills"),
-        Text("Skills needed"),
-        Text("TODO: flowchart of how skills are needed for topics?"),
-        Text("Oppervlakte Berekenen"),
-        SizedBox(
-          height: 300,
-          child: RadarChart(RadarChartData(
-            dataSets: showingDataSets(),
-            radarBackgroundColor: Colors.transparent,
-            borderData: FlBorderData(show: false),
-            titleTextStyle: TextStyle(color: Colors.black, fontSize: 14),
-            getTitle: (index, angle) {
-              final usedAngle = angle;
-              switch (index) {
-                case 0:
-                  return RadarChartTitle(
-                    text: 'Oppervlakte vierkant',
-                    angle: usedAngle,
-                  );
-                case 2:
-                  return RadarChartTitle(
-                    text: 'Oppervlakte rechthoek',
-                    angle: usedAngle,
-                  );
-                case 1:
-                  return RadarChartTitle(
-                      text: 'Oppervlakte Cirkel', angle: usedAngle);
-                case 3:
-                  return RadarChartTitle(
-                      text: 'Oppervlakte Driehoek', angle: usedAngle);
-                default:
-                  return const RadarChartTitle(text: '');
-              }
-            },
-            titlePositionPercentageOffset: 0.2,
-            tickBorderData: const BorderSide(color: Colors.transparent),
-            gridBorderData: BorderSide(color: Colors.orange, width: 2),
-            ticksTextStyle:
-                const TextStyle(color: Colors.transparent, fontSize: 10),
-            radarBorderData:
-                const BorderSide(color: Colors.transparent), //buitenste cirkel
-          )),
-        ),
-        Text("OR"),
+        space,
+        title,
+        h1,
+        subH1,
+        space,
+        radar,
+        space,
+        space,
+        h2,
+        subH2,
+        space,
         SizedBox(
           height: 300,
           child: RadarChart(RadarChartData(
@@ -155,22 +243,22 @@ class _SkillState extends State<Viewskills> {
               switch (index) {
                 case 0:
                   return RadarChartTitle(
-                    text: 'Remember',
+                    text: 'Opp. vierkant',
                     angle: usedAngle,
                   );
                 case 2:
                   return RadarChartTitle(
-                    text: 'Understand',
+                    text: 'Opp. rechthoek',
                     angle: usedAngle,
                   );
                 case 1:
-                  return RadarChartTitle(text: 'Apply', angle: usedAngle);
+                  return RadarChartTitle(text: 'Opp. Cirkel', angle: usedAngle);
                 case 3:
-                  return RadarChartTitle(text: 'Analyse', angle: usedAngle);
+                  return RadarChartTitle(
+                      text: 'Opp. Driehoek', angle: usedAngle);
                 case 4:
-                  return RadarChartTitle(text: 'Evaluate', angle: usedAngle);
-                case 5:
-                  return RadarChartTitle(text: 'Create', angle: usedAngle);
+                  return RadarChartTitle(
+                      text: 'Conversion Tabel', angle: usedAngle);
                 default:
                   return const RadarChartTitle(text: '');
               }
@@ -184,23 +272,10 @@ class _SkillState extends State<Viewskills> {
                 const BorderSide(color: Colors.transparent), //buitenste cirkel
           )),
         ),
-        Text("Progress"),
-        Text("Your skills significantly improved for x topics"),
-        Text(
-            "Long time that you have practiced y topic, refresh your knowledge"),
-        Text("Advise"),
-        Text("Practice these (link) exercises: (Personalised Feedback)"),
-        Text("Analyse"),
-        Text("Low Knowledge: oppervlakte cirkel"),
-        Text("Medium Knowledge: oppervlakte driehoek"),
-        Text("Good Knowledge: Oppervlakte rechthoek"),
-        Text("Pro Knowledge: oppervlakte vierkant")
       ],
     );
     final List _pages = [page];
 
-    return Scaffold(
-      body: Center(child: _pages[selectedPage]),
-    );
+    return _pages[selectedPage];
   }
 }

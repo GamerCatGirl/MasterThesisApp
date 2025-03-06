@@ -32,6 +32,93 @@ class Database {
     }
   }
 
+  static Future<List<double>> getElo(String user) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference usersDB = db.collection("exercises");
+
+    var doc = await usersDB.doc(user).get();
+
+    if (doc.exists) {
+      var data = doc.data() as Map<String, dynamic>;
+      var elo = data["elo"] as Map<String, dynamic>;
+
+      var eloCirkel = (elo["oppervlakte-cirkel"] != null)
+          ? elo["oppervlakte-cirkel"]["elo"]
+          : 0;
+
+      var eloVierkant = (elo["oppervlakte-vierkant"] != null)
+          ? elo["oppervlakte-vierkant"]["elo"]
+          : 0;
+      var eloRechthoek = (elo["oppervlakte-rechthoek"] != null)
+          ? elo["oppervlakte-rechthoek"]["elo"]
+          : 0;
+      var eloDriehoek = (elo["oppervlakte-driehoek"] != null)
+          ? elo["oppervlakte-driehoek"]["elo"]
+          : 0;
+      var eloConversion = (elo["conversion-table"] != null)
+          ? elo["conversion-table"]["elo"]
+          : 0;
+
+      return [eloVierkant, eloCirkel, eloRechthoek, eloDriehoek, eloConversion];
+    } else {
+      throw ArgumentError("No existing Elo for user");
+    }
+  }
+
+  static Future<List<double>> getAllElo() async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference usersDB = db.collection("exercises");
+
+    var query = await usersDB.get();
+    var docs = query.docs;
+
+    List<double> vierkantElos = [];
+    var rechthoekElos = [];
+    var cirkelElos = [];
+    var driehoekElos = [];
+    var conversionElos = [];
+
+    for (var doc in docs) {
+      var data = doc.data() as Map<String, dynamic>;
+      var elo = data["elo"] as Map<String, dynamic>;
+
+      var eloCirkel = (elo["oppervlakte-cirkel"] != null)
+          ? elo["oppervlakte-cirkel"]["elo"]
+          : 0;
+
+      var eloVierkant = (elo["oppervlakte-vierkant"] != null)
+          ? elo["oppervlakte-vierkant"]["elo"]
+          : 0;
+      var eloRechthoek = (elo["oppervlakte-rechthoek"] != null)
+          ? elo["oppervlakte-rechthoek"]["elo"]
+          : 0;
+      var eloDriehoek = (elo["oppervlakte-driehoek"] != null)
+          ? elo["oppervlakte-driehoek"]["elo"]
+          : 0;
+      var eloConversion = (elo["conversion-table"] != null)
+          ? elo["conversion-table"]["elo"]
+          : 0;
+
+      vierkantElos.add(eloVierkant);
+      rechthoekElos.add(eloRechthoek);
+      cirkelElos.add(eloCirkel);
+      driehoekElos.add(eloDriehoek);
+      conversionElos.add(eloConversion);
+    }
+
+    var eloVierkant =
+        vierkantElos.reduce((a, b) => a + b) / vierkantElos.length;
+    var eloCirkel = cirkelElos.reduce((a, b) => a + b) / cirkelElos.length;
+    var eloDriehoek =
+        driehoekElos.reduce((a, b) => a + b) / driehoekElos.length;
+    var eloRechthoek =
+        rechthoekElos.reduce((a, b) => a + b) / rechthoekElos.length;
+    var eloConversion =
+        conversionElos.reduce((a, b) => a + b) / conversionElos.length;
+
+    return [eloVierkant, eloCirkel, eloRechthoek, eloDriehoek, eloConversion];
+  }
+
   static void login(String user) {
     FirebaseFirestore db = FirebaseFirestore.instance;
     CollectionReference usersDB = db.collection("activePlayers");

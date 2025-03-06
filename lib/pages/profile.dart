@@ -5,6 +5,7 @@ import 'package:mathapp/Utils/redirections.dart';
 import 'package:mathapp/components/title.dart';
 import 'package:mathapp/pages/signIn.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mathapp/pages/viewSkills.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -157,22 +158,6 @@ class _ProfileState extends State<Profile> {
       height: 20,
     );
 
-    final loggedInPage = ListView(
-      children: [
-        Center(
-          child: Header(title: "Ingelogd als " + userLogged),
-        ),
-        spacer,
-        Center(
-          child: skillsButton,
-        ),
-        spacer,
-        Center(
-          child: logoutButton,
-        )
-      ],
-    );
-
     final signInLogIn = Center(
         child: ListView(
       children: [
@@ -204,7 +189,7 @@ class _ProfileState extends State<Profile> {
       ],
     ));
 
-    final List _pages = [signInLogIn, loggedInPage];
+    final List _pages = [signInLogIn, Viewskills()];
 
     return Scaffold(
       body: Center(child: _pages[selectedPage]),

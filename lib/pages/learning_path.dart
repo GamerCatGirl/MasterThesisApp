@@ -7,8 +7,6 @@ import 'package:mathapp/pages/conversion_theory.dart';
 import 'package:mathapp/pages/oppervlakte_theory.dart';
 import 'package:mathapp/pages/figure_theory.dart';
 
-//TODO: add floating add button
-
 class LearningPath extends StatefulWidget {
   const LearningPath({super.key});
 
