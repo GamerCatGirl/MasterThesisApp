@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:mathapp/Utils/consts.dart';
 import 'package:mathapp/Utils/redirections.dart';
 import 'package:mathapp/components/exercise_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,15 +18,7 @@ import 'package:mathapp/pages/figure_theory.dart';
 //TODO: add floating add button
 
 class LearningPath extends StatefulWidget {
-  final String username;
-  final List<dynamic> path;
-  final List<dynamic> pathCompletion;
-
-  const LearningPath(
-      {super.key,
-      required this.username,
-      required this.path,
-      required this.pathCompletion});
+  const LearningPath({super.key});
 
   @override
   State<LearningPath> createState() => _LearningPathState();
@@ -34,20 +27,26 @@ class LearningPath extends StatefulWidget {
 class _LearningPathState extends State<LearningPath> {
   int selectedPage = 0;
   bool theoryDoneOppervlakte = false;
+  String user = "Preview";
+  List<String> path = [""];
+  List<bool> pathCompletion = [true];
   FirebaseFirestore db = FirebaseFirestore.instance;
-
-  void _routeToAddExercise() {
-    //TODO
-    setState(() {
-      selectedPage = 1;
-    });
-  }
 
   @override
   void initState() {
     super.initState();
-    print(widget.path);
-    print(widget.pathCompletion);
+
+    bool loggedIn = Consts.loggedIn();
+
+    if (loggedIn) {
+      user = Consts.getLoggedInUser();
+      selectedPage = 0;
+
+      path = Consts.retrievePath();
+      pathCompletion = Consts.retrievePathCompletion();
+    } else {
+      selectedPage = 1;
+    }
     //update db?
   }
 
@@ -70,9 +69,9 @@ class _LearningPathState extends State<LearningPath> {
         builder: (context) => OppervlakteTheory(
           done: () {},
           solved: theoryDoneOppervlakte,
-          user: widget.username,
-          path: widget.path,
-          pathCompletion: widget.pathCompletion,
+          user: user,
+          path: path,
+          pathCompletion: pathCompletion,
         ),
       ),
     );
@@ -86,7 +85,7 @@ class _LearningPathState extends State<LearningPath> {
         builder: (context) => FigureTheory(
               synced: false,
               amountExercises: 10,
-              user: widget.username,
+              user: user,
               skills: [figure],
               opponent: "bot",
               exerciseName: figure,
@@ -97,7 +96,7 @@ class _LearningPathState extends State<LearningPath> {
     //TODO: get all possible values needed from database to get custom exercises
     CollectionReference dbUsers = db.collection("users");
 
-    dbUsers.doc(widget.username).get().then((doc) {
+    dbUsers.doc(user).get().then((doc) {
       var document = doc.data() as Map<String, dynamic>;
       //TODO get needed info
 
@@ -135,7 +134,7 @@ class _LearningPathState extends State<LearningPath> {
     //TODO: get all possible values needed from database to get custom exercises
     CollectionReference dbUsers = db.collection("users");
 
-    dbUsers.doc(widget.username).get().then((doc) {
+    dbUsers.doc(user).get().then((doc) {
       var document = doc.data() as Map<String, dynamic>;
       //TODO get needed info
 
@@ -168,7 +167,7 @@ class _LearningPathState extends State<LearningPath> {
     //TODO: get all possible values needed from database to get custom exercises
     CollectionReference dbUsers = db.collection("users");
 
-    dbUsers.doc(widget.username).get().then((doc) {
+    dbUsers.doc(user).get().then((doc) {
       var document = doc.data() as Map<String, dynamic>;
       //TODO get needed info
 
@@ -214,7 +213,7 @@ class _LearningPathState extends State<LearningPath> {
     //TODO: get all possible values needed from database to get custom exercises
     CollectionReference dbUsers = db.collection("users");
 
-    dbUsers.doc(widget.username).get().then((doc) {
+    dbUsers.doc(user).get().then((doc) {
       var document = doc.data() as Map<String, dynamic>;
       //TODO get needed info
 
@@ -264,20 +263,17 @@ class _LearningPathState extends State<LearningPath> {
   Widget build(BuildContext context) {
     List<Widget> pathWidgets = [
       Header(title: "H5: Oppervlakte"),
-      Text("Leerpad van " + widget.username),
+      Text("Leerpad van " + user),
       Center(
         child: SizedBox(
             width: 200,
             child: ElevatedButton(
-                onPressed: () =>
-                    Functions.toStartMatch(context, widget.username),
+                onPressed: () => Functions.toStartMatch(context, user),
                 child: Text("Play"))),
       )
     ];
 
     void addCustoms() {
-      List<dynamic> path = widget.path;
-      List<dynamic> pathCompletion = widget.pathCompletion;
       List<Widget> pathTiles = [leftToMid, midToRight, rightToMid, midToLeft];
       List<String> positions = ["left", "mid", "right", "mid"];
       int current = 0;
@@ -285,7 +281,7 @@ class _LearningPathState extends State<LearningPath> {
       int indexCompleted = 0;
 
       path.forEach((element) {
-        var completed = pathCompletion[current] as bool;
+        var completed = pathCompletion[current];
         var position = positions[currentTiles];
         var enabeled = true;
 
@@ -301,7 +297,7 @@ class _LearningPathState extends State<LearningPath> {
               icon: theory,
               completed: completed,
               enabeled: enabeled,
-              userID: widget.username);
+              userID: user);
           pathWidgets.add(oppervlakte);
           pathWidgets.add(pathTiles[currentTiles]);
           current += 1;
@@ -313,7 +309,7 @@ class _LearningPathState extends State<LearningPath> {
             position: position,
             completed: completed,
             enabeled: enabeled,
-            userID: widget.username,
+            userID: user,
           );
           pathWidgets.add(vierkant);
           pathWidgets.add(pathTiles[currentTiles]);
@@ -326,7 +322,7 @@ class _LearningPathState extends State<LearningPath> {
             position: position,
             completed: completed,
             enabeled: enabeled,
-            userID: widget.username,
+            userID: user,
           );
           pathWidgets.add(cirkel);
           pathWidgets.add(pathTiles[currentTiles]);
@@ -339,7 +335,7 @@ class _LearningPathState extends State<LearningPath> {
             position: position,
             completed: completed,
             enabeled: enabeled,
-            userID: widget.username,
+            userID: user,
           );
           pathWidgets.add(rechthoek);
           pathWidgets.add(pathTiles[currentTiles]);
@@ -352,7 +348,7 @@ class _LearningPathState extends State<LearningPath> {
             position: position,
             completed: completed,
             enabeled: enabeled,
-            userID: widget.username,
+            userID: user,
           );
           pathWidgets.add(driehoek);
           pathWidgets.add(pathTiles[currentTiles]);
@@ -394,7 +390,7 @@ class _LearningPathState extends State<LearningPath> {
       children: pathWidgets,
     );
 
-    final List _pages = [exercises, AddExercise()];
+    final List _pages = [exercises, Consts.logginFirst];
 
     return Scaffold(
       body: Center(child: _pages[selectedPage]),

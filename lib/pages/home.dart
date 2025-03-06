@@ -49,6 +49,8 @@ class _HomeState extends State<Home> {
     } else {
       selectedPage = 1;
     }
+
+    //TODO: check if part of active part to join back in
   }
 
   @override
@@ -238,20 +240,6 @@ class _HomeState extends State<Home> {
       height: 20,
     );
 
-    final logginFirst = ListView(
-      children: [
-        widthSpacer,
-        Center(
-          child: Header(title: "Log eerst in voor je verder kan gaan!"),
-        ),
-        widthSpacer,
-        Center(
-          child: Text("Ga naar profiel om in te loggen, veel succes!"),
-        ),
-        widthSpacer,
-      ],
-    );
-
     final home = ListView(
       children: [
         widthSpacer,
@@ -366,7 +354,7 @@ class _HomeState extends State<Home> {
       ],
     );
 
-    List<Widget> pages = [home, logginFirst];
+    List<Widget> pages = [home, Consts.logginFirst];
 
     // TODO: implement build
     return Scaffold(

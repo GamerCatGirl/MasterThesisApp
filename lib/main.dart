@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mathapp/Utils/consts.dart';
 import 'package:mathapp/pages/home.dart';
 import 'package:mathapp/pages/learning_path.dart';
 import 'package:mathapp/pages/logic.dart';
@@ -16,6 +17,15 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  //TODO: get info
+  bool loggedIn = Consts.loggedIn();
+
+  if (loggedIn) {
+    //Database: get learning path
+    //Database: get learning progress
+    Consts.refreshInfo();
+  }
 
   runApp(const MyApp());
 }
@@ -45,11 +55,7 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: (settings) {
         final args = settings.arguments as Map<String, dynamic>;
         if (settings.name == '/learning-path') {
-          return MaterialPageRoute(
-              builder: (context) => LearningPath(
-                  username: args['user'],
-                  path: args['path'],
-                  pathCompletion: args['pathCompletion']));
+          return MaterialPageRoute(builder: (context) => LearningPath());
         } else if (settings.name == '/vierkant-exercises') {
           return MaterialPageRoute(
               builder: (context) => MeetkundeEx(

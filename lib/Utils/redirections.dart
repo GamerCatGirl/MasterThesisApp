@@ -7,9 +7,8 @@ import 'package:mathapp/pages/lobby.dart';
 class Functions {
   void toLearningPatch(String user, List<dynamic> path,
       List<dynamic> pathCompletion, BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => LearningPath(
-            username: user, path: path, pathCompletion: pathCompletion)));
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => LearningPath()));
   }
 
   static void toCompExercise(

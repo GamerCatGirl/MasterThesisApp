@@ -52,11 +52,7 @@ class _LogicState extends State<Logic> {
   Widget build(BuildContext context) {
     final List _pages = [
       Home(),
-      LearningPath(
-        username: user,
-        path: ['oppervlakte', 'vierkant', 'cirkel', 'rechthoek', 'driehoek'],
-        pathCompletion: [true, true, true, true, false],
-      ),
+      LearningPath(),
       Profile(),
       Setting(),
     ];

@@ -1,6 +1,11 @@
 import 'dart:math';
 import 'dart:html' as html;
 
+import 'package:flutter/material.dart';
+import 'package:mathapp/components/title.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+
 class Consts {
   int maxMultiplyByHead = 12;
   int maxMultiplyCalc = 999;
@@ -70,8 +75,68 @@ class Consts {
     "wall4.JPG"
   ];
 
+  static List<String> retrievePath() {
+    String pathStr = retrieveFromCookies("path");
+    int length = pathStr.length;
+
+    var pathWithoutBrackets = pathStr.substring(1, length - 1);
+
+    List<String> path = pathWithoutBrackets.split(", ");
+
+    return path;
+  }
+
+  static List<bool> retrievePathCompletion() {
+    var pathCompletionStr = retrieveFromCookies("pathCompletion");
+    int length = pathCompletionStr.length;
+
+    String pathWithoutBrackets = pathCompletionStr.substring(1, length - 1);
+
+    List<String> pathWithout = pathWithoutBrackets.split(", ");
+
+    List<bool> path = pathWithout.map((elm) {
+      if (elm == "true") {
+        return true;
+      } else if (elm == "false") {
+        return false;
+      } else {
+        return false;
+      }
+    }).toList();
+
+    return path;
+  }
+
+  static void refreshInfo() async {
+    String username = getLoggedInUser();
+
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference users = db.collection("users");
+
+    var user = await users.doc(username).get();
+
+    if (user.exists) {
+      var data = user.data() as Map<String, dynamic>;
+
+      var path = data["path"];
+      var pathCompletion = data["pathCompletion"];
+
+      saveToCookies("path", path.toString());
+      saveToCookies("pathCompletion", pathCompletion.toString());
+    } else {
+      throw ArgumentError("User is non existend in database");
+    }
+  }
+
+  static void login(String username) {
+    saveToCookies("loggedInAs", username);
+    refreshInfo();
+  }
+
   static void logout() {
-    html.window.localStorage.remove("loggedInAs");
+    deleteCookie("loggedInAs");
+    deleteCookie("path");
+    deleteCookie("pathCompletion");
   }
 
   static bool loggedIn() {
@@ -101,7 +166,7 @@ class Consts {
   }
 
   static dynamic retrieveFromCookies(String key) {
-    html.window.localStorage[key];
+    return html.window.localStorage[key];
   }
 
   static Map<String, dynamic> generateVars(String figure) {
@@ -124,6 +189,26 @@ class Consts {
       throw ArgumentError("Invalid figure: $figure");
     }
   }
+
+  static Widget logginFirst = ListView(
+    children: [
+      SizedBox(
+        height: 20,
+      ),
+      Center(
+        child: Header(title: "Log eerst in voor je verder kan gaan!"),
+      ),
+      SizedBox(
+        height: 20,
+      ),
+      Center(
+        child: Text("Ga naar profiel om in te loggen, veel succes!"),
+      ),
+      SizedBox(
+        height: 20,
+      ),
+    ],
+  );
 
   static String getPathRandomImage(String figure) {
     if (!skills.contains(figure)) {
