@@ -1,17 +1,9 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:mathapp/Utils/consts.dart';
-import 'package:mathapp/Utils/redirections.dart';
-import 'package:mathapp/components/exercise_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mathapp/components/learningPathTile.dart';
-import 'package:mathapp/components/row_exercise.dart';
 import 'package:mathapp/components/title.dart';
-import 'package:mathapp/components/title_tile.dart';
-import 'package:mathapp/pages/add_exercise.dart';
 import 'package:mathapp/pages/conversion_theory.dart';
-import 'package:mathapp/pages/meetkunde_ex.dart';
 import 'package:mathapp/pages/oppervlakte_theory.dart';
 import 'package:mathapp/pages/figure_theory.dart';
 
@@ -84,30 +76,6 @@ class _LearningPathState extends State<LearningPath> {
     figure.value = fig;
     selectedPage.value = 2;
   }
-  //todo: elo current player
-  //TODO: matchID for link?
-  /*
-    FigureTheory(
-      synced: false,
-      amountExercises: 10,
-      user: user,
-      skills: [figure],
-      opponent: "bot",
-      exerciseName: figure,
-    );
-    /*
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => FigureTheory(
-              synced: false,
-              amountExercises: 10,
-              user: user,
-              skills: [figure],
-              opponent: "bot",
-              exerciseName: figure,
-            )));
-            */
-  }
-  */
 
   void vierkantCallback() {
     //TODO: get all possible values needed from database to get custom exercises
@@ -210,8 +178,7 @@ class _LearningPathState extends State<LearningPath> {
       }
 
       if (document['elo-speed'] != null) {
-        //TODO:
-        eloVierkant = document['elo-speed'];
+        eloSpeed = document['elo-speed'];
       }
 
       makeCompEx('rechthoek');
@@ -277,13 +244,6 @@ class _LearningPathState extends State<LearningPath> {
     List<Widget> pathWidgets = [
       Header(title: "H5: Oppervlakte"),
       Text("Leerpad van " + user),
-      Center(
-        child: SizedBox(
-            width: 200,
-            child: ElevatedButton(
-                onPressed: () => Functions.toStartMatch(context, user),
-                child: Text("Play"))),
-      )
     ];
 
     void addCustoms() {
