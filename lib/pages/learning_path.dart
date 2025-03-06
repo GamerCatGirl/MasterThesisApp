@@ -219,11 +219,7 @@ class _LearningPathState extends State<LearningPath> {
   }
 
   void conversionCallback() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ConversionTheory(done: () {}),
-      ),
-    );
+    selectedPage.value = 3;
   }
 
   void driehoekCallback() {
@@ -371,6 +367,18 @@ class _LearningPathState extends State<LearningPath> {
           pathWidgets.add(pathTiles[currentTiles]);
           current += 1;
           currentTiles += 1;
+        } else if (element == "conversion") {
+          var conversion = Learningpathtile(
+              onTileClicked: conversionCallback,
+              position: position,
+              icon: iconPlattegrond,
+              completed: completed,
+              enabeled: enabeled,
+              userID: user);
+          pathWidgets.add(conversion);
+          pathWidgets.add(pathTiles[currentTiles]);
+          current += 1;
+          currentTiles += 1;
         }
         if (currentTiles > 3) {
           currentTiles = 0;
@@ -384,24 +392,6 @@ class _LearningPathState extends State<LearningPath> {
     }
 
     addCustoms();
-
-    // TODO: implement build
-    /*
-    final ListView exercisesOld = ListView(children: [
-      // SUBDIVISION
-      Header(title: "H5: Oppervlakte"),
-      Text("Leerpad van " + widget.username),
-      oppervlakte,
-      leftToMid,
-      vierkant,
-      midToRight,
-      Learningpathtileright(
-          onTileClicked: conversionCallback, icon: iconOppervlakte),
-      rightToMid,
-      Learningpathtilemid(onTileClicked: theoryCallback, icon: iconTriangleEx),
-      midToLeft,
-      Learningpathtileleft(onTileClicked: theoryCallback, icon: iconCirlceEx),
-    ]); */
 
     final ListView exercises = ListView(
       children: pathWidgets,
@@ -420,7 +410,12 @@ class _LearningPathState extends State<LearningPath> {
           );
         });
 
-    final List _pages = [exercises, Consts.logginFirst, compEx];
+    final List _pages = [
+      exercises,
+      Consts.logginFirst,
+      compEx,
+      ConversionTheory(done: () {})
+    ];
 
     final page = ValueListenableBuilder(
         valueListenable: selectedPage,
