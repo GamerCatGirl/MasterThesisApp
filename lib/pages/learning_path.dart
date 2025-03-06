@@ -25,12 +25,15 @@ class LearningPath extends StatefulWidget {
 }
 
 class _LearningPathState extends State<LearningPath> {
-  int selectedPage = 0;
+  //int selectedPage = 0;
+  ValueNotifier<int> selectedPage = ValueNotifier(0);
   bool theoryDoneOppervlakte = false;
   String user = "Preview";
   List<String> path = [""];
   List<bool> pathCompletion = [true];
   FirebaseFirestore db = FirebaseFirestore.instance;
+
+  ValueNotifier<String> figure = ValueNotifier("vierkant");
 
   @override
   void initState() {
@@ -40,12 +43,12 @@ class _LearningPathState extends State<LearningPath> {
 
     if (loggedIn) {
       user = Consts.getLoggedInUser();
-      selectedPage = 0;
+      selectedPage.value = 0;
 
       path = Consts.retrievePath();
       pathCompletion = Consts.retrievePathCompletion();
     } else {
-      selectedPage = 1;
+      selectedPage.value = 1;
     }
     //update db?
   }
@@ -77,10 +80,22 @@ class _LearningPathState extends State<LearningPath> {
     );
   }
 
-  void makeCompEx(String figure) {
-    //todo: elo current player
-    //TODO: matchID for link?
-
+  void makeCompEx(String fig) {
+    figure.value = fig;
+    selectedPage.value = 2;
+  }
+  //todo: elo current player
+  //TODO: matchID for link?
+  /*
+    FigureTheory(
+      synced: false,
+      amountExercises: 10,
+      user: user,
+      skills: [figure],
+      opponent: "bot",
+      exerciseName: figure,
+    );
+    /*
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => FigureTheory(
               synced: false,
@@ -90,7 +105,9 @@ class _LearningPathState extends State<LearningPath> {
               opponent: "bot",
               exerciseName: figure,
             )));
+            */
   }
+  */
 
   void vierkantCallback() {
     //TODO: get all possible values needed from database to get custom exercises
@@ -390,10 +407,29 @@ class _LearningPathState extends State<LearningPath> {
       children: pathWidgets,
     );
 
-    final List _pages = [exercises, Consts.logginFirst];
+    final compEx = ValueListenableBuilder(
+        valueListenable: figure,
+        builder: (x, value, y) {
+          return FigureTheory(
+            synced: false,
+            amountExercises: 10,
+            user: user,
+            skills: [value],
+            opponent: "bot",
+            exerciseName: value,
+          );
+        });
+
+    final List _pages = [exercises, Consts.logginFirst, compEx];
+
+    final page = ValueListenableBuilder(
+        valueListenable: selectedPage,
+        builder: (x, val, y) {
+          return _pages[val];
+        });
 
     return Scaffold(
-      body: Center(child: _pages[selectedPage]),
+      body: Center(child: page),
     );
   }
 }

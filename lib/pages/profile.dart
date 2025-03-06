@@ -99,7 +99,7 @@ class _ProfileState extends State<Profile> {
               selectedPage = 1;
               loggedIn = true;
             });
-            Consts.saveToCookies("loggedInAs", user);
+            Consts.login(user);
             Database.login(user);
           } else {
             setState(() {
