@@ -302,8 +302,6 @@ class _FigureState extends State<FigureTheory> {
   }
 
   void announceWinner() {
-    print("Announcing a winner :)");
-    print(generatedToPost);
     //TODO: post generated exercises
     WriteBatch batch = FirebaseFirestore.instance.batch();
     String exerciseID = "oppervlakte-" + widget.skills.join("-");

@@ -62,10 +62,12 @@ class _CompetitiveState extends State<CompetitiveEx> {
   int r = 0;
   int l = 0;
   int b = 0;
-  List<String> selectedItems = [];
+  ValueNotifier<List> selectedItems = ValueNotifier([]);
   ValueNotifier<String> errorSelect = ValueNotifier("");
   ValueNotifier<List> rowCombined = ValueNotifier([]);
+  MultiSelectController<String> controllerSelector = MultiSelectController();
   //
+  String labelVierkant = "Vierkant";
   late String label1;
   late String label2;
 
@@ -88,6 +90,14 @@ class _CompetitiveState extends State<CompetitiveEx> {
       l = widget.z;
     }
     //update db?
+  }
+
+  void onSelect(allSelectedItems, selectedItem) {
+    selectedItems.value = allSelectedItems;
+
+    if (selectedItems.value.length > 0) {
+      errorSelect.value = "";
+    }
   }
 
   @override
@@ -277,9 +287,9 @@ class _CompetitiveState extends State<CompetitiveEx> {
     }
 
     bool checkResultDriehoek() {
-      double oppervlakteCalc = ((widget.h ?? 1) * widget.z) / 2;
+      double oppervlakteCalc = ((widget.h ?? 1) * b) / 2;
 
-      if (basis.text != widget.z.toString()) {
+      if (basis.text != b.toString()) {
         setState(() {
           errorCode =
               "de ingevulde basis (b) komt niet overeen met de werkelijke basis (input 1)";
@@ -288,7 +298,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
       } else if (hoogte.text != widget.h.toString()) {
         setState(() {
           errorCode =
-              "de ingevulde hoogte (b) komt niet overeen met de werkelijke hoogte (input 2)";
+              "de ingevulde hoogte (h) komt niet overeen met de werkelijke hoogte (input 2)";
         });
         return false;
       } else if (double.parse(oppervlakteDriehoek.text) != oppervlakteCalc) {
@@ -357,6 +367,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
         breedte.text = "";
         lengte.text = "";
         oppervlakteRechthoek.text = "";
+        selectedItems.value = [];
+        controllerSelector.deselectAll();
       });
     }
 
@@ -392,16 +404,16 @@ class _CompetitiveState extends State<CompetitiveEx> {
       int idx2 = Consts.imagesCombined.indexOf(img);
       List<String> figures = Consts.figuresCombined[idx2];
 
-      selectedItems.sort();
+      selectedItems.value.sort();
       figures.sort();
 
-      if (!listEquals(selectedItems, figures)) {
-        if (selectedItems.length < figures.length) {
+      if (!listEquals(selectedItems.value, figures)) {
+        if (selectedItems.value.length < figures.length) {
           setState(() {
             errorCode = "Niet alle figuren zijn gevonden!";
           });
           return false;
-        } else if (selectedItems.length > figures.length) {
+        } else if (selectedItems.value.length > figures.length) {
           setState(() {
             errorCode = "Je hebt teveel figuren geselecteerd!";
           });
@@ -414,19 +426,19 @@ class _CompetitiveState extends State<CompetitiveEx> {
         }
       } else {
         bool result = true;
-        if (selectedItems.contains("vierkant")) {
+        if (selectedItems.value.contains("vierkant")) {
           bool resVierkant = checkResultVierkant();
           result = result && resVierkant;
         }
-        if (selectedItems.contains("rechthoek")) {
+        if (selectedItems.value.contains("rechthoek")) {
           bool resVierkant = checkResultRechthoek();
           result = result && resVierkant;
         }
-        if (selectedItems.contains("driehoek")) {
+        if (selectedItems.value.contains("driehoek")) {
           bool resVierkant = checkResultDriehoek();
           result = result && resVierkant;
         }
-        if (selectedItems.contains("cirkel")) {
+        if (selectedItems.value.contains("cirkel")) {
           bool resVierkant = checkResultCirkel();
           result = result && resVierkant;
         }
@@ -545,11 +557,12 @@ class _CompetitiveState extends State<CompetitiveEx> {
 
     final figuresSelect = MultiSelectContainer(
         items: [
-          MultiSelectCard(value: 'vierkant', label: 'Vierkant'),
+          MultiSelectCard(value: 'vierkant', label: labelVierkant),
           MultiSelectCard(value: 'rechthoek', label: 'Rechthoek'),
           MultiSelectCard(value: 'driehoek', label: 'Driehoek'),
           MultiSelectCard(value: 'cirkel', label: 'Cirkel'),
         ],
+        controller: controllerSelector,
         onChange: (allSelectedItems, selectedItem) {
           var row;
           if (selectedItem == "vierkant") {
@@ -562,7 +575,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
             row = rowCirkel;
           }
 
-          if (selectedItems.contains(selectedItem)) {
+          if (selectedItems.value.contains(selectedItem)) {
             print("deleting out row...");
             //TODO: soms niet correct verwijderd
             //ik denk dat after build het object veranderd dat daarvoor werd toegevoegd
@@ -574,9 +587,9 @@ class _CompetitiveState extends State<CompetitiveEx> {
 
           //rowCombined.no
 
-          selectedItems = allSelectedItems;
+          selectedItems.value = allSelectedItems;
 
-          if (selectedItems.length > 0) {
+          if (allSelectedItems.length > 0) {
             errorSelect.value = "";
           }
         });
@@ -603,15 +616,25 @@ class _CompetitiveState extends State<CompetitiveEx> {
                     : rowCombined.value;
 
     var rows = ValueListenableBuilder(
-        valueListenable: rowCombined,
+        valueListenable: selectedItems,
         builder: (x, val, y) {
           if (widget.figure == "combined") {
             return Column(
-              children: val
-                  .map((elm) => Row(
-                        children: elm,
-                      ))
-                  .toList(),
+              children: val.map((elm) {
+                var row;
+                if (elm == "vierkant") {
+                  row = rowVierkant;
+                } else if (elm == "rechthoek") {
+                  row = rowRechthoek;
+                } else if (elm == "driehoek") {
+                  row = rowDriehoek;
+                } else if (elm == "cirkel") {
+                  row = rowCirkel;
+                }
+                return Row(
+                  children: row,
+                );
+              }).toList(),
             );
           } else {
             return Column(
