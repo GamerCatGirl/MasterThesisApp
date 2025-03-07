@@ -54,6 +54,7 @@ class _FigureState extends State<FigureTheory> {
   List<String> imagesCirkel = Consts.imagesCirkel;
   List<String> imagesRechthoek = Consts.imagesRechthoek;
   List<String> imagesDriehoek = Consts.imagesDriehoek;
+  List<String> imagesCombined = Consts.imagesCombined;
 
   List<dynamic> harderExercises = [];
   List<dynamic> easierExercises = [];
@@ -117,6 +118,8 @@ class _FigureState extends State<FigureTheory> {
 
   void generateExercisesBot() {
     //get exercises already played
+    if (figure == "combined") {
+    } else {}
     String exerciseID = "oppervlakte-" + widget.skills.join("-");
     String tableID = "generated-" + exerciseID;
 
@@ -133,7 +136,6 @@ class _FigureState extends State<FigureTheory> {
       var eloInfo = elos[exerciseID];
 
       if (alreadyPlayed != null) {
-        print(alreadyPlayed.runtimeType);
         generatedPlayed = alreadyPlayed;
       } else {
         generatedPlayed = [];
@@ -245,6 +247,15 @@ class _FigureState extends State<FigureTheory> {
       imageChosen = imagesDriehoek[idx];
       pathImage = "assets/images/driehoek/";
       hoogte = Random().nextInt(Consts().maxMultiplyByHead + 1);
+    } else if (figure == "combined") {
+      maxIDX = imagesCombined.length;
+      idx = Random().nextInt(
+          maxIDX); //TODO: length of vect of combined exercises determines speed/elo
+      imageChosen = imagesCombined[idx];
+      pathImage = "assets/images/combined-figures/";
+
+      hoogte = Random().nextInt(Consts().maxMultiplyByHead + 1);
+      breedte = Random().nextInt(Consts().maxMultiplyByHead + 1);
     }
 
     image = pathImage + imageChosen;

@@ -1,11 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:mathapp/Utils/consts.dart';
 import 'package:mathapp/components/exercise_tile.dart';
 import 'package:mathapp/components/icon_button_switch.dart';
 import 'package:mathapp/components/row_exercise.dart';
 import 'package:mathapp/components/start_exercise.dart';
 import 'package:mathapp/components/title_tile.dart';
+import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
 
 class CompetitiveEx extends StatefulWidget {
   final VoidCallback callback;
@@ -52,9 +54,35 @@ class _CompetitiveState extends State<CompetitiveEx> {
   //driehoek
   final TextEditingController basis = TextEditingController();
   final TextEditingController hoogte = TextEditingController();
+  //combined: select the figures
+  int r = 0;
+  int l = 0;
+  int b = 0;
+  List<String> selectedItems = [];
+  ValueNotifier<String> errorSelect = ValueNotifier("");
+  ValueNotifier<List> rowCombined = ValueNotifier([]);
   //
   late String label1;
   late String label2;
+
+  @override
+  void initState() {
+    super.initState();
+    int max = Consts().maxMultiplyByHead;
+
+    if (widget.figure == "combined") {
+      r = Random().nextInt(max);
+      l = Random().nextInt(max);
+      b = Random().nextInt(max);
+    } else if (widget.figure == "cirkel") {
+      r = widget.z;
+    } else if (widget.figure == "driehoek") {
+      b = widget.z;
+    } else if (widget.figure == "rechthoek") {
+      l = widget.z;
+    }
+    //update db?
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -167,19 +195,29 @@ class _CompetitiveState extends State<CompetitiveEx> {
         widget.h.toString() +
         "m";
 
+    String varAssignCombined = "z = " + //vierkant
+        widget.z.toString() +
+        "m\nstraal = " + //cirkel
+        r.toString() +
+        "m\nlengte = " + //rechthoek
+        l.toString() +
+        "m\nbreedte = " +
+        widget.b.toString() +
+        "m\nbasis = " + //driehoek
+        b.toString() +
+        "m\nhoogte = " +
+        widget.h.toString() +
+        "m";
+
     String varAssign = (widget.figure == "vierkant")
         ? varAssignVierkant
         : (widget.figure == "cirkel")
             ? varAssignCirkel
             : (widget.figure == "rechthoek")
                 ? varAssignRechthoek
-                : varAssignDriehoek;
-
-    Widget storyText = Text(story);
-    Widget vars = Text(
-      varAssign,
-      style: TextStyle(fontWeight: FontWeight.bold),
-    );
+                : (widget.figure == "combined")
+                    ? varAssignCombined
+                    : varAssignVierkant;
 
     bool checkResultRechthoek() {
       int oppervlakteCalc = (widget.b ?? 1) * widget.z;
@@ -461,13 +499,82 @@ class _CompetitiveState extends State<CompetitiveEx> {
       Spacer()
     ];
 
+    final figuresSelect = MultiSelectContainer(
+        items: [
+          MultiSelectCard(value: 'vierkant', label: 'Vierkant'),
+          MultiSelectCard(value: 'rechthoek', label: 'Rechthoek'),
+          MultiSelectCard(value: 'driehoek', label: 'Driehoek'),
+          MultiSelectCard(value: 'cirkel', label: 'Cirkel'),
+        ],
+        onChange: (allSelectedItems, selectedItem) {
+          var row;
+          if (selectedItem == "vierkant") {
+            row = rowVierkant;
+          } else if (selectedItem == "rechthoek") {
+            row = rowRechthoek;
+          } else if (selectedItem == "driehoek") {
+            row = rowDriehoek;
+          } else if (selectedItem == "cirkel") {
+            row = rowCirkel;
+          }
+
+          if (selectedItems.contains(selectedItem)) {
+            rowCombined.value = List.from(rowCombined.value)..remove(row);
+          } else {
+            rowCombined.value = List.from(rowCombined.value)..add(row);
+          }
+
+          //rowCombined.no
+
+          selectedItems = allSelectedItems;
+
+          if (selectedItems.length > 0) {
+            errorSelect.value = "";
+          }
+          print("change in selectedItem $selectedItem");
+        });
+
+    Widget selector = Center(
+      child: figuresSelect,
+    );
+    Widget selectFigures = (widget.figure == "combined") ? selector : Text("");
+
+    Widget storyText = Text(story);
+    Widget vars = Text(
+      varAssign,
+      style: TextStyle(fontWeight: FontWeight.bold),
+    );
+
     var row = (widget.figure == "vierkant")
-        ? rowVierkant
+        ? [rowVierkant]
         : (widget.figure == "cirkel")
-            ? rowCirkel
+            ? [rowCirkel]
             : (widget.figure == "rechthoek")
-                ? rowRechthoek
-                : rowDriehoek;
+                ? [rowRechthoek]
+                : rowCombined.value;
+
+    var rows = ValueListenableBuilder(
+        valueListenable: rowCombined,
+        builder: (x, val, y) {
+          print("row Combined changed");
+          if (widget.figure == "combined") {
+            return Column(
+              children: val
+                  .map((elm) => Row(
+                        children: elm,
+                      ))
+                  .toList(),
+            );
+          } else {
+            return Column(
+              children: row
+                  .map((elm) => Row(
+                        children: elm,
+                      ))
+                  .toList(),
+            );
+          }
+        });
 
     // TODO: implement build
     return Column(children: [
@@ -486,7 +593,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
       ),
       storyText,
       vars,
-      Row(children: row),
+      selectFigures,
+      rows,
       Text(
         errorCode,
         style: TextStyle(color: Colors.red),

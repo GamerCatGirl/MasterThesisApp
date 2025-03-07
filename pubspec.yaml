@@ -81,6 +81,7 @@ flutter:
     - assets/images/cirkel/
     - assets/images/rechthoek/
     - assets/images/driehoek/
+    - assets/images/combined-figures/
     - assets/images/vierkant/easy/
     - assets/images/vierkant/medium/
     - assets/images/vierkant/hard/

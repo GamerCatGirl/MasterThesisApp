@@ -4,20 +4,26 @@ import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:mathapp/components/title.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 class Consts {
   int maxMultiplyByHead = 12;
   int maxMultiplyCalc = 999;
   int amountSkills = 4;
   int amountExercises = 10;
-  static List<String> skills = ["vierkant", "rechthoek", "cirkel", "driehoek"];
+
+  static String vierkant = "vierkant";
+  static String rechthoek = "rechthoek";
+  static String driehoek = "driehoek";
+  static String cirkel = "cirkel";
+
+  static List<String> skills = [vierkant, rechthoek, cirkel, driehoek];
 
   static final paths = {
     "vierkant": "assets/images/vierkant/",
     "rechthoek": "assets/images/rechthoek/",
     "driehoek": "assets/images/driehoek/",
-    "cirkel": "assets/images/cirkel/"
+    "cirkel": "assets/images/cirkel/",
+    "combined": "assets/images/combined-figures/"
   };
 
   static List<String> imagesVierkant = [
@@ -73,6 +79,40 @@ class Consts {
     "wall2.JPG",
     "wall3.JPG",
     "wall4.JPG"
+  ];
+
+  static List<String> imagesCombined = [
+    "bloem1.JPG",
+    "bloem2.JPG",
+    "bloem3.JPG",
+    "bloem4.JPG",
+    "nintendo1.JPG",
+    "nintendo2.JPG",
+    "shapes.JPG",
+    "shapes2.JPG",
+    "shapes3.JPG",
+    "shapes4.JPG",
+    "shapes5.JPG",
+    "shapes6.JPG",
+    "shapes7.JPG",
+    "shapes8.JPG"
+  ];
+
+  static List<List<String>> figuresCombined = [
+    [vierkant, cirkel, driehoek],
+    [vierkant, rechthoek, driehoek, cirkel],
+    [driehoek, cirkel, vierkant],
+    [driehoek],
+    [cirkel, rechthoek, vierkant, driehoek],
+    [cirkel, vierkant, driehoek, rechthoek],
+    [cirkel, driehoek, rechthoek, vierkant],
+    [driehoek, vierkant, cirkel],
+    [cirkel, driehoek, vierkant],
+    [vierkant, cirkel],
+    [vierkant, cirkel],
+    [driehoek, cirkel],
+    [driehoek, cirkel],
+    [driehoek, cirkel]
   ];
 
   static List<String> retrievePath() {

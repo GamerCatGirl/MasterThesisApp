@@ -55,6 +55,7 @@ class _LearningPathState extends State<LearningPath> {
   IconData iconDownload = Icons.download;
   IconData iconTestKnowledge = Icons.edit_note_outlined;
   IconData iconCheckKnowledge = Icons.fact_check_rounded;
+  IconData figures = Icons.auto_awesome_mosaic;
 
   void theoryCallback() {
     Navigator.of(context).push(
@@ -185,6 +186,10 @@ class _LearningPathState extends State<LearningPath> {
 
   void conversionCallback() {
     selectedPage.value = 3;
+  }
+
+  void combinedCallback() {
+    makeCompEx('combined');
   }
 
   void driehoekCallback() {
@@ -322,6 +327,18 @@ class _LearningPathState extends State<LearningPath> {
             userID: user,
           );
           pathWidgets.add(driehoek);
+          pathWidgets.add(pathTiles[currentTiles]);
+          current += 1;
+          currentTiles += 1;
+        } else if (element == "combined") {
+          var combined = Learningpathtile(
+              onTileClicked: combinedCallback,
+              position: position,
+              icon: figures,
+              completed: completed,
+              enabeled: enabeled,
+              userID: user);
+          pathWidgets.add(combined);
           pathWidgets.add(pathTiles[currentTiles]);
           current += 1;
           currentTiles += 1;
