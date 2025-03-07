@@ -81,6 +81,8 @@ class _FigureState extends State<FigureTheory> {
   //TODO: ex: db and id
   //TODO: ex: [10, 20, 40, 30, ....]
 
+  //TODO: rebuild after callback!
+
   List<dynamic>? generatedPlayed;
   int elo = Elo.initElo;
   double t = Elo.initT;

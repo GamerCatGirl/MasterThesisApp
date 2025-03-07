@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mathapp/Utils/consts.dart';
 import 'package:mathapp/components/exercise_tile.dart';
@@ -48,12 +49,15 @@ class _CompetitiveState extends State<CompetitiveEx> {
   final TextEditingController straal1 = TextEditingController();
   final TextEditingController straal2 = TextEditingController();
   final TextEditingController pi = TextEditingController();
+  final TextEditingController oppervlakteCirkel = TextEditingController();
   //rechthoek
   final TextEditingController lengte = TextEditingController();
   final TextEditingController breedte = TextEditingController();
+  final TextEditingController oppervlakteRechthoek = TextEditingController();
   //driehoek
   final TextEditingController basis = TextEditingController();
   final TextEditingController hoogte = TextEditingController();
+  final TextEditingController oppervlakteDriehoek = TextEditingController();
   //combined: select the figures
   int r = 0;
   int l = 0;
@@ -69,6 +73,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
   void initState() {
     super.initState();
     int max = Consts().maxMultiplyByHead;
+    print("FIGURE");
+    print(widget.figure);
 
     if (widget.figure == "combined") {
       r = Random().nextInt(max);
@@ -113,6 +119,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
         labelText: 'z',
       ),
     );
+
     var input3Field = TextFormField(
       controller: oppervlakte,
       decoration: const InputDecoration(
@@ -145,6 +152,13 @@ class _CompetitiveState extends State<CompetitiveEx> {
       ),
     );
 
+    var inputOppervlakteCirkel = TextFormField(
+      controller: oppervlakteCirkel,
+      decoration: const InputDecoration(
+        border: UnderlineInputBorder(),
+        labelText: 'Opp',
+      ),
+    );
     //rechthoek
     var input1FieldRechthoek = TextFormField(
       controller: lengte,
@@ -159,6 +173,14 @@ class _CompetitiveState extends State<CompetitiveEx> {
       decoration: const InputDecoration(
         border: UnderlineInputBorder(),
         labelText: 'b',
+      ),
+    );
+
+    var inputOppervlakteRechthoek = TextFormField(
+      controller: oppervlakteRechthoek,
+      decoration: const InputDecoration(
+        border: UnderlineInputBorder(),
+        labelText: 'Opp',
       ),
     );
 
@@ -179,12 +201,20 @@ class _CompetitiveState extends State<CompetitiveEx> {
       ),
     );
 
+    var inputOppervlakteDriehoek = TextFormField(
+      controller: oppervlakteDriehoek,
+      decoration: const InputDecoration(
+        border: UnderlineInputBorder(),
+        labelText: 'Opp',
+      ),
+    );
+
     String varAssignVierkant = "z = " + widget.z.toString() + "m";
 
-    String varAssignCirkel = "straal = " + widget.z.toString() + "m";
+    String varAssignCirkel = "straal = " + r.toString() + "m";
 
     String varAssignRechthoek = "lengte = " +
-        widget.z.toString() +
+        l.toString() +
         "m\n breedte = " +
         widget.b.toString() +
         "m";
@@ -215,14 +245,16 @@ class _CompetitiveState extends State<CompetitiveEx> {
             ? varAssignCirkel
             : (widget.figure == "rechthoek")
                 ? varAssignRechthoek
-                : (widget.figure == "combined")
-                    ? varAssignCombined
-                    : varAssignVierkant;
+                : (widget.figure == "driehoek")
+                    ? varAssignDriehoek
+                    : (widget.figure == "combined")
+                        ? varAssignCombined
+                        : varAssignVierkant;
 
     bool checkResultRechthoek() {
-      int oppervlakteCalc = (widget.b ?? 1) * widget.z;
+      int oppervlakteCalc = (widget.b ?? 1) * l;
 
-      if (lengte.text != widget.z.toString()) {
+      if (lengte.text != l.toString()) {
         setState(() {
           errorCode =
               "de ingevulde lengte (l) komt niet overeen met de werkelijke lengte (input 1)";
@@ -234,24 +266,13 @@ class _CompetitiveState extends State<CompetitiveEx> {
               "de ingevulde breedte (b) komt niet overeen met de werkelijke breedte (input 2)";
         });
         return false;
-      } else if (oppervlakte.text != oppervlakteCalc.toString()) {
+      } else if (oppervlakteRechthoek.text != oppervlakteCalc.toString()) {
         setState(() {
           errorCode =
               "de oppervlakte is niet juist berekend, maar de breedte en lengte kloppen, probeer opnieuw, je bent er bijna :)";
         });
         return false;
       }
-      setState(() {
-        errorCode = "";
-      });
-
-      //TODO: callback to make new ex
-      widget.callback();
-      setState(() {
-        breedte.text = "";
-        lengte.text = "";
-        oppervlakte.text = "";
-      });
       return true;
     }
 
@@ -270,35 +291,24 @@ class _CompetitiveState extends State<CompetitiveEx> {
               "de ingevulde hoogte (b) komt niet overeen met de werkelijke hoogte (input 2)";
         });
         return false;
-      } else if (double.parse(oppervlakte.text) != oppervlakteCalc) {
+      } else if (double.parse(oppervlakteDriehoek.text) != oppervlakteCalc) {
         setState(() {
           errorCode =
               "de oppervlakte is niet juist berekend, maar de basis en hoogte kloppen, probeer opnieuw, je bent er bijna :)";
         });
         return false;
       }
-      setState(() {
-        errorCode = "";
-      });
-
-      //TODO: callback to make new ex
-      widget.callback();
-      setState(() {
-        basis.text = "";
-        hoogte.text = "";
-        oppervlakte.text = "";
-      });
       return true;
     }
 
     bool checkResultCirkel() {
-      if (straal1.text != widget.z.toString()) {
+      if (straal1.text != r.toString()) {
         setState(() {
           errorCode =
               "de ingevulde straal (r) komt niet overeen met de werkelijke straal (input 1)";
         });
         return false;
-      } else if (straal2.text != widget.z.toString()) {
+      } else if (straal2.text != r.toString()) {
         setState(() {
           errorCode =
               "de ingevulde straal (r) komt niet overeen met de werkelijke straal (input 2)";
@@ -311,8 +321,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
         });
         return false;
       } else {
-        double oppervlakteVal = widget.z * widget.z * 3.14;
-        String oppervlakteNumber = oppervlakte.text.replaceAll(",", ".");
+        double oppervlakteVal = r * r * 3.14;
+        String oppervlakteNumber = oppervlakteCirkel.text.replaceAll(",", ".");
         double oppervlakteFilledin = double.parse(oppervlakteNumber);
 
         var rounded1 = (oppervlakteVal * 100).round();
@@ -327,18 +337,27 @@ class _CompetitiveState extends State<CompetitiveEx> {
         }
       }
 
-      setState(() {
-        errorCode = "";
-      });
-      //TODO: callback to make new ex
+      return true;
+    }
+
+    void resultsChecked() {
       widget.callback();
       setState(() {
+        zijde1.text = "";
+        zijde2.text = "";
+        oppervlakte.text = "";
+        basis.text = "";
+        hoogte.text = "";
+        oppervlakteDriehoek.text = "";
+        errorCode = "";
         straal1.text = "";
         straal2.text = "";
         pi.text = "";
-        oppervlakte.text = "";
+        oppervlakteCirkel.text = "";
+        breedte.text = "";
+        lengte.text = "";
+        oppervlakteRechthoek.text = "";
       });
-      return true;
     }
 
     bool checkResultVierkant() {
@@ -355,42 +374,85 @@ class _CompetitiveState extends State<CompetitiveEx> {
         });
         return false;
       } else if (oppervlakte.text != (widget.z * widget.z).toString()) {
-        print((widget.z * widget.z).toString());
         setState(() {
           errorCode =
               "de oppervlakte is niet juist berekend, maar zijde 1 en 2 kloppen, probeer opnieuw, je bent er bijna :)";
         });
         return false;
       }
-      setState(() {
-        errorCode = "";
-      });
-
-      //TODO: callback to make new ex
-      widget.callback();
-      setState(() {
-        zijde1.text = "";
-        zijde2.text = "";
-        oppervlakte.text = "";
-      });
       return true;
     }
 
     bool checkResultCombined() {
-      return false;
+      String image = widget.image;
+      List<String> imagePath = image.split("/");
+      int idx = imagePath.length - 1;
+      String img = imagePath[idx];
+
+      int idx2 = Consts.imagesCombined.indexOf(img);
+      List<String> figures = Consts.figuresCombined[idx2];
+
+      selectedItems.sort();
+      figures.sort();
+
+      if (!listEquals(selectedItems, figures)) {
+        if (selectedItems.length < figures.length) {
+          setState(() {
+            errorCode = "Niet alle figuren zijn gevonden!";
+          });
+          return false;
+        } else if (selectedItems.length > figures.length) {
+          setState(() {
+            errorCode = "Je hebt teveel figuren geselecteerd!";
+          });
+          return false;
+        } else {
+          setState(() {
+            errorCode = "Je hebt niet de juiste figuren geselecteerd!";
+          });
+          return false;
+        }
+      } else {
+        bool result = true;
+        if (selectedItems.contains("vierkant")) {
+          bool resVierkant = checkResultVierkant();
+          result = result && resVierkant;
+        }
+        if (selectedItems.contains("rechthoek")) {
+          bool resVierkant = checkResultRechthoek();
+          result = result && resVierkant;
+        }
+        if (selectedItems.contains("driehoek")) {
+          bool resVierkant = checkResultDriehoek();
+          result = result && resVierkant;
+        }
+        if (selectedItems.contains("cirkel")) {
+          bool resVierkant = checkResultCirkel();
+          result = result && resVierkant;
+        }
+        return result;
+      }
     }
 
     bool checkResult() {
+      bool done = false;
       if (widget.figure == "vierkant") {
-        return checkResultVierkant();
+        done = checkResultVierkant();
       } else if (widget.figure == "cirkel") {
-        return checkResultCirkel();
+        done = checkResultCirkel();
       } else if (widget.figure == "rechthoek") {
-        return checkResultRechthoek();
+        done = checkResultRechthoek();
       } else if (widget.figure == "driehoek") {
-        return checkResultDriehoek();
+        done = checkResultDriehoek();
       } else if (widget.figure == "combined") {
-        return checkResultCombined();
+        done = checkResultCombined();
+      } else {
+        return false;
+      }
+
+      if (done) {
+        resultsChecked();
+        return true;
       } else {
         return false;
       }
@@ -428,7 +490,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
       Text("  =  "),
       SizedBox(
         width: 50,
-        child: input3Field,
+        child: inputOppervlakteRechthoek,
       ),
       Text("m\u00B2"),
       Spacer(),
@@ -448,7 +510,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
       Text("  =  "),
       SizedBox(
         width: 50,
-        child: input3Field,
+        child: inputOppervlakteDriehoek,
       ),
       Text("m\u00B2"),
       Spacer(),
@@ -475,7 +537,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
       Text("  =  "),
       SizedBox(
         width: 50,
-        child: input3Field,
+        child: inputOppervlakteCirkel,
       ),
       Text("m\u00B2"),
       Spacer(),
@@ -501,6 +563,10 @@ class _CompetitiveState extends State<CompetitiveEx> {
           }
 
           if (selectedItems.contains(selectedItem)) {
+            print("deleting out row...");
+            //TODO: soms niet correct verwijderd
+            //ik denk dat after build het object veranderd dat daarvoor werd toegevoegd
+            //TODO: werk misschien met id's
             rowCombined.value = List.from(rowCombined.value)..remove(row);
           } else {
             rowCombined.value = List.from(rowCombined.value)..add(row);
@@ -513,7 +579,6 @@ class _CompetitiveState extends State<CompetitiveEx> {
           if (selectedItems.length > 0) {
             errorSelect.value = "";
           }
-          print("change in selectedItem $selectedItem");
         });
 
     Widget selector = Center(
@@ -533,12 +598,13 @@ class _CompetitiveState extends State<CompetitiveEx> {
             ? [rowCirkel]
             : (widget.figure == "rechthoek")
                 ? [rowRechthoek]
-                : rowCombined.value;
+                : (widget.figure == "driehoek")
+                    ? [rowDriehoek]
+                    : rowCombined.value;
 
     var rows = ValueListenableBuilder(
         valueListenable: rowCombined,
         builder: (x, val, y) {
-          print("row Combined changed");
           if (widget.figure == "combined") {
             return Column(
               children: val
@@ -550,7 +616,9 @@ class _CompetitiveState extends State<CompetitiveEx> {
           } else {
             return Column(
               children: row
-                  .map((elm) => Row(
+                  .map((elm) =>
+                      //TODO: doe hier misschien de checks om juiste object te verkrijgen ipv object comparison te doen
+                      Row(
                         children: elm,
                       ))
                   .toList(),
