@@ -376,6 +376,10 @@ class _CompetitiveState extends State<CompetitiveEx> {
       return true;
     }
 
+    bool checkResultCombined() {
+      return false;
+    }
+
     bool checkResult() {
       if (widget.figure == "vierkant") {
         return checkResultVierkant();
@@ -385,6 +389,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
         return checkResultRechthoek();
       } else if (widget.figure == "driehoek") {
         return checkResultDriehoek();
+      } else if (widget.figure == "combined") {
+        return checkResultCombined();
       } else {
         return false;
       }
@@ -407,12 +413,6 @@ class _CompetitiveState extends State<CompetitiveEx> {
       ),
       Text("m\u00B2"),
       Spacer(),
-      IconButton(
-          onPressed: () {
-            checkResult();
-          },
-          icon: Icon(Icons.done)),
-      Spacer()
     ];
 
     var rowRechthoek = [
@@ -432,12 +432,6 @@ class _CompetitiveState extends State<CompetitiveEx> {
       ),
       Text("m\u00B2"),
       Spacer(),
-      IconButton(
-          onPressed: () {
-            checkResult();
-          },
-          icon: Icon(Icons.done)),
-      Spacer()
     ];
 
     var rowDriehoek = [
@@ -458,12 +452,6 @@ class _CompetitiveState extends State<CompetitiveEx> {
       ),
       Text("m\u00B2"),
       Spacer(),
-      IconButton(
-          onPressed: () {
-            checkResult();
-          },
-          icon: Icon(Icons.done)),
-      Spacer()
     ];
 
     var rowCirkel = [
@@ -491,12 +479,6 @@ class _CompetitiveState extends State<CompetitiveEx> {
       ),
       Text("m\u00B2"),
       Spacer(),
-      IconButton(
-          onPressed: () {
-            checkResult();
-          },
-          icon: Icon(Icons.done)),
-      Spacer()
     ];
 
     final figuresSelect = MultiSelectContainer(
@@ -576,25 +558,30 @@ class _CompetitiveState extends State<CompetitiveEx> {
           }
         });
 
-    // TODO: implement build
     return Column(children: [
-      Row(
-        children: [
-          Spacer(),
-          Text("Exercise " +
-              widget.currentExercise.toString() +
-              " out of " +
-              widget.amountExercises.toString()),
-          Spacer(),
-        ],
+      Center(
+        child: Text("Exercise " +
+            widget.currentExercise.toString() +
+            " out of " +
+            widget.amountExercises.toString()),
       ),
-      Row(
-        children: [Spacer(), vierkant, Spacer()],
+      Center(
+        child: vierkant,
       ),
       storyText,
       vars,
       selectFigures,
       rows,
+      SizedBox(
+        height: 20,
+      ),
+      Center(
+        child: IconButton(
+            onPressed: () {
+              checkResult();
+            },
+            icon: Icon(Icons.done)),
+      ),
       Text(
         errorCode,
         style: TextStyle(color: Colors.red),

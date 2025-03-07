@@ -532,7 +532,7 @@ class _FigureState extends State<FigureTheory> {
     var exercisesOrLoading = ValueListenableBuilder(
         valueListenable: startExercise,
         builder: (context, value, child) {
-          var exercise = Column(
+          var exercise = ListView(
             children: [
               Text("Oppervlakte"),
               Spacer(),
