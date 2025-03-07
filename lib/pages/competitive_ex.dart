@@ -279,7 +279,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
       } else if (oppervlakteRechthoek.text != oppervlakteCalc.toString()) {
         setState(() {
           errorCode =
-              "de oppervlakte is niet juist berekend, maar de breedte en lengte kloppen, probeer opnieuw, je bent er bijna :)";
+              "de oppervlakte (rechthoek) is niet juist berekend, maar de breedte en lengte kloppen, probeer opnieuw, je bent er bijna :)";
         });
         return false;
       }
@@ -304,7 +304,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
       } else if (double.parse(oppervlakteDriehoek.text) != oppervlakteCalc) {
         setState(() {
           errorCode =
-              "de oppervlakte is niet juist berekend, maar de basis en hoogte kloppen, probeer opnieuw, je bent er bijna :)";
+              "de oppervlakte (driehoek) is niet juist berekend, maar de basis en hoogte kloppen, probeer opnieuw, je bent er bijna :)";
         });
         return false;
       }
@@ -341,7 +341,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
         if (rounded1 != rounded2) {
           setState(() {
             errorCode =
-                "de oppervlakte is niet juist berekend, maar de straal en constante kloppen, probeer opnieuw, je bent er bijna :)";
+                "de oppervlakte (cirkel) is niet juist berekend, maar de straal en constante kloppen, probeer opnieuw, je bent er bijna :)";
           });
           return false;
         }
@@ -388,7 +388,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
       } else if (oppervlakte.text != (widget.z * widget.z).toString()) {
         setState(() {
           errorCode =
-              "de oppervlakte is niet juist berekend, maar zijde 1 en 2 kloppen, probeer opnieuw, je bent er bijna :)";
+              "de oppervlakte (vierkant) is niet juist berekend, maar zijde 1 en 2 kloppen, probeer opnieuw, je bent er bijna :)";
         });
         return false;
       }
