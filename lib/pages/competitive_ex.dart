@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mathapp/Utils/consts.dart';
 import 'package:mathapp/components/exercise_tile.dart';
+import 'package:mathapp/components/formule_input.dart';
 import 'package:mathapp/components/icon_button_switch.dart';
 import 'package:mathapp/components/row_exercise.dart';
 import 'package:mathapp/components/start_exercise.dart';
@@ -71,12 +72,16 @@ class _CompetitiveState extends State<CompetitiveEx> {
   late String label1;
   late String label2;
 
+  // Formule needs to be given
+  late bool showFormule;
+  bool checkFormule = false;
+  final TextEditingController inputFormule = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     int max = Consts().maxMultiplyByHead;
-    print("FIGURE");
-    print(widget.figure);
+    showFormule = widget.showFormule;
 
     if (widget.figure == "combined") {
       r = Random().nextInt(max);
@@ -218,6 +223,13 @@ class _CompetitiveState extends State<CompetitiveEx> {
         labelText: 'Opp',
       ),
     );
+
+    var inputFormuleWidget = FormuleInputTile(
+        controller: inputFormule,
+        saveResult: (res) {},
+        showAnswers: checkFormule,
+        icon: Icons.abc,
+        name: widget.figure);
 
     String varAssignVierkant = "z = " + widget.z.toString() + "m";
 
