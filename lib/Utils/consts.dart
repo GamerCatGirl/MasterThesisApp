@@ -18,6 +18,19 @@ class Consts {
 
   static List<String> skills = [vierkant, rechthoek, cirkel, driehoek];
 
+  static List<String> bots = [
+    "Bot200",
+    "Bot500",
+    "Bot800",
+    "Bot1000",
+    "Bot1200",
+    "Bot1500",
+    "Bot1800",
+    "Bot2000",
+    "Bot2500",
+    "Bot3000"
+  ];
+
   static final paths = {
     "vierkant": "assets/images/vierkant/",
     "rechthoek": "assets/images/rechthoek/",
@@ -114,6 +127,59 @@ class Consts {
     [driehoek, cirkel],
     [driehoek, cirkel]
   ];
+
+  static List<String> getBots(int elo) {
+    int rounded = (elo / 100).round();
+    if (rounded < 8) {
+      return ["Bot200", "Bot500", "Bot800"];
+    }
+    if (rounded < 10) {
+      return ["Bot500", "Bot800", "Bot1000"];
+    }
+    if (rounded < 12) {
+      return ["Bot800", "Bot1000", "Bot1200"];
+    }
+    if (rounded < 15) {
+      return ["Bot1000", "Bot1200", "Bot1500"];
+    }
+    if (rounded < 17) {
+      return ["Bot1200", "Bot1500", "Bot1800"];
+    }
+    if (rounded < 19) {
+      return ["Bot1500", "Bot1800", "Bot2000"];
+    }
+    if (rounded < 23) {
+      return ["Bot1800", "Bot2000", "Bot2500"];
+    } else {
+      return ["Bot2000", "Bot2500", "Bot3000"];
+    }
+  }
+
+  static String getClosetsBot(int elo) {
+    List<int> elosBot = [
+      200,
+      500,
+      800,
+      1000,
+      1200,
+      1500,
+      1800,
+      2000,
+      2500,
+      3000
+    ];
+
+    List<int> differenceLst = elosBot.map((elm) {
+      return (elo - elm).abs();
+    }).toList();
+
+    int minValue = differenceLst.reduce((a, b) => a < b ? a : b);
+    int idx = differenceLst.indexOf(minValue);
+    int eloBot = elosBot[idx];
+
+    String bot = "Bot" + eloBot.toString();
+    return bot;
+  }
 
   static List<String> retrievePath() {
     String pathStr = retrieveFromCookies("path");

@@ -32,6 +32,27 @@ class Database {
     }
   }
 
+  static Future<Map<dynamic, dynamic>> getSpeedBots(List<String> bots) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference botsDB = db.collection("Bots");
+
+    var bot = bots[0];
+    print(bot);
+    var info = {};
+
+    for (var bot in bots) {
+      var doc = await botsDB.doc(bot).get();
+      if (doc.exists) {
+        var data = doc.data() as Map<String, dynamic>;
+        info[bot] = data;
+        //info.addEntries({bot: data})
+        //info.add({bot: data});
+      } //.then((doc) {
+    } //(elm) => bots.contains(elm)).get();
+
+    return info;
+  }
+
   static void updateElo(
       String user,
       List<double> vierkant,
@@ -69,6 +90,8 @@ class Database {
     if (doc.exists) {
       var data = doc.data() as Map<String, dynamic>;
       var elo = data["elo"] as Map<String, dynamic>;
+
+      print(elo);
 
       var elseReturn = {"elo": 0, "t": 0};
 

@@ -62,6 +62,8 @@ class _FigureState extends State<FigureTheory> {
 
   List<dynamic> generatedToPost = [];
 
+  List<int> progression = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
   String image = "assets/images/Vierkant_Easy.jpg";
   String figure = "vierkant";
   int eloExercise = 0;
@@ -101,6 +103,14 @@ class _FigureState extends State<FigureTheory> {
   int eloCoversion = Elo.initElo;
   double tConversion = Elo.initT;
 
+  List<String> bots = ["Bot1200", "Bot1500", "Bot1800"];
+  List<String> botsVierkant = ["Bot1200", "Bot1500", "Bot1800"];
+  List<String> botsRechthoek = ["Bot1200", "Bot1500", "Bot1800"];
+  List<String> botsCirkel = ["Bot1200", "Bot1500", "Bot1800"];
+  List<String> botsDriehoek = ["Bot1200", "Bot1500", "Bot1800"];
+
+  var botsInfo = {};
+
   bool foundLower = false;
   bool foundHigher = false;
   bool wonCurrent = false;
@@ -111,6 +121,8 @@ class _FigureState extends State<FigureTheory> {
   ValueNotifier<bool> startExercise = ValueNotifier(false);
 
   Map<String, dynamic> generatedPlayedGenaral = {};
+
+  int updateTime = 0;
 
   var elos = {};
 
@@ -130,6 +142,49 @@ class _FigureState extends State<FigureTheory> {
     speeds.sort();
   }
 
+  void getExistingExercisesBot() {
+    String exerciseID = "oppervlakte-" + widget.skills.join("-");
+    String tableID = "generated-" + exerciseID;
+    CollectionReference dbEx = db.collection(tableID);
+    //look if there are exercises for current user to play against
+    int upperbound = elo.toInt() + Elo.thresholdElo;
+    int lowerbound = elo.toInt() - Elo.thresholdElo;
+    dbEx
+        .where("elo", isGreaterThanOrEqualTo: elo)
+        .where("elo", isLessThan: upperbound)
+        .orderBy("elo", descending: false)
+        .get()
+        .then((doc) {
+      var docs = doc.docs as List<dynamic>;
+      harderExercises = docs;
+      foundHigher = true;
+
+      if (foundLower) {
+        generateSpeedInfo();
+        newExercise();
+        startTimer();
+        startExercise.value = true;
+      }
+    });
+
+    dbEx
+        .where("elo", isLessThan: elo)
+        .where("elo", isGreaterThan: lowerbound)
+        .orderBy("elo", descending: true)
+        .get()
+        .then((doc) {
+      var docs = doc.docs;
+      easierExercises = docs;
+      foundLower = true;
+      if (foundHigher) {
+        generateSpeedInfo();
+        newExercise();
+        startTimer();
+        startExercise.value = true;
+      }
+    });
+  }
+
   void generateExercisesBot() {
     //get exercises already played
     if (figure == "combined") {
@@ -137,25 +192,40 @@ class _FigureState extends State<FigureTheory> {
         eloVierkant =
             (elo[0]["elo"] != 0) ? elo[0]["elo"].toInt() : Elo.initElo;
         tVierkant = (elo[0]["t"] != 0) ? elo[0]["t"] : Elo.initT;
+        botsVierkant = Consts.getBots(eloVierkant);
         eloCirkel = (elo[1]["elo"] != 0) ? elo[1]["elo"].toInt() : Elo.initElo;
         tCirkel = (elo[1]["t"] != 0) ? elo[1]["t"] : Elo.initT;
+        botsCirkel = Consts.getBots(eloCirkel);
         eloRechthoek =
             (elo[2]["elo"] != 0) ? elo[2]["elo"].toInt() : Elo.initElo;
         tRechthoek = (elo[2]["t"] != 0) ? elo[2]["t"] : Elo.initT;
+        botsRechthoek = Consts.getBots(eloRechthoek);
         eloDriehoek =
             (elo[3]["elo"] != 0) ? elo[3]["elo"].toInt() : Elo.initElo;
         tDriehoek = (elo[3]["t"] != 0) ? elo[3]["t"] : Elo.initT;
+        botsDriehoek = Consts.getBots(eloDriehoek);
         eloCoversion =
             (elo[4]["elo"] != 0) ? elo[4]["elo"].toInt() : Elo.initElo;
         tConversion = (elo[4]["t"] != 0) ? elo[4]["t"] : Elo.initT;
+
+        bots = (botsVierkant + botsRechthoek + botsCirkel + botsDriehoek)
+            .toSet()
+            .toList();
+
+        Database.getSpeedBots(bots); //.then((info) {});
       });
-      //TODO: just generate new exercise randomly
-    } else {}
+    }
+
+    //get bots from DB
+
     String exerciseID = "oppervlakte-" + widget.skills.join("-");
     String tableID = "generated-" + exerciseID;
 
     CollectionReference dbComp = db.collection("exercises");
     CollectionReference dbEx = db.collection(tableID);
+
+    generatedPlayed = [];
+    generatedPlayedGenaral[exerciseID] = [];
 
     dbComp.doc(widget.user).get().then((doc) {
       var document = doc.data() as Map<String, dynamic>;
@@ -166,58 +236,26 @@ class _FigureState extends State<FigureTheory> {
       var alreadyPlayed = generatedPlayedGenaral[exerciseID];
       var eloInfo = elos[exerciseID];
 
-      if (alreadyPlayed != null) {
-        generatedPlayed = alreadyPlayed;
-      } else {
-        generatedPlayed = [];
-        generatedPlayedGenaral[exerciseID] = [];
-      }
-
       if (eloInfo != null) {
         elo = eloInfo["elo"];
         t = eloInfo["t"];
-      } else {
-        elo = Elo.initElo;
-        t = Elo.initT;
+        bots = Consts.getBots(elo);
       }
 
-      //look if there are exercises for current user to play against
-      int upperbound = elo.toInt() + Elo.thresholdElo;
-      int lowerbound = elo.toInt() - Elo.thresholdElo;
-      dbEx
-          .where("elo", isGreaterThanOrEqualTo: elo)
-          .where("elo", isLessThan: upperbound)
-          .orderBy("elo", descending: false)
-          .get()
-          .then((doc) {
-        var docs = doc.docs as List<dynamic>;
-        harderExercises = docs;
-        foundHigher = true;
-
-        if (foundLower) {
-          generateSpeedInfo();
-          newExercise();
-          startTimer();
-          startExercise.value = true;
-        }
+      Database.getSpeedBots(bots).then((data) {
+        botsInfo = data;
+        generateSpeedInfo();
+        newExercise();
+        startTimer();
+        startExercise.value = true;
+        // !!!! Not used
+        //getExistingExercisesBot();
       });
 
-      dbEx
-          .where("elo", isLessThan: elo)
-          .where("elo", isGreaterThan: lowerbound)
-          .orderBy("elo", descending: true)
-          .get()
-          .then((doc) {
-        var docs = doc.docs;
-        easierExercises = docs;
-        foundLower = true;
-        if (foundHigher) {
-          generateSpeedInfo();
-          newExercise();
-          startTimer();
-          startExercise.value = true;
-        }
-      });
+      if (alreadyPlayed != null) {
+        generatedPlayed = alreadyPlayed;
+      }
+      //
     });
   }
 
@@ -242,7 +280,6 @@ class _FigureState extends State<FigureTheory> {
     dbComp.doc("eloVec").get().then((doc) {
       var document = doc.data() as Map<String, dynamic>;
       progressionOpponent = document['progression'] as List<dynamic>;
-      print(progressionOpponent);
     });
 
     CollectionReference dbUser = db.collection("users");
@@ -259,6 +296,30 @@ class _FigureState extends State<FigureTheory> {
     int idx = Random().nextInt(maxIDX);
     String imageChosen = imagesVierkant[idx];
     String pathImage = "assets/images/vierkant/";
+
+    //TODO: get speed from bot
+    speed = Random().nextInt(16) + 2;
+
+    if (figure != "combined") {
+      String bot = Consts.getClosetsBot(elo);
+
+      var botInfo = botsInfo[bot];
+      var key = "Speed-" + figure[0].toUpperCase() + figure.substring(1);
+      speed = botInfo[key];
+      updateTime += speed;
+
+      //
+
+      int idx = progression.indexWhere((num) => num == 0);
+
+      var sub = 0;
+
+      if (stopWatch != null) {
+        sub = stopWatch!.tick;
+      }
+
+      progression[idx] = sub + speed;
+    }
 
     if (figure == "cirkel") {
       maxIDX = imagesCirkel.length;
@@ -292,8 +353,6 @@ class _FigureState extends State<FigureTheory> {
     image = pathImage + imageChosen;
     z = Random()
         .nextInt(Consts().maxMultiplyByHead + 1); //TODO: hou rekening met elo
-    speed = Random().nextInt(16) +
-        2; //tussen 5 en 20 seconden //TODO: hou rekening met elo
     generated = true;
     eloExercise = elo.floor();
     return;
@@ -391,12 +450,19 @@ class _FigureState extends State<FigureTheory> {
   void startTimer() {
     stopWatch = Timer.periodic(Duration(seconds: 1), (timer) {
       seconds.value++; // This now properly updates the UI
+
       if (hasOpponent &&
           progressionOpponent != null &&
           opponentProgress.value < widget.amountExercises) {
         var update = progressionOpponent?[opponentProgress.value];
 
+        var update2 = progression[opponentProgress.value];
+
         if (update != null && update == seconds.value) {
+          //opponentProgress.value++;
+        }
+
+        if (update2 == seconds.value) {
           opponentProgress.value++;
         }
 
