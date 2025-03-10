@@ -17,6 +17,7 @@ class LearningPath extends StatefulWidget {
 class _LearningPathState extends State<LearningPath> {
   //int selectedPage = 0;
   ValueNotifier<int> selectedPage = ValueNotifier(0);
+  int amountExercises = 10;
   bool theoryDoneOppervlakte = false;
   String user = "Preview";
   List<String> path = [""];
@@ -72,6 +73,9 @@ class _LearningPathState extends State<LearningPath> {
   }
 
   void makeCompEx(String fig) {
+    if (fig == "combined") {
+      amountExercises = 5;
+    }
     figure.value = fig;
     selectedPage.value = 2;
   }
@@ -377,7 +381,7 @@ class _LearningPathState extends State<LearningPath> {
         builder: (x, value, y) {
           return FigureTheory(
             synced: false,
-            amountExercises: 10,
+            amountExercises: amountExercises,
             user: user,
             skills: [value],
             opponent: "bot",

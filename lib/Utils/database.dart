@@ -32,6 +32,69 @@ class Database {
     }
   }
 
+  static void updateElo(
+      String user,
+      List<double> vierkant,
+      List<double> rechthoek,
+      List<double> driehoek,
+      List<double> cirkel,
+      List<double> conversion) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference usersDB = db.collection("exercises");
+
+    var docVierkant = {"elo": vierkant[0], "t": vierkant[1]};
+    var docRechthoek = {"elo": rechthoek[0], "t": rechthoek[1]};
+    var docCirkel = {"elo": cirkel[0], "t": cirkel[1]};
+    var docDriehoek = {"elo": driehoek[0], "t": driehoek[1]};
+    var docConversion = {"elo": conversion[0], "t": conversion[1]};
+
+    var doc = {
+      "oppervlakte-vierkant": docVierkant,
+      "oppervlakte-rechthoek": docRechthoek,
+      "oppervlakte-driehoek": docDriehoek,
+      "oppervlakte-cirkel": docCirkel,
+      "conversion": docConversion,
+    };
+
+    //usersDB.add()
+    usersDB.doc(user).set({"elo": doc}, SetOptions(merge: true));
+  }
+
+  static Future getEloAndT(String user) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference usersDB = db.collection("exercises");
+
+    var doc = await usersDB.doc(user).get();
+
+    if (doc.exists) {
+      var data = doc.data() as Map<String, dynamic>;
+      var elo = data["elo"] as Map<String, dynamic>;
+
+      var elseReturn = {"elo": 0, "t": 0};
+
+      var eloCirkel = (elo["oppervlakte-cirkel"] != null)
+          ? elo["oppervlakte-cirkel"]
+          : elseReturn;
+
+      var eloVierkant = (elo["oppervlakte-vierkant"] != null)
+          ? elo["oppervlakte-vierkant"]
+          : elseReturn;
+      var eloRechthoek = (elo["oppervlakte-rechthoek"] != null)
+          ? elo["oppervlakte-rechthoek"]
+          : elseReturn;
+      var eloDriehoek = (elo["oppervlakte-driehoek"] != null)
+          ? elo["oppervlakte-driehoek"]
+          : elseReturn;
+      var eloConversion = (elo["conversion-table"] != null)
+          ? elo["conversion-table"]
+          : elseReturn;
+
+      return [eloVierkant, eloCirkel, eloRechthoek, eloDriehoek, eloConversion];
+    } else {
+      throw ArgumentError("No existing Elo for user");
+    }
+  }
+
   static Future<List<double>> getElo(String user) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
     CollectionReference usersDB = db.collection("exercises");

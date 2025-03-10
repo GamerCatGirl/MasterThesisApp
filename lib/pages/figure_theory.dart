@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mathapp/Utils/consts.dart';
+import 'package:mathapp/Utils/database.dart';
 import 'package:mathapp/Utils/elo.dart';
 import 'package:mathapp/Utils/redirections.dart';
 import 'package:mathapp/components/exercise_tile.dart';
@@ -89,6 +90,17 @@ class _FigureState extends State<FigureTheory> {
   double? eloOpponent;
   double? tOpponent;
 
+  int eloVierkant = Elo.initElo;
+  double tVierkant = Elo.initT;
+  int eloCirkel = Elo.initElo;
+  double tCirkel = Elo.initT;
+  int eloDriehoek = Elo.initElo;
+  double tDriehoek = Elo.initT;
+  int eloRechthoek = Elo.initElo;
+  double tRechthoek = Elo.initT;
+  int eloCoversion = Elo.initElo;
+  double tConversion = Elo.initT;
+
   bool foundLower = false;
   bool foundHigher = false;
   bool wonCurrent = false;
@@ -121,6 +133,23 @@ class _FigureState extends State<FigureTheory> {
   void generateExercisesBot() {
     //get exercises already played
     if (figure == "combined") {
+      Database.getEloAndT(widget.user).then((var elo) {
+        eloVierkant =
+            (elo[0]["elo"] != 0) ? elo[0]["elo"].toInt() : Elo.initElo;
+        tVierkant = (elo[0]["t"] != 0) ? elo[0]["t"] : Elo.initT;
+        eloCirkel = (elo[1]["elo"] != 0) ? elo[1]["elo"].toInt() : Elo.initElo;
+        tCirkel = (elo[1]["t"] != 0) ? elo[1]["t"] : Elo.initT;
+        eloRechthoek =
+            (elo[2]["elo"] != 0) ? elo[2]["elo"].toInt() : Elo.initElo;
+        tRechthoek = (elo[2]["t"] != 0) ? elo[2]["t"] : Elo.initT;
+        eloDriehoek =
+            (elo[3]["elo"] != 0) ? elo[3]["elo"].toInt() : Elo.initElo;
+        tDriehoek = (elo[3]["t"] != 0) ? elo[3]["t"] : Elo.initT;
+        eloCoversion =
+            (elo[4]["elo"] != 0) ? elo[4]["elo"].toInt() : Elo.initElo;
+        tConversion = (elo[4]["t"] != 0) ? elo[4]["t"] : Elo.initT;
+      });
+      //TODO: just generate new exercise randomly
     } else {}
     String exerciseID = "oppervlakte-" + widget.skills.join("-");
     String tableID = "generated-" + exerciseID;
@@ -334,14 +363,23 @@ class _FigureState extends State<FigureTheory> {
 
     //post to DB
     //post matchIDs played
-
     CollectionReference dbEx = db.collection("exercises");
 
-    elos[skillString] = {"elo": elo, "t": t};
+    if (figure == "combined") {
+      var vierkant = [eloVierkant.toDouble(), tVierkant];
+      var rechthoek = [eloRechthoek.toDouble(), tRechthoek];
+      var cirkel = [eloCirkel.toDouble(), tCirkel];
+      var driehoek = [eloDriehoek.toDouble(), tDriehoek];
+      var conversion = [eloCoversion.toDouble(), tConversion];
+      Database.updateElo(
+          widget.user, vierkant, rechthoek, driehoek, cirkel, conversion);
+    } else {
+      elos[skillString] = {"elo": elo, "t": t};
 
-    dbEx.doc(widget.user).set(
-        {"elo": elos, "generatedPlayed": generatedPlayedGenaral},
-        SetOptions(merge: true));
+      dbEx.doc(widget.user).set(
+          {"elo": elos, "generatedPlayed": generatedPlayedGenaral},
+          SetOptions(merge: true));
+    }
 
     if (opponentProgress.value > ownProgress.value) {
       won.value = false;
@@ -382,24 +420,63 @@ class _FigureState extends State<FigureTheory> {
   }
 
   void updateElo() {
-    //TODO:
-    print(elo);
-    print(eloExercise);
-
-    //TODO: how long did my exercise take?
     int time = seconds.value;
     exerciseTook = time - timeLastEx;
     timeLastEx = time;
-
-    print(exerciseTook);
-    speeds.add(exerciseTook);
-    speeds.sort();
 
     if (exerciseTook > speed) {
       wonCurrent = false;
     } else {
       wonCurrent = true;
     }
+
+    if (figure == "combined") {
+      //TODO: update elo
+      List<String> imagePath = image.split("/");
+      int pathLength = imagePath.length;
+      int idx = pathLength - 1;
+      String imageNoPath = imagePath[idx];
+      int idxImage = Consts.imagesCombined.indexOf(imageNoPath);
+      List<String> figures = Consts.figuresCombined[idxImage];
+
+      for (String figure in figures) {
+        double speedInterval = wonCurrent ? 1 : speed / exerciseTook;
+        int eloFigure = eloVierkant;
+        double tFigure = tVierkant;
+
+        if (figure == "rechthoek") {
+          eloFigure = eloRechthoek;
+          tFigure = tRechthoek;
+        } else if (figure == "cirkel") {
+          eloFigure = eloCirkel;
+          tFigure = tCirkel;
+        } else if (figure == "driehoek") {
+          eloFigure = eloDriehoek;
+          tFigure = tDriehoek;
+        }
+
+        List<dynamic> newInfo = Elo.updateElo(
+            eloFigure, eloExercise, wonCurrent, tFigure, speedInterval);
+
+        if (figure == "vierkant") {
+          eloVierkant = newInfo[0];
+          tVierkant = newInfo[1];
+        } else if (figure == "rechthoek") {
+          eloRechthoek = newInfo[0];
+          tRechthoek = newInfo[1];
+        } else if (figure == "driehoek") {
+          eloDriehoek = newInfo[0];
+          tDriehoek = newInfo[1];
+        } else if (figure == "cirkel") {
+          eloCirkel = newInfo[0];
+          tCirkel = newInfo[1];
+        }
+      }
+    }
+    //TODO:
+
+    speeds.add(exerciseTook);
+    speeds.sort();
 
     int current = speeds.indexOf(exerciseTook) + 1;
     int totalSpeeds = speeds.length;
@@ -419,7 +496,7 @@ class _FigureState extends State<FigureTheory> {
     current = speeds.indexOf(speed) + 1;
     totalSpeeds = speeds.length;
 
-    List<dynamic> newInfoExercise =
+    List<dynamic> newInfoExercise = //update elo of exercise
         Elo.updateElo(1500, elo, !wonCurrent, tExercise, current / totalSpeeds);
     //speeds.reduce(combine)
     speeds.removeAt(current - 1);
@@ -596,7 +673,7 @@ class _FigureState extends State<FigureTheory> {
                         b: breedte,
                         h: hoogte,
                         currentExercise: value + 1,
-                        amountExercises: 10,
+                        amountExercises: widget.amountExercises,
                         image: image,
                         figure: figure,
                         callback: exerciseSolved);

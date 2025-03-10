@@ -241,11 +241,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
         widget.b.toString() +
         "m";
 
-    String varAssignDriehoek = "basis = " +
-        widget.z.toString() +
-        "m\n hoogte = " +
-        widget.h.toString() +
-        "m";
+    String varAssignDriehoek =
+        "basis = " + b.toString() + "m\n hoogte = " + widget.h.toString() + "m";
 
     String varAssignCombined = "z = " + //vierkant
         widget.z.toString() +
@@ -588,16 +585,10 @@ class _CompetitiveState extends State<CompetitiveEx> {
           }
 
           if (selectedItems.value.contains(selectedItem)) {
-            print("deleting out row...");
-            //TODO: soms niet correct verwijderd
-            //ik denk dat after build het object veranderd dat daarvoor werd toegevoegd
-            //TODO: werk misschien met id's
             rowCombined.value = List.from(rowCombined.value)..remove(row);
           } else {
             rowCombined.value = List.from(rowCombined.value)..add(row);
           }
-
-          //rowCombined.no
 
           selectedItems.value = allSelectedItems;
 
@@ -651,9 +642,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
           } else {
             return Column(
               children: row
-                  .map((elm) =>
-                      //TODO: doe hier misschien de checks om juiste object te verkrijgen ipv object comparison te doen
-                      Row(
+                  .map((elm) => Row(
                         children: elm,
                       ))
                   .toList(),
