@@ -11,6 +11,7 @@ import 'package:mathapp/components/exercise_tile.dart';
 import 'package:mathapp/components/icon_button_switch.dart';
 import 'package:mathapp/components/row_exercise.dart';
 import 'package:mathapp/components/start_exercise.dart';
+import 'package:mathapp/components/title.dart';
 import 'package:mathapp/components/title_tile.dart';
 import 'package:mathapp/pages/competitive_ex.dart';
 import 'package:mathapp/pages/meetkunde_ex.dart';
@@ -23,6 +24,7 @@ class FigureTheory extends StatefulWidget {
   final List<String> skills;
   final bool synced;
   final String exerciseName;
+  final done;
 
   const FigureTheory(
       {super.key,
@@ -31,6 +33,7 @@ class FigureTheory extends StatefulWidget {
       required this.exerciseName,
       required this.opponent,
       required this.synced,
+      required this.done,
       required this.skills});
 
   @override
@@ -291,7 +294,6 @@ class _FigureState extends State<FigureTheory> {
   }
 
   void generateExercise() {
-    //TODO: make more general now just vierkant
     int maxIDX = imagesVierkant.length;
     int idx = Random().nextInt(maxIDX);
     String imageChosen = imagesVierkant[idx];
@@ -309,16 +311,18 @@ class _FigureState extends State<FigureTheory> {
       updateTime += speed;
 
       //
+      //int idx; // = progression.indexWhere((num) => num == 0);
 
-      int idx = progression.indexWhere((num) => num == 0);
+      if (progression.contains(0)) {
+        int idx = progression.indexWhere((num) => num == 0);
+        var sub = 0;
 
-      var sub = 0;
+        if (stopWatch != null) {
+          sub = stopWatch!.tick;
+        }
 
-      if (stopWatch != null) {
-        sub = stopWatch!.tick;
+        progression[idx] = sub + speed;
       }
-
-      progression[idx] = sub + speed;
     }
 
     if (figure == "cirkel") {
@@ -375,9 +379,6 @@ class _FigureState extends State<FigureTheory> {
 
     var doc = toChooseFrom[randomExerciseIdx];
     var idExercise = doc.id;
-    //TODO:
-    //generatedPlayed?.map(
-    //    (e) => {print("check if player has not already had this ex before")});
 
     var data = doc.data();
 
@@ -440,10 +441,10 @@ class _FigureState extends State<FigureTheory> {
           SetOptions(merge: true));
     }
 
-    if (opponentProgress.value > ownProgress.value) {
-      won.value = false;
-    } else {
+    if (opponentProgress.value < ownProgress.value) {
       won.value = true;
+    } else {
+      won.value = false;
     }
   }
 
@@ -454,13 +455,7 @@ class _FigureState extends State<FigureTheory> {
       if (hasOpponent &&
           progressionOpponent != null &&
           opponentProgress.value < widget.amountExercises) {
-        var update = progressionOpponent?[opponentProgress.value];
-
         var update2 = progression[opponentProgress.value];
-
-        if (update != null && update == seconds.value) {
-          //opponentProgress.value++;
-        }
 
         if (update2 == seconds.value) {
           opponentProgress.value++;
@@ -553,6 +548,7 @@ class _FigureState extends State<FigureTheory> {
         Elo.updateElo(elo, eloExercise, wonCurrent, t, speedInterval);
 
     print(newInfo);
+    print(progression);
     elo = newInfo[0];
     t = newInfo[1];
 
@@ -608,6 +604,7 @@ class _FigureState extends State<FigureTheory> {
     newExercise();
 
     ownProgress.value++;
+
     if (hasOpponent) {
       if (opponentProgress.value > ownProgress.value) {
         colorBar.value = Colors.red;
@@ -617,6 +614,7 @@ class _FigureState extends State<FigureTheory> {
         colorBar.value = Colors.orange;
       }
     }
+
     if (ownProgress.value == widget.amountExercises) {
       announceWinner();
       stopWatch?.cancel();
@@ -626,19 +624,15 @@ class _FigureState extends State<FigureTheory> {
 
   @override
   Widget build(BuildContext context) {
-    var winner = SizedBox(width: 100, child: Text("Gewonnen"));
-    var loser = SizedBox(width: 100, child: Text("Verloren"));
+    var winner = Center(child: Header(title: "Gewonnen"));
+    var loser = Center(child: Header(title: "Verloren"));
 
     var viewAnswersButton =
         ElevatedButton(onPressed: () {}, child: Text("Bekijk mijn oefeningen"));
     var viewProgressButton = ElevatedButton(
         onPressed: () {}, child: Text("Bekijk mijn vooruitgang!"));
     var learningPathButton = ElevatedButton(
-        onPressed: () {
-          Functions()
-              .toLearningPatch(widget.user, path, pathCompletion, context);
-        },
-        child: Text("Ga terug naar leerpad!"));
+        onPressed: widget.done, child: Text("Ga terug naar leerpad!"));
 
     var loading = Column(
       children: [
@@ -657,17 +651,17 @@ class _FigureState extends State<FigureTheory> {
             valueListenable: won,
             builder: (context, value, child) => value ? winner : loser),
         SizedBox(
-          height: 200,
-          child: viewAnswersButton,
+          height: 20,
         ),
-        SizedBox(
-          height: 200,
-          child: viewProgressButton,
-        ),
-        SizedBox(
-          height: 200,
-          child: learningPathButton,
-        ),
+        viewAnswersButton,
+        //SizedBox(
+        //  height: 20,
+        //),
+        //viewProgressButton,
+        //SizedBox(
+        //  height: 20,
+        //),
+        learningPathButton,
         Spacer(),
       ],
     );

@@ -386,6 +386,10 @@ class _LearningPathState extends State<LearningPath> {
             skills: [value],
             opponent: "bot",
             exerciseName: value,
+            done: () {
+              //TODO: update learning path
+              selectedPage.value = 0;
+            },
           );
         });
 
