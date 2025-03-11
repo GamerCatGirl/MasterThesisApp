@@ -323,6 +323,55 @@ class _FigureState extends State<FigureTheory> {
 
         progression[idx] = sub + speed;
       }
+    } else {
+      maxIDX = imagesCombined.length;
+      idx = Random().nextInt(
+          maxIDX); //TODO: length of vect of combined exercises determines speed/elo
+      imageChosen = imagesCombined[idx];
+      pathImage = "assets/images/combined-figures/";
+
+      //TODO: get all figures
+      List<String> figures = Consts.figuresCombined[idx];
+      //+ x figures to select
+      int speedSum = figures.length;
+      print("figs: " + figures.toString());
+      // sum all the speeds
+      for (var fig in figures) {
+        int eloFig = 1500;
+
+        if (fig == "vierkant") {
+          eloFig = eloVierkant;
+        } else if (fig == "rechthoek") {
+          eloFig = eloRechthoek;
+        } else if (fig == "cirkel") {
+          eloFig = eloCirkel;
+        } else if (fig == "driehoek") {
+          eloFig = eloDriehoek;
+        }
+
+        String bot = Consts.getClosetsBot(eloFig);
+        var botInfo = botsInfo[bot];
+        var key = "Speed-" + fig[0].toUpperCase() + fig.substring(1);
+        print(key);
+        int speedFig = (botInfo[key] != null) ? botInfo[key] : 0;
+        print(speedFig);
+        speedSum += speedFig;
+      }
+
+      print(speedSum);
+      speed = speedSum;
+      updateTime += speed;
+
+      if (progression.contains(0)) {
+        int idx = progression.indexWhere((num) => num == 0);
+        var sub = 0;
+
+        if (stopWatch != null) {
+          sub = stopWatch!.tick;
+        }
+
+        progression[idx] = sub + speed;
+      }
     }
 
     if (figure == "cirkel") {
@@ -344,12 +393,6 @@ class _FigureState extends State<FigureTheory> {
       pathImage = "assets/images/driehoek/";
       hoogte = Random().nextInt(Consts().maxMultiplyByHead + 1);
     } else if (figure == "combined") {
-      maxIDX = imagesCombined.length;
-      idx = Random().nextInt(
-          maxIDX); //TODO: length of vect of combined exercises determines speed/elo
-      imageChosen = imagesCombined[idx];
-      pathImage = "assets/images/combined-figures/";
-
       hoogte = Random().nextInt(Consts().maxMultiplyByHead + 1);
       breedte = Random().nextInt(Consts().maxMultiplyByHead + 1);
     }
@@ -534,7 +577,6 @@ class _FigureState extends State<FigureTheory> {
         }
       }
     }
-    //TODO:
 
     speeds.add(exerciseTook);
     speeds.sort();
@@ -542,7 +584,11 @@ class _FigureState extends State<FigureTheory> {
     int current = speeds.indexOf(exerciseTook) + 1;
     int totalSpeeds = speeds.length;
 
-    speedInterval = current / totalSpeeds;
+    //speedInterval = current / totalSpeeds;
+
+    //TODO: % of speed
+    double speedInterval = wonCurrent ? 1 : speed / exerciseTook;
+    print(speedInterval);
 
     List<dynamic> newInfo =
         Elo.updateElo(elo, eloExercise, wonCurrent, t, speedInterval);
