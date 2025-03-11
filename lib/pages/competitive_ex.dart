@@ -307,7 +307,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
                         : varAssignVierkant;
 
     bool checkResultRechthoekFormule() {
-      String inputFormule = formuleRechthoek.text;
+      String inputFormule = formuleRechthoek.text.replaceAll("m", "");
 
       int oppervlakteCalc = (widget.b ?? 1) * l;
 
@@ -363,7 +363,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
     }
 
     bool checkResultVierkantFormule() {
-      String inputFormule = formuleVierkant.text;
+      String inputFormule = formuleVierkant.text.replaceAll("m", "");
 
       int oppervlakteCalc = widget.z * widget.z;
 
@@ -408,7 +408,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
     }
 
     bool checkResultDriehoekFormule() {
-      String inputFormule = formuleDriehoek.text;
+      String inputFormule = formuleDriehoek.text.replaceAll("m", "");
       double oppervlakteCalc = (widget.h * b) / 2;
 
       if (!inputFormule.contains(":")) {
@@ -446,7 +446,6 @@ class _CompetitiveState extends State<CompetitiveEx> {
       }
 
       String withoutBrakets = leftSide.substring(1, maxIdx);
-      print(withoutBrakets);
 
       if (!withoutBrakets.contains("x")) {
         setState(() {
@@ -496,8 +495,10 @@ class _CompetitiveState extends State<CompetitiveEx> {
 
     bool checkResultCirkelFormule() {
       double oppervlakteVal = r * r * 3.14;
-      String formule =
-          formuleCirkel.text.replaceAll(" ", "").replaceAll(",", ".");
+      String formule = formuleCirkel.text
+          .replaceAll(" ", "")
+          .replaceAll(",", ".")
+          .replaceAll("m", "");
 
       if (!formule.contains("x")) {
         setState(() {
@@ -680,6 +681,10 @@ class _CompetitiveState extends State<CompetitiveEx> {
         zijde1.text = "";
         zijde2.text = "";
         oppervlakte.text = "";
+        formuleVierkant.text = "";
+        formuleCirkel.text = "";
+        formuleDriehoek.text = "";
+        formuleRechthoek.text = "";
         basis.text = "";
         hoogte.text = "";
         oppervlakteDriehoek.text = "";
@@ -863,7 +868,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
       Text("  =  "),
       SizedBox(
         width: 50,
-        child: input3Field,
+        child: inputOppervlakteRechthoek,
       ),
       Text("m\u00B2"),
       Spacer()
@@ -898,7 +903,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
       Text("  =  "),
       SizedBox(
         width: 50,
-        child: input3Field,
+        child: inputOppervlakteDriehoek,
       ),
       Text("m\u00B2"),
       Spacer()
@@ -940,7 +945,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
       Text("  =  "),
       SizedBox(
         width: 50,
-        child: input3Field,
+        child: inputOppervlakteCirkel,
       ),
       Text("m\u00B2"),
       Spacer()
