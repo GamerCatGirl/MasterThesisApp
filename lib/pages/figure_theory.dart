@@ -79,7 +79,7 @@ class _FigureState extends State<FigureTheory> {
   int breedte = 0;
   int speed = 10;
   double speedInterval = 0.5;
-  bool showFormule = false;
+  dynamic showFormule = false;
   ValueNotifier<bool> completed = ValueNotifier(false);
   ValueNotifier<bool> won = ValueNotifier(false);
 
@@ -97,12 +97,16 @@ class _FigureState extends State<FigureTheory> {
 
   int eloVierkant = Elo.initElo;
   double tVierkant = Elo.initT;
+  bool showFormuleVierkant = true;
   int eloCirkel = Elo.initElo;
   double tCirkel = Elo.initT;
+  bool showFormuleCirkel = true;
   int eloDriehoek = Elo.initElo;
   double tDriehoek = Elo.initT;
+  bool showFormuleDriehoek = true;
   int eloRechthoek = Elo.initElo;
   double tRechthoek = Elo.initT;
+  bool showFormuleRechthoek = true;
   int eloCoversion = Elo.initElo;
   double tConversion = Elo.initT;
 
@@ -308,6 +312,7 @@ class _FigureState extends State<FigureTheory> {
       var botInfo = botsInfo[bot];
       var key = "Speed-" + figure[0].toUpperCase() + figure.substring(1);
       speed = botInfo[key];
+      showFormule = botInfo["showFormule"];
       updateTime += speed;
 
       //
@@ -330,11 +335,34 @@ class _FigureState extends State<FigureTheory> {
       imageChosen = imagesCombined[idx];
       pathImage = "assets/images/combined-figures/";
 
-      //TODO: get all figures
       List<String> figures = Consts.figuresCombined[idx];
       //+ x figures to select
       int speedSum = figures.length;
       print("figs: " + figures.toString());
+      showFormule = {};
+
+      //TODO: showFormule a vect of bools
+      for (var fig in Consts.figures) {
+        int eloFig = 1500;
+
+        if (fig == "vierkant") {
+          eloFig = eloVierkant;
+        } else if (fig == "rechthoek") {
+          eloFig = eloRechthoek;
+        } else if (fig == "cirkel") {
+          eloFig = eloCirkel;
+        } else if (fig == "driehoek") {
+          eloFig = eloDriehoek;
+        }
+
+        String bot = Consts.getClosetsBot(eloFig);
+        var botInfo = botsInfo[bot];
+        var key = "showFormule";
+        bool val = (botInfo[key] != null) ? botInfo[key] : true;
+
+        showFormule[fig] = val;
+      }
+
       // sum all the speeds
       for (var fig in figures) {
         int eloFig = 1500;
@@ -620,7 +648,7 @@ class _FigureState extends State<FigureTheory> {
         'image': image,
         'speed': speed,
         'z': z,
-        'showFormule': true,
+        'showFormule': showFormule,
       };
 
       //TODO: setup page for teacher to see engagement!

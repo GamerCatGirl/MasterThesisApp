@@ -18,7 +18,7 @@ class CompetitiveEx extends StatefulWidget {
   final int h;
   final int amountExercises;
   final int currentExercise;
-  final bool showFormule;
+  final dynamic showFormule;
   final String image;
   final String figure;
 
@@ -45,19 +45,23 @@ class _CompetitiveState extends State<CompetitiveEx> {
   //vierkant
   final TextEditingController zijde1 = TextEditingController();
   final TextEditingController zijde2 = TextEditingController();
+  final TextEditingController formuleVierkant = TextEditingController();
   final TextEditingController oppervlakte = TextEditingController();
   //cirkel
   final TextEditingController straal1 = TextEditingController();
   final TextEditingController straal2 = TextEditingController();
   final TextEditingController pi = TextEditingController();
+  final TextEditingController formuleCirkel = TextEditingController();
   final TextEditingController oppervlakteCirkel = TextEditingController();
   //rechthoek
   final TextEditingController lengte = TextEditingController();
   final TextEditingController breedte = TextEditingController();
+  final TextEditingController formuleRechthoek = TextEditingController();
   final TextEditingController oppervlakteRechthoek = TextEditingController();
   //driehoek
   final TextEditingController basis = TextEditingController();
   final TextEditingController hoogte = TextEditingController();
+  final TextEditingController formuleDriehoek = TextEditingController();
   final TextEditingController oppervlakteDriehoek = TextEditingController();
   //combined: select the figures
   int r = 0;
@@ -73,7 +77,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
   late String label2;
 
   // Formule needs to be given
-  late bool showFormule;
+  late dynamic showFormule;
   bool checkFormule = false;
   final TextEditingController inputFormule = TextEditingController();
 
@@ -143,6 +147,14 @@ class _CompetitiveState extends State<CompetitiveEx> {
       ),
     );
 
+    var inputVierkantFormule = TextFormField(
+      controller: formuleVierkant,
+      decoration: const InputDecoration(
+        border: UnderlineInputBorder(),
+        labelText: 'Berekening',
+      ),
+    );
+
     var input1FieldCirkel = TextFormField(
       controller: straal1,
       decoration: const InputDecoration(
@@ -164,6 +176,14 @@ class _CompetitiveState extends State<CompetitiveEx> {
       decoration: const InputDecoration(
         border: UnderlineInputBorder(),
         labelText: 'pi',
+      ),
+    );
+
+    var inputCirkelFormule = TextFormField(
+      controller: formuleCirkel,
+      decoration: const InputDecoration(
+        border: UnderlineInputBorder(),
+        labelText: 'Berekening',
       ),
     );
 
@@ -191,6 +211,14 @@ class _CompetitiveState extends State<CompetitiveEx> {
       ),
     );
 
+    var inputRechthoekFormule = TextFormField(
+      controller: formuleRechthoek,
+      decoration: const InputDecoration(
+        border: UnderlineInputBorder(),
+        labelText: 'Berekening',
+      ),
+    );
+
     var inputOppervlakteRechthoek = TextFormField(
       controller: oppervlakteRechthoek,
       decoration: const InputDecoration(
@@ -213,6 +241,14 @@ class _CompetitiveState extends State<CompetitiveEx> {
       decoration: const InputDecoration(
         border: UnderlineInputBorder(),
         labelText: 'h',
+      ),
+    );
+
+    var inputDriehoekFormule = TextFormField(
+      controller: formuleDriehoek,
+      decoration: const InputDecoration(
+        border: UnderlineInputBorder(),
+        labelText: 'Berekening',
       ),
     );
 
@@ -498,6 +534,21 @@ class _CompetitiveState extends State<CompetitiveEx> {
       Spacer(),
     ];
 
+    var rowVierkantFormule = [
+      Spacer(),
+      SizedBox(
+        width: 100,
+        child: inputVierkantFormule,
+      ),
+      Text("  =  "),
+      SizedBox(
+        width: 50,
+        child: input3Field,
+      ),
+      Text("m\u00B2"),
+      Spacer()
+    ];
+
     var rowRechthoek = [
       Spacer(),
       SizedBox(width: 40, child: input1FieldRechthoek),
@@ -515,6 +566,21 @@ class _CompetitiveState extends State<CompetitiveEx> {
       ),
       Text("m\u00B2"),
       Spacer(),
+    ];
+
+    var rowRechthoekFormule = [
+      Spacer(),
+      SizedBox(
+        width: 100,
+        child: inputRechthoekFormule,
+      ),
+      Text("  =  "),
+      SizedBox(
+        width: 50,
+        child: input3Field,
+      ),
+      Text("m\u00B2"),
+      Spacer()
     ];
 
     var rowDriehoek = [
@@ -535,6 +601,21 @@ class _CompetitiveState extends State<CompetitiveEx> {
       ),
       Text("m\u00B2"),
       Spacer(),
+    ];
+
+    var rowDriehoekFormule = [
+      Spacer(),
+      SizedBox(
+        width: 100,
+        child: inputDriehoekFormule,
+      ),
+      Text("  =  "),
+      SizedBox(
+        width: 50,
+        child: input3Field,
+      ),
+      Text("m\u00B2"),
+      Spacer()
     ];
 
     var rowCirkel = [
@@ -562,6 +643,21 @@ class _CompetitiveState extends State<CompetitiveEx> {
       ),
       Text("m\u00B2"),
       Spacer(),
+    ];
+
+    var rowCirkelFormule = [
+      Spacer(),
+      SizedBox(
+        width: 100,
+        child: inputCirkelFormule,
+      ),
+      Text("  =  "),
+      SizedBox(
+        width: 50,
+        child: input3Field,
+      ),
+      Text("m\u00B2"),
+      Spacer()
     ];
 
     final figuresSelect = MultiSelectContainer(
@@ -608,6 +704,13 @@ class _CompetitiveState extends State<CompetitiveEx> {
       style: TextStyle(fontWeight: FontWeight.bold),
     );
 
+    if (widget.figure != "combined" && !widget.showFormule) {
+      rowVierkant = rowVierkantFormule;
+      rowCirkel = rowCirkelFormule;
+      rowDriehoek = rowDriehoekFormule;
+      rowRechthoek = rowRechthoekFormule;
+    }
+
     var row = (widget.figure == "vierkant")
         ? [rowVierkant]
         : (widget.figure == "cirkel")
@@ -625,14 +728,32 @@ class _CompetitiveState extends State<CompetitiveEx> {
             return Column(
               children: val.map((elm) {
                 var row;
+                bool showFor = showFormule[elm];
+
                 if (elm == "vierkant") {
-                  row = rowVierkant;
+                  if (showFor) {
+                    row = rowVierkant;
+                  } else {
+                    row = rowVierkantFormule;
+                  }
                 } else if (elm == "rechthoek") {
-                  row = rowRechthoek;
+                  if (showFor) {
+                    row = rowRechthoek;
+                  } else {
+                    row = rowRechthoekFormule;
+                  }
                 } else if (elm == "driehoek") {
-                  row = rowDriehoek;
+                  if (showFor) {
+                    row = rowDriehoek;
+                  } else {
+                    row = rowDriehoekFormule;
+                  }
                 } else if (elm == "cirkel") {
-                  row = rowCirkel;
+                  if (showFor) {
+                    row = rowCirkel;
+                  } else {
+                    row = rowCirkelFormule;
+                  }
                 }
                 return Row(
                   children: row,

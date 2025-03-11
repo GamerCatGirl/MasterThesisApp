@@ -17,6 +17,7 @@ class Consts {
   static String cirkel = "cirkel";
 
   static List<String> skills = [vierkant, rechthoek, cirkel, driehoek];
+  static List<String> figures = [vierkant, rechthoek, cirkel, driehoek];
 
   static List<String> bots = [
     "Bot200",
