@@ -306,7 +306,30 @@ class _CompetitiveState extends State<CompetitiveEx> {
                         ? varAssignCombined
                         : varAssignVierkant;
 
+    bool checkResultRechthoekFormule() {
+      return true;
+    }
+
+    bool checkResultVierkantFormule() {
+      return true;
+    }
+
+    bool checkResultDriehoekFormule() {
+      return true;
+    }
+
+    bool checkResultCirkelFormule() {
+      return true;
+    }
+
     bool checkResultRechthoek() {
+      //check if formule needs to be checked
+      if (widget.figure != "combined" && !showFormule) {
+        return checkResultRechthoekFormule();
+      } else if (widget.figure == "combined" && !showFormule["rechthoek"]) {
+        return checkResultRechthoekFormule();
+      }
+
       int oppervlakteCalc = (widget.b ?? 1) * l;
 
       if (lengte.text != l.toString()) {
@@ -334,6 +357,12 @@ class _CompetitiveState extends State<CompetitiveEx> {
     bool checkResultDriehoek() {
       double oppervlakteCalc = ((widget.h ?? 1) * b) / 2;
 
+      if (widget.figure != "combined" && !showFormule) {
+        return checkResultDriehoekFormule();
+      } else if (widget.figure == "combined" && !showFormule["rechthoek"]) {
+        return checkResultDriehoekFormule();
+      }
+
       if (basis.text != b.toString()) {
         setState(() {
           errorCode =
@@ -357,6 +386,12 @@ class _CompetitiveState extends State<CompetitiveEx> {
     }
 
     bool checkResultCirkel() {
+      if (widget.figure != "combined" && !showFormule) {
+        return checkResultCirkelFormule();
+      } else if (widget.figure == "combined" && !showFormule["rechthoek"]) {
+        return checkResultCirkelFormule();
+      }
+
       if (straal1.text != r.toString()) {
         setState(() {
           errorCode =
@@ -418,6 +453,12 @@ class _CompetitiveState extends State<CompetitiveEx> {
     }
 
     bool checkResultVierkant() {
+      if (widget.figure != "combined" && !showFormule) {
+        return checkResultVierkantFormule();
+      } else if (widget.figure == "combined" && !showFormule["rechthoek"]) {
+        return checkResultVierkantFormule();
+      }
+
       if (zijde1.text != widget.z.toString()) {
         setState(() {
           errorCode =
