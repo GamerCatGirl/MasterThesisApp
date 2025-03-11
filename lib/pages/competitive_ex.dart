@@ -307,18 +307,260 @@ class _CompetitiveState extends State<CompetitiveEx> {
                         : varAssignVierkant;
 
     bool checkResultRechthoekFormule() {
+      String inputFormule = formuleRechthoek.text;
+
+      int oppervlakteCalc = (widget.b ?? 1) * l;
+
+      if (!inputFormule.contains("x")) {
+        setState(() {
+          errorCode =
+              "De formule moet een 'x' bevatten om de oppervlakte te berekenen!";
+        });
+        return false;
+      }
+
+      List<String> splitted = inputFormule.split("x");
+
+      if (splitted.length > 2) {
+        setState(() {
+          errorCode = "De formule hoort maar in 'x' te bevatten!";
+        });
+        return false;
+      }
+
+      String leftSide = splitted[0].replaceAll(" ", "");
+      String rightSide = splitted[1].replaceAll(" ", "");
+
+      String lengte = l.toString();
+      String breedte = widget.b.toString();
+
+      if (leftSide != lengte && rightSide != lengte) {
+        setState(() {
+          errorCode =
+              "De correcte lengte is niet terug te vinden in de formule!";
+        });
+        return false;
+      }
+
+      if (leftSide != breedte && rightSide != breedte) {
+        setState(() {
+          errorCode =
+              "De correcte breedte is niet terug te vinden in de formule!";
+        });
+        return false;
+      }
+
+      if (oppervlakteRechthoek.text.replaceAll(" ", "") !=
+          oppervlakteCalc.toString()) {
+        setState(() {
+          errorCode =
+              "de oppervlakte (rechthoek) is niet juist berekend, maar de breedte en lengte kloppen, probeer opnieuw, je bent er bijna :)";
+        });
+        return false;
+      }
+
       return true;
     }
 
     bool checkResultVierkantFormule() {
+      String inputFormule = formuleVierkant.text;
+
+      int oppervlakteCalc = widget.z * widget.z;
+
+      if (!inputFormule.contains("x")) {
+        setState(() {
+          errorCode =
+              "De formule moet een 'x' bevatten om de oppervlakte te berekenen!";
+        });
+        return false;
+      }
+
+      List<String> splitted = inputFormule.split("x");
+
+      if (splitted.length > 2) {
+        setState(() {
+          errorCode = "De formule hoort maar in 'x' te bevatten!";
+        });
+        return false;
+      }
+
+      String leftSide = splitted[0].replaceAll(" ", "");
+      String rightSide = splitted[1].replaceAll(" ", "");
+
+      String zijde = widget.z.toString();
+
+      if (leftSide != zijde || rightSide != zijde) {
+        setState(() {
+          errorCode = "De formule is niet correct";
+        });
+        return false;
+      }
+
+      if (oppervlakte.text.replaceAll(" ", "") != oppervlakteCalc.toString()) {
+        setState(() {
+          errorCode =
+              "de oppervlakte (vierkant) is niet juist berekend, maar de formule klopt, probeer opnieuw, je bent er bijna :)";
+        });
+        return false;
+      }
+
       return true;
     }
 
     bool checkResultDriehoekFormule() {
+      String inputFormule = formuleDriehoek.text;
+      double oppervlakteCalc = (widget.h * b) / 2;
+
+      if (!inputFormule.contains(":")) {
+        setState(() {
+          errorCode = "De formule moet een deling (:) bevatten (driehoek)";
+        });
+        return false;
+      }
+
+      List<String> splitted = inputFormule.split(":");
+      if (splitted.length > 2) {
+        setState(() {
+          errorCode = "De formule mag maar 1 deling (:) bevatten (driehoek)";
+        });
+        return false;
+      }
+
+      String leftSide = splitted[0].replaceAll(" ", "");
+      String rightSide = splitted[1].replaceAll(" ", "");
+
+      if (rightSide != "2") {
+        setState(() {
+          errorCode = "De noemer klopt niet (driehoek)";
+        });
+        return false;
+      }
+
+      int maxIdx = leftSide.length - 1;
+
+      if (leftSide[0] != "(" || leftSide[maxIdx] != ")") {
+        setState(() {
+          errorCode = "De haakjes kloppen niet (driehoek)";
+        });
+        return false;
+      }
+
+      String withoutBrakets = leftSide.substring(1, maxIdx);
+      print(withoutBrakets);
+
+      if (!withoutBrakets.contains("x")) {
+        setState(() {
+          errorCode = "De teller moet een maal (x) bevatten! (driehoek)";
+        });
+        return false;
+      }
+
+      List<String> breakUp = withoutBrakets.split("x");
+
+      if (breakUp.length > 2) {
+        setState(() {
+          errorCode = "De teller mag maar 1 maalteken (x) bevatten! (driehoek)";
+        });
+        return false;
+      }
+
+      String leftAtom = breakUp[0];
+      String rightAtom = breakUp[1];
+
+      if (leftAtom != widget.h.toString() && rightAtom != widget.h.toString()) {
+        setState(() {
+          errorCode = "De hoogte van de driehoek ontbreekt in de formule!";
+        });
+        return false;
+      }
+
+      if (leftAtom != b.toString() && rightAtom != b.toString()) {
+        setState(() {
+          errorCode = "De basis van de driehoek ontbreekt in de formule!";
+        });
+        return false;
+      }
+
+      if (double.parse(oppervlakteDriehoek.text
+              .replaceAll(" ", "")
+              .replaceAll(",", ".")) !=
+          oppervlakteCalc) {
+        setState(() {
+          errorCode = "De oppervlakte klopt niet, maar formule is wel correct!";
+        });
+        return false;
+      }
+
       return true;
     }
 
     bool checkResultCirkelFormule() {
+      double oppervlakteVal = r * r * 3.14;
+      String formule =
+          formuleCirkel.text.replaceAll(" ", "").replaceAll(",", ".");
+
+      if (!formule.contains("x")) {
+        setState(() {
+          errorCode =
+              "De formule moet een vermenigvuldiging (x) bevatten (cirkel)";
+        });
+        return false;
+      }
+
+      List<String> splitted = formule.split("x");
+
+      if (splitted.length != 3) {
+        setState(() {
+          errorCode = "De formule moet 2 maaltekens (x) bevatten (cirkel)";
+        });
+        return false;
+      }
+
+      // r x r x 3,14
+      var var1 = splitted[0];
+      var var2 = splitted[1];
+      var var3 = splitted[2];
+
+      if (var1 != "3.14" && var2 != "3.14" && var3 != "3.14") {
+        setState(() {
+          errorCode = "De formule moet 3.14 (pi) bevatten! (cirkel)";
+        });
+        return false;
+      }
+
+      splitted.remove("3.14");
+
+      var r1 = splitted[0];
+      var r2 = splitted[1];
+
+      if (r1 != r2) {
+        setState(() {
+          errorCode = "De formule moet 2 keer de straal (r) bevatten! (cirkel)";
+        });
+        return false;
+      }
+
+      if (r1 != r.toString()) {
+        setState(() {
+          errorCode = "De straal (r) in de formule klopt niet! (cirkel)";
+        });
+        return false;
+      }
+
+      String oppervlakteNumber = oppervlakteCirkel.text.replaceAll(",", ".");
+      double oppervlakteFilledin = double.parse(oppervlakteNumber);
+
+      var rounded1 = (oppervlakteVal * 100).round();
+      var rounded2 = (oppervlakteFilledin * 100).round();
+
+      if (rounded1 != rounded2) {
+        setState(() {
+          errorCode =
+              "de oppervlakte (cirkel) is niet juist berekend, de formule klopt wel, probeer opnieuw, je bent er bijna :)";
+        });
+        return false;
+      }
+
       return true;
     }
 
@@ -344,7 +586,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
               "de ingevulde breedte (b) komt niet overeen met de werkelijke breedte (input 2)";
         });
         return false;
-      } else if (oppervlakteRechthoek.text != oppervlakteCalc.toString()) {
+      } else if (oppervlakteRechthoek.text.replaceAll(" ", "") !=
+          oppervlakteCalc.toString()) {
         setState(() {
           errorCode =
               "de oppervlakte (rechthoek) is niet juist berekend, maar de breedte en lengte kloppen, probeer opnieuw, je bent er bijna :)";
@@ -375,7 +618,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
               "de ingevulde hoogte (h) komt niet overeen met de werkelijke hoogte (input 2)";
         });
         return false;
-      } else if (double.parse(oppervlakteDriehoek.text) != oppervlakteCalc) {
+      } else if (double.parse(oppervlakteDriehoek.text.replaceAll(" ", "")) !=
+          oppervlakteCalc) {
         setState(() {
           errorCode =
               "de oppervlakte (driehoek) is niet juist berekend, maar de basis en hoogte kloppen, probeer opnieuw, je bent er bijna :)";
@@ -471,7 +715,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
               "de ingevulde zijde (z) komt niet overeen met de werkelijke zijde (input 2)";
         });
         return false;
-      } else if (oppervlakte.text != (widget.z * widget.z).toString()) {
+      } else if (oppervlakte.text.replaceAll(" ", "") !=
+          (widget.z * widget.z).toString()) {
         setState(() {
           errorCode =
               "de oppervlakte (vierkant) is niet juist berekend, maar zijde 1 en 2 kloppen, probeer opnieuw, je bent er bijna :)";
