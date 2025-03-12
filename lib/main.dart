@@ -50,7 +50,6 @@ class MyApp extends StatelessWidget {
         '/login': (context) => Profile(),
         '/setting': (context) => Setting(),
         '/signIn': (context) => Signin(),
-        '/skills': (context) => Viewskills(),
       },
       onGenerateRoute: (settings) {
         final args = settings.arguments as Map<String, dynamic>;

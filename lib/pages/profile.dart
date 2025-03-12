@@ -189,7 +189,12 @@ class _ProfileState extends State<Profile> {
       ],
     ));
 
-    final List _pages = [signInLogIn, Viewskills()];
+    final List _pages = [
+      signInLogIn,
+      Viewskills(
+        logout: logout,
+      )
+    ];
 
     return Scaffold(
       body: Center(child: _pages[selectedPage]),

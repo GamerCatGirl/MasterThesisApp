@@ -5,7 +5,9 @@ import 'package:mathapp/components/title.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class Viewskills extends StatefulWidget {
-  const Viewskills({super.key});
+  final VoidCallback logout;
+
+  const Viewskills({super.key, required this.logout});
 
   @override
   State<Viewskills> createState() => _SkillState();
@@ -218,6 +220,11 @@ class _SkillState extends State<Viewskills> {
           }
         });
 
+    final logoutButton = ElevatedButton(
+      onPressed: widget.logout,
+      child: Text('Uitloggen'),
+    );
+
     final page = ListView(
       children: [
         space,
@@ -272,6 +279,15 @@ class _SkillState extends State<Viewskills> {
                 const BorderSide(color: Colors.transparent), //buitenste cirkel
           )),
         ),
+        SizedBox(
+          height: 40,
+        ),
+        Center(
+          child: SizedBox(
+            width: 200,
+            child: logoutButton,
+          ),
+        )
       ],
     );
     final List _pages = [page];

@@ -9,6 +9,7 @@ import 'package:mathapp/components/row_exercise.dart';
 import 'package:mathapp/components/start_exercise.dart';
 import 'package:mathapp/components/title.dart';
 import 'package:mathapp/components/title_tile.dart';
+import 'package:mathapp/pages/async_match.dart';
 import 'package:mathapp/pages/meetkunde_ex.dart';
 import 'dart:math';
 
@@ -179,9 +180,15 @@ class _HomeState extends State<Home> {
     }
 
     void playFriendAsync() {
+      print("play friend async");
       if (checkSelect()) {
         checkInput(opponent, errorFriend, "Gebruikersnaam vriend").then((val) {
-          if (val) {}
+          if (val) {
+            print("playing against friend");
+            setState(() {
+              selectedPage = 2;
+            });
+          }
         });
       }
     }
@@ -189,7 +196,6 @@ class _HomeState extends State<Home> {
     void playFriendSync() {
       checkInput(opponent, errorFriend, "Gebruikersnaam vriend").then((val) {
         if (val) {
-          //TODO: redirect
           String you = user;
           String opponentName = opponent.text;
 
@@ -354,7 +360,9 @@ class _HomeState extends State<Home> {
       ],
     );
 
-    List<Widget> pages = [home, Consts.logginFirst];
+    var asyncFriend = AsyncMatch(user: user, opponent: opponent.text);
+
+    List<Widget> pages = [home, Consts.logginFirst, asyncFriend];
 
     // TODO: implement build
     return Scaffold(
