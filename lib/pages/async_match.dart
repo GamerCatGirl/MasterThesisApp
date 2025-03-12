@@ -14,8 +14,13 @@ import 'package:mathapp/pages/setting.dart';
 class AsyncMatch extends StatefulWidget {
   final String opponent;
   final String user;
+  final List<String> selectedSkills;
 
-  AsyncMatch({super.key, required this.user, required this.opponent});
+  AsyncMatch(
+      {super.key,
+      required this.user,
+      required this.opponent,
+      required this.selectedSkills});
 
   @override
   State<AsyncMatch> createState() => _CompetitivePartyState();
@@ -25,7 +30,7 @@ class _CompetitivePartyState extends State<AsyncMatch> {
   late String partyID;
   late String partyName;
 
-  List<dynamic> exercises = [];
+  Map<String, dynamic> exercises = {};
   int amountPlayers = 2;
   int placing = 0;
 
@@ -34,6 +39,8 @@ class _CompetitivePartyState extends State<AsyncMatch> {
   int hoogte = 0;
   String image = "";
   String figure = "";
+
+  Map<String, dynamic> elos = {};
 
   //ValueNotifier<Map<String, double>> progression = ValueNotifier({});
   Map<String, ValueNotifier<double>> progression = {};
@@ -47,16 +54,52 @@ class _CompetitivePartyState extends State<AsyncMatch> {
   ValueNotifier<List<String>> activePlayers = ValueNotifier([]);
   FirebaseFirestore db = FirebaseFirestore.instance;
 
-  void exerciseSolved() {}
+  String error = "";
+
+  void newExercise() {}
+  void exerciseSolved() {
+    //TODO: save info
+
+    //TODO: check if winner
+
+    // generate new exercise
+    newExercise();
+  }
 
   @override
   void initState() {
     super.initState();
+
+    //get elo current player
+    Database.getEloAndT(widget.user).then((res) {
+      elos["vierkant"] = res[0];
+      elos["rechthoek"] = res[2];
+      elos["cirkel"] = res[1];
+      elos["driehoek"] = res[3];
+
+      //get matches of matching player
+      for (var skill in widget.selectedSkills) {
+        int elo = elos[skill]["elo"];
+        Database.getMatches(widget.opponent, skill, elo).then((res) {
+          if (res is String) {
+            error = res;
+          } else {
+            exercises[skill] = exercises;
+          }
+
+          if (widget.selectedSkills.indexOf(skill) ==
+              widget.selectedSkills.length - 1) {
+            newExercise();
+          }
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    var title = Center(child: Header(title: "???"));
+    var title =
+        Center(child: Header(title: widget.user + " vs. " + widget.opponent));
 
     var loadingPage = Column(
       children: [

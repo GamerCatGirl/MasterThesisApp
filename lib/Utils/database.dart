@@ -81,6 +81,26 @@ class Database {
     usersDB.doc(user).set({"elo": doc}, SetOptions(merge: true));
   }
 
+  static Future<dynamic> getMatches(String user, String skill, int elo) async {
+    String dbName = "generated-oppervlakte-" + skill;
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference exDB = db.collection(dbName);
+
+    var doc = await exDB.where("user", isEqualTo: user).orderBy("elo").get();
+
+    if (doc.size > 0) {
+      doc.docs.sort((a, b) {
+        var eloA = a["elo"];
+        var eloB = b["elo"];
+        return (eloA - elo).abs().compareTo((eloB - elo).abs());
+      });
+      return doc.docs.take(10).toList();
+    } else {
+      return "De gebruiker heeft nog geen oefeningen gemaakt voor oppervlakte van een " +
+          skill;
+    }
+  }
+
   static Future getEloAndT(String user) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
     CollectionReference usersDB = db.collection("exercises");
@@ -90,8 +110,6 @@ class Database {
     if (doc.exists) {
       var data = doc.data() as Map<String, dynamic>;
       var elo = data["elo"] as Map<String, dynamic>;
-
-      print(elo);
 
       var elseReturn = {"elo": 0, "t": 0};
 

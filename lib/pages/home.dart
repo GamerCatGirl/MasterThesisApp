@@ -30,6 +30,7 @@ class _HomeState extends State<Home> {
   int amountExercises = 0;
   int currentRandom = 0;
   late String user = "";
+  List<String> selectedItems = [];
 
   final TextEditingController opponent = TextEditingController();
   final TextEditingController partyMake = TextEditingController();
@@ -56,10 +57,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    //print(imageIdx.toString() + "\n");
-
-    List<String> selectedItems = [];
-
     final topicsSelect = MultiSelectContainer(
         items: [
           MultiSelectCard(value: 'vierkant', label: 'Vierkant'),
@@ -180,11 +177,9 @@ class _HomeState extends State<Home> {
     }
 
     void playFriendAsync() {
-      print("play friend async");
       if (checkSelect()) {
         checkInput(opponent, errorFriend, "Gebruikersnaam vriend").then((val) {
           if (val) {
-            print("playing against friend");
             setState(() {
               selectedPage = 2;
             });
@@ -360,9 +355,15 @@ class _HomeState extends State<Home> {
       ],
     );
 
-    var asyncFriend = AsyncMatch(user: user, opponent: opponent.text);
+    Widget asyncFriend() {
+      return AsyncMatch(
+        user: user,
+        opponent: opponent.text,
+        selectedSkills: selectedItems,
+      );
+    }
 
-    List<Widget> pages = [home, Consts.logginFirst, asyncFriend];
+    List<Widget> pages = [home, Consts.logginFirst, asyncFriend()];
 
     // TODO: implement build
     return Scaffold(
