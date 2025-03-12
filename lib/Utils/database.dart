@@ -37,7 +37,6 @@ class Database {
     CollectionReference botsDB = db.collection("Bots");
 
     var bot = bots[0];
-    print(bot);
     var info = {};
 
     for (var bot in bots) {

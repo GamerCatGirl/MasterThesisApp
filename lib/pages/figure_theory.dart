@@ -539,14 +539,6 @@ class _FigureState extends State<FigureTheory> {
         } else {
           colorBar.value = Colors.orange;
         }
-
-        /*
-        if (ownProgress.value == widget.amountExercises) {
-          announceWinner();
-          stopWatch?.cancel();
-          completed.value = true;
-        }
-        */
       }
     });
   }
