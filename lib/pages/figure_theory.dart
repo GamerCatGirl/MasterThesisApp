@@ -551,6 +551,34 @@ class _FigureState extends State<FigureTheory> {
     });
   }
 
+  void updateExerciseInfo() {
+    //TODO: also post timeStamp to see progression over time
+    var date = DateTime.now();
+
+    var newDoc = {
+      'elo': elo,
+      'tookTime': exerciseTook,
+      'timeStamp': date,
+      'image': image,
+      'speed': speed,
+      'user': widget.user,
+      'z': z,
+      'showFormule': showFormule,
+    };
+
+    if (widget.exerciseName == "cirkel") {
+      newDoc['straal'] = z;
+    } else if (widget.exerciseName == "rechthoek") {
+      newDoc['lengte'] = z;
+      newDoc['breedte'] = breedte;
+    } else if (widget.exerciseName == "driehoek") {
+      newDoc['basis'] = z;
+      newDoc['hoogte'] = hoogte;
+    } else if (widget.exerciseName == "combined") {}
+
+    generatedToPost.add(newDoc);
+  }
+
   void updateElo() {
     int time = seconds.value;
     exerciseTook = time - timeLastEx;
@@ -611,7 +639,6 @@ class _FigureState extends State<FigureTheory> {
 
     int current = speeds.indexOf(exerciseTook) + 1;
     int totalSpeeds = speeds.length;
-
     //speedInterval = current / totalSpeeds;
 
     //TODO: % of speed
@@ -641,29 +668,7 @@ class _FigureState extends State<FigureTheory> {
     //(chances exist that some writes get lost when the whole class is playing at the same time)
 
     if (generated) {
-      //TODO: also post timeStamp to see progression over time
-      var newDoc = {
-        'elo': newInfoExercise[0],
-        't': newInfoExercise[1],
-        'image': image,
-        'speed': speed,
-        'z': z,
-        'showFormule': showFormule,
-      };
-
-      //TODO: setup page for teacher to see engagement!
-
-      if (widget.exerciseName == "cirkel") {
-        newDoc['straal'] = z;
-      } else if (widget.exerciseName == "rechthoek") {
-        newDoc['lengte'] = z;
-        newDoc['breedte'] = breedte;
-      } else if (widget.exerciseName == "driehoek") {
-        newDoc['basis'] = z;
-        newDoc['hoogte'] = hoogte;
-      }
-
-      generatedToPost.add(newDoc);
+      updateExerciseInfo();
     } else {
       //TODO: update directly
     }
