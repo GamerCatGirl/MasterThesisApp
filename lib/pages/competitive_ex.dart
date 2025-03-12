@@ -697,7 +697,9 @@ class _CompetitiveState extends State<CompetitiveEx> {
         lengte.text = "";
         oppervlakteRechthoek.text = "";
         selectedItems.value = [];
-        controllerSelector.deselectAll();
+        if (widget.figure == "combined") {
+          controllerSelector.deselectAll();
+        }
       });
     }
 
