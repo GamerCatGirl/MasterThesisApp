@@ -29,7 +29,7 @@ class _HomeState extends State<Home> {
   int currentExercise = 1;
   int amountExercises = 0;
   int currentRandom = 0;
-  late String user;
+  late String user = "";
 
   final TextEditingController opponent = TextEditingController();
   final TextEditingController partyMake = TextEditingController();
