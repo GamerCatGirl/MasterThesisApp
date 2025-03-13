@@ -134,6 +134,12 @@ class _CompetitivePartyState extends State<AsyncMatch> {
     newExercise();
   }
 
+  void postAllToDB() {
+    loading.value = true;
+  }
+
+  void announceWinner() {}
+
   void exerciseSolved() {
     yourProgress.value += 1;
     progression[widget.user]?.value += 0.1;
@@ -162,9 +168,9 @@ class _CompetitivePartyState extends State<AsyncMatch> {
     exercisesMade[figure]?.add(doc);
 
     if (yourProgress.value == 10) {
-      //TODO: announce winner
-
-      //TODO: post info to database
+      // save all info
+      postAllToDB();
+      announceWinner();
     } else {
       // generate new exercise
       newExercise();
@@ -200,22 +206,26 @@ class _CompetitivePartyState extends State<AsyncMatch> {
         bots[skill] = bot;
         botsNames.add(bot);
 
-        Database.getMatches(widget.opponent, skill, elo).then((res) {
-          if (res is String) {
-            error = res;
-          } else {
-            exercises[skill] = res;
-          }
-
-          if (widget.selectedSkills.indexOf(skill) ==
-              widget.selectedSkills.length - 1) {
-            if (botsInit) {
-              setupAllExercises();
+        if (widget.opponent == "Bot") {
+          throw ArgumentError("TODO: implement play against Bot");
+        } else {
+          Database.getMatches(widget.opponent, skill, elo).then((res) {
+            if (res is String) {
+              error = res;
             } else {
-              matchInit = true;
+              exercises[skill] = res;
             }
-          }
-        });
+
+            if (widget.selectedSkills.indexOf(skill) ==
+                widget.selectedSkills.length - 1) {
+              if (botsInit) {
+                setupAllExercises();
+              } else {
+                matchInit = true;
+              }
+            }
+          });
+        }
       }
 
       Database.getSpeedBots(botsNames).then((res) {

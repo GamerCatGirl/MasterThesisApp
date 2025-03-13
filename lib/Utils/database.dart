@@ -32,6 +32,70 @@ class Database {
     }
   }
 
+  static Future<String> findUserToPlayAgainst(
+      List<String> skills, String user) async {
+    List<String> skillsAdapted = skills;
+
+    if (skills.contains("recommended")) {
+      skillsAdapted.remove("recommended");
+    }
+    if (skills.contains("all")) {
+      skillsAdapted = ["vierkant", "rechthoek", "cirkel", "driehoek"];
+    }
+
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference usersDB = db.collection("users");
+
+    var usersQ = await usersDB.get();
+    var users = usersQ.docs;
+
+    var amountUsers = users.length;
+
+    var found = false;
+
+    while (!found) {
+      if (amountUsers == 0) {
+        found = true;
+        return "Bot";
+      }
+
+      int idx = Random().nextInt(amountUsers);
+      var toCheckConstraint = users[idx];
+
+      if (toCheckConstraint.id == user) {
+        users.remove(toCheckConstraint);
+        amountUsers -= 1;
+      } else {
+        var data = toCheckConstraint.data() as Map<String, dynamic>;
+        var vec = data["pathCompletion"];
+        var goodMatch = true;
+        for (var skill in skills) {
+          if (skill == "vierkant") {
+            goodMatch = vec[1] as bool && goodMatch;
+          } else if (skill == "rechthoek") {
+            goodMatch = vec[4] as bool && goodMatch;
+          } else if (skill == "driehoek") {
+            goodMatch = vec[2] as bool && goodMatch;
+          } else if (skill == "cirkel") {
+            goodMatch = vec[3] as bool && goodMatch;
+          }
+        }
+
+        if (goodMatch) {
+          found = true;
+          return toCheckConstraint.id;
+        } else {
+          users.remove(toCheckConstraint);
+          amountUsers -= 1;
+        }
+      }
+
+      found = true;
+    }
+
+    return "Bot";
+  }
+
   static Future<Map<dynamic, dynamic>> getSpeedBots(List<String> bots) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
     CollectionReference botsDB = db.collection("Bots");

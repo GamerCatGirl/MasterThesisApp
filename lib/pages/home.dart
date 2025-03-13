@@ -32,6 +32,8 @@ class _HomeState extends State<Home> {
   late String user = "";
   List<String> selectedItems = [];
 
+  String playAgainst = "";
+
   final TextEditingController opponent = TextEditingController();
   final TextEditingController partyMake = TextEditingController();
   final TextEditingController partyJoin = TextEditingController();
@@ -168,12 +170,25 @@ class _HomeState extends State<Home> {
       }
     }
 
-    void playRandom() {
-      if (checkSelect()) {}
+    void playBot() {
+      if (checkSelect()) {
+        setState(() {
+          playAgainst = "Bot";
+          selectedPage = 2;
+        });
+      }
     }
 
-    void playBot() {
-      if (checkSelect()) {}
+    void playRandom() {
+      if (checkSelect()) {
+        Database.findUserToPlayAgainst(selectedItems, user)
+            .then((String opponent) {
+          setState(() {
+            playAgainst = opponent;
+            selectedPage = 2;
+          });
+        });
+      }
     }
 
     void playFriendAsync() {
@@ -181,6 +196,7 @@ class _HomeState extends State<Home> {
         checkInput(opponent, errorFriend, "Gebruikersnaam vriend").then((val) {
           if (val) {
             setState(() {
+              playAgainst = opponent.text;
               selectedPage = 2;
             });
           }
@@ -358,7 +374,7 @@ class _HomeState extends State<Home> {
     Widget asyncFriend() {
       return AsyncMatch(
         user: user,
-        opponent: opponent.text,
+        opponent: playAgainst,
         selectedSkills: selectedItems,
       );
     }
