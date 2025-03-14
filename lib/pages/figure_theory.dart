@@ -270,6 +270,10 @@ class _FigureState extends State<FigureTheory> {
   void initState() {
     super.initState();
 
+    if (widget.exerciseName == "competition") {
+      throw ArgumentError("Implement Comp bot");
+    }
+
     figure = widget.exerciseName;
 
     if (widget.opponent == "") {

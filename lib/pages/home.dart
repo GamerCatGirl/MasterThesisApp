@@ -4,12 +4,14 @@ import 'package:mathapp/Utils/consts.dart';
 import 'package:mathapp/Utils/database.dart';
 import 'package:mathapp/Utils/redirections.dart';
 import 'package:mathapp/components/exercise_tile.dart';
+import 'package:mathapp/components/figure_input.dart';
 import 'package:mathapp/components/icon_button_switch.dart';
 import 'package:mathapp/components/row_exercise.dart';
 import 'package:mathapp/components/start_exercise.dart';
 import 'package:mathapp/components/title.dart';
 import 'package:mathapp/components/title_tile.dart';
 import 'package:mathapp/pages/async_match.dart';
+import 'package:mathapp/pages/figure_theory.dart';
 import 'package:mathapp/pages/meetkunde_ex.dart';
 import 'dart:math';
 

@@ -32,7 +32,7 @@ class Consts {
     "Bot3000"
   ];
 
-  static final paths = {
+  static Map<String, String> paths = {
     "vierkant": "assets/images/vierkant/",
     "rechthoek": "assets/images/rechthoek/",
     "driehoek": "assets/images/driehoek/",
@@ -111,6 +111,13 @@ class Consts {
     "shapes7.JPG",
     "shapes8.JPG"
   ];
+
+  static Map<String, List> images = {
+    "vierkant": imagesVierkant,
+    "rechthoek": imagesRechthoek,
+    "cirkel": imagesCirkel,
+    "driehoek": imagesDriehoek
+  };
 
   static List<List<String>> figuresCombined = [
     [vierkant, cirkel, driehoek],

@@ -97,6 +97,7 @@ class _CompetitivePartyState extends State<AsyncMatch> {
 
   void newExercise() {
     int idx = yourProgress.value;
+    print(exercisesToMake);
 
     Map<String, dynamic> ex = exercisesToMake[idx];
 
@@ -116,7 +117,10 @@ class _CompetitivePartyState extends State<AsyncMatch> {
 
   void setupAllExercises() {
     for (var i = 0; i < 10; i++) {
-      int randomIDX = Random().nextInt(widget.selectedSkills.length);
+      int randomIDX = 0;
+      if (widget.selectedSkills.length > 2) {
+        randomIDX = Random().nextInt(widget.selectedSkills.length);
+      }
       String skill = widget.selectedSkills[randomIDX];
 
       var exs = exercises[skill];
@@ -130,7 +134,6 @@ class _CompetitivePartyState extends State<AsyncMatch> {
 
       exercisesToMake.add(ex);
     }
-
     newExercise();
   }
 
@@ -177,6 +180,86 @@ class _CompetitivePartyState extends State<AsyncMatch> {
     }
   }
 
+  void generateExercise(String skill, Map<String, dynamic> botsInfo) {
+    Map<String, dynamic> doc = {};
+
+    Map<String, dynamic> botInfo = botsInfo[skill];
+    String botName = "Bot" + botInfo["elo"].toString();
+
+    doc["user"] = botName;
+    doc["figure"] = skill;
+    doc["showFormule"] = botInfo["showFormule"];
+    doc["elo"] = botInfo["elo"];
+
+    String speed =
+        "Speed-" + skill.substring(0, 1).toUpperCase() + skill.substring(1);
+    print(speed);
+    doc["tookTime"] = botInfo[speed];
+
+    //image
+    String? path = Consts.paths[skill];
+    List? images = Consts.images[skill];
+
+    if (path != null && images != null) {
+      int maxIDX = images.length;
+      int idx = Random().nextInt(maxIDX);
+      String image = path + images[idx];
+      doc["image"] = image;
+    }
+
+    if (skill == "vierkant") {
+      doc["z"] = Random().nextInt(11) + 1;
+    } else if (skill == "rechthoek") {
+      throw ArgumentError("TODO: implement Rechthoek");
+    } else if (skill == "driehoek") {
+      throw ArgumentError("TODO: implement Driehoek");
+    } else if (skill == "cirkel") {
+      throw ArgumentError("TODO: implement Cirkel");
+    }
+    exercisesToMake.add(doc);
+  }
+
+  void generateExercisesBot(Map<String, dynamic> botsInfo, double sumWeigth) {
+    var amounts = {};
+    int total = 0;
+
+    int minEx = 10;
+    String minExSkill = "";
+    for (var skill in widget.selectedSkills) {
+      var botInfo = botsInfo[skill];
+      double weigth = 1 / botInfo["elo"];
+      double amount = (weigth / sumWeigth) * 10;
+      total += amount.round();
+
+      amounts[skill] = amount.round();
+
+      if (amount.round() < minEx) {
+        minEx = amount.round();
+        minExSkill = skill;
+      }
+    }
+    if (total != 10) {
+      var toAdd = 10 - total;
+      var oldAm = amounts[minExSkill];
+      var newAm = oldAm + toAdd;
+      amounts[minExSkill] = newAm;
+    }
+
+    List<String> skillsToChoseFrom = widget.selectedSkills.toList();
+    for (var i = 0; i < 10; i++) {
+      int maxIDX = skillsToChoseFrom.length;
+      int idx = Random().nextInt(maxIDX);
+      String skill = skillsToChoseFrom[idx];
+
+      amounts[skill] -= 1;
+      if (amounts[skill] == 0) {
+        skillsToChoseFrom.remove(skill);
+      }
+
+      generateExercise(skill, botsInfo);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -206,9 +289,7 @@ class _CompetitivePartyState extends State<AsyncMatch> {
         bots[skill] = bot;
         botsNames.add(bot);
 
-        if (widget.opponent == "Bot") {
-          throw ArgumentError("TODO: implement play against Bot");
-        } else {
+        if (widget.opponent != "Bot") {
           Database.getMatches(widget.opponent, skill, elo).then((res) {
             if (res is String) {
               error = res;
@@ -225,21 +306,48 @@ class _CompetitivePartyState extends State<AsyncMatch> {
               }
             }
           });
+        } else {
+          print("in Else :)");
+          if (widget.selectedSkills.indexOf(skill) ==
+              widget.selectedSkills.length - 1) {
+            if (botsInit) {
+              newExercise();
+            } else {
+              matchInit = true;
+            }
+          }
         }
       }
 
       Database.getSpeedBots(botsNames).then((res) {
+        Map<String, dynamic> botsInfo = {};
+        double sumWeigth = 0;
         for (var skill in widget.selectedSkills) {
           var botName = bots[skill];
 
           var botInfo = res[botName];
           bool showFormuleFigure = botInfo["showFormule"];
 
+          String eloBotStr = botName.substring(3);
+          int elo = int.parse(eloBotStr);
+          botInfo["elo"] = elo;
+          sumWeigth += 1 / elo;
+
+          botsInfo[skill] = botInfo;
+
           bots[skill] = showFormuleFigure;
         }
 
+        if (widget.opponent == "Bot") {
+          generateExercisesBot(botsInfo, sumWeigth);
+        }
+
         if (matchInit == true) {
-          setupAllExercises();
+          if (widget.opponent != "Bot") {
+            setupAllExercises();
+          } else {
+            newExercise();
+          }
         } else {
           botsInit = true;
         }
