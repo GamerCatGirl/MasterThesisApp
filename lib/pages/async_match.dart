@@ -97,7 +97,6 @@ class _CompetitivePartyState extends State<AsyncMatch> {
 
   void newExercise() {
     int idx = yourProgress.value;
-    print(exercisesToMake);
 
     Map<String, dynamic> ex = exercisesToMake[idx];
 
@@ -324,7 +323,6 @@ class _CompetitivePartyState extends State<AsyncMatch> {
             }
           });
         } else {
-          print("in Else :)");
           if (widget.selectedSkills.indexOf(skill) ==
               widget.selectedSkills.length - 1) {
             if (botsInit) {
