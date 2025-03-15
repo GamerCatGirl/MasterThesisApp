@@ -107,6 +107,9 @@ class _CompetitivePartyState extends State<AsyncMatch> {
 
     if (figure == "vierkant") {
       z = ex["z"];
+    } else if (figure == "rechthoek") {
+      z = ex["lengte"];
+      breedte = ex["breedte"];
     }
 
     if (loading.value) {
@@ -166,6 +169,9 @@ class _CompetitivePartyState extends State<AsyncMatch> {
 
     if (figure == "vierkant") {
       doc["z"] = z;
+    } else if (figure == "rechthoek") {
+      doc["lengte"] = z;
+      doc["breedte"] = breedte;
     }
 
     exercisesMade[figure]?.add(doc);
@@ -193,7 +199,6 @@ class _CompetitivePartyState extends State<AsyncMatch> {
 
     String speed =
         "Speed-" + skill.substring(0, 1).toUpperCase() + skill.substring(1);
-    print(speed);
     doc["tookTime"] = botInfo[speed];
 
     //image
@@ -210,7 +215,8 @@ class _CompetitivePartyState extends State<AsyncMatch> {
     if (skill == "vierkant") {
       doc["z"] = Random().nextInt(11) + 1;
     } else if (skill == "rechthoek") {
-      throw ArgumentError("TODO: implement Rechthoek");
+      doc["breedte"] = Random().nextInt(11) + 1;
+      doc["lengte"] = Random().nextInt(11) + 1;
     } else if (skill == "driehoek") {
       throw ArgumentError("TODO: implement Driehoek");
     } else if (skill == "cirkel") {

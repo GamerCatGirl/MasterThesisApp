@@ -312,7 +312,7 @@ class _FigureState extends State<FigureTheory> {
 
     if (figure != "combined") {
       String bot = Consts.getClosetsBot(elo);
-
+      print("generating a exercise...");
       var botInfo = botsInfo[bot];
       var key = "Speed-" + figure[0].toUpperCase() + figure.substring(1);
       speed = botInfo[key];
@@ -384,13 +384,10 @@ class _FigureState extends State<FigureTheory> {
         String bot = Consts.getClosetsBot(eloFig);
         var botInfo = botsInfo[bot];
         var key = "Speed-" + fig[0].toUpperCase() + fig.substring(1);
-        print(key);
         int speedFig = (botInfo[key] != null) ? botInfo[key] : 0;
-        print(speedFig);
         speedSum += speedFig;
       }
 
-      print(speedSum);
       speed = speedSum;
       updateTime += speed;
 

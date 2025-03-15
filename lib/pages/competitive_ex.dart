@@ -603,7 +603,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
 
       if (widget.figure != "combined" && !showFormule) {
         return checkResultDriehoekFormule();
-      } else if (widget.figure == "combined" && !showFormule["rechthoek"]) {
+      } else if (widget.figure == "combined" && !showFormule["driehoek"]) {
         return checkResultDriehoekFormule();
       }
 
@@ -633,7 +633,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
     bool checkResultCirkel() {
       if (widget.figure != "combined" && !showFormule) {
         return checkResultCirkelFormule();
-      } else if (widget.figure == "combined" && !showFormule["rechthoek"]) {
+      } else if (widget.figure == "combined" && !showFormule["cirkel"]) {
         return checkResultCirkelFormule();
       }
 
@@ -706,7 +706,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
     bool checkResultVierkant() {
       if (widget.figure != "combined" && !showFormule) {
         return checkResultVierkantFormule();
-      } else if (widget.figure == "combined" && !showFormule["rechthoek"]) {
+      } else if (widget.figure == "combined" && !showFormule["vierkant"]) {
         return checkResultVierkantFormule();
       }
 
