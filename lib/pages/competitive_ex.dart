@@ -704,6 +704,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
     }
 
     bool checkResultVierkant() {
+      print("showFormule: " + showFormule.toString());
+      print("figure: " + widget.figure);
       if (widget.figure != "combined" && !showFormule) {
         return checkResultVierkantFormule();
       } else if (widget.figure == "combined" && !showFormule["vierkant"]) {
@@ -997,11 +999,15 @@ class _CompetitiveState extends State<CompetitiveEx> {
       style: TextStyle(fontWeight: FontWeight.bold),
     );
 
-    if (widget.figure != "combined" && !widget.showFormule) {
+    print("showFormule: " + showFormule.toString());
+    if (widget.figure != "combined" && !showFormule) {
       rowVierkant = rowVierkantFormule;
       rowCirkel = rowCirkelFormule;
       rowDriehoek = rowDriehoekFormule;
       rowRechthoek = rowRechthoekFormule;
+      print("assiged row without formule");
+      print(rowRechthoek);
+      print(rowRechthoekFormule);
     }
 
     var row = (widget.figure == "vierkant")
@@ -1013,6 +1019,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
                 : (widget.figure == "driehoek")
                     ? [rowDriehoek]
                     : rowCombined.value;
+
+    print(row);
 
     var rows = ValueListenableBuilder(
         valueListenable: selectedItems,
