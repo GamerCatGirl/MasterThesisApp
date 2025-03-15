@@ -113,6 +113,8 @@ class _CompetitivePartyState extends State<AsyncMatch> {
     } else if (figure == "driehoek") {
       z = ex["basis"];
       hoogte = ex["hoogte"];
+    } else if (figure == "cirkel") {
+      z = ex["straal"];
     }
 
     if (loading.value) {
@@ -178,6 +180,8 @@ class _CompetitivePartyState extends State<AsyncMatch> {
     } else if (figure == "driehoek") {
       doc["basis"] = z;
       doc["hoogte"] = hoogte;
+    } else if (figure == "cirkel") {
+      doc["straal"] = z;
     }
 
     exercisesMade[figure]?.add(doc);
@@ -227,7 +231,7 @@ class _CompetitivePartyState extends State<AsyncMatch> {
       doc["basis"] = Random().nextInt(11) + 1;
       doc["hoogte"] = Random().nextInt(11) + 1;
     } else if (skill == "cirkel") {
-      throw ArgumentError("TODO: implement Cirkel");
+      doc["straal"] = Random().nextInt(11) + 1;
     }
     exercisesToMake.add(doc);
   }

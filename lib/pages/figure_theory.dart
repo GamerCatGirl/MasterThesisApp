@@ -311,10 +311,8 @@ class _FigureState extends State<FigureTheory> {
 
     if (figure != "combined") {
       String bot = Consts.getClosetsBot(elo);
-      print("generating a exercise...");
       var botInfo = botsInfo[bot];
       var key = "Speed-" + figure[0].toUpperCase() + figure.substring(1);
-      print(botInfo);
       if (botInfo != null) {
         //TODO: sometimes null????
         speed = botInfo[key];
