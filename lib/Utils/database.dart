@@ -116,6 +116,60 @@ class Database {
     return info;
   }
 
+  static Future<Map<String, dynamic>> postExercises(
+      Map<String, dynamic> exercises) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    WriteBatch batch = firestore.batch();
+
+    Map<String, dynamic> ids = {};
+
+    for (var elm in exercises.entries) {
+      var exs = elm.value;
+      var dbID = "generated-oppervlakte-" + elm.key;
+      CollectionReference db = firestore.collection(dbID);
+      var idsSkill = [];
+      for (var ex in exs as List) {
+        // set doc with ref in batch
+        DocumentReference newDocRef = db.doc();
+        batch.set(newDocRef, ex);
+
+        // keep ids
+        String ref = newDocRef.id;
+        idsSkill.add(ref);
+      }
+      ids[elm.key] = idsSkill;
+    }
+
+    await batch.commit();
+    return ids;
+  }
+
+  static void updateEloAndEx(
+      String user, Map<String, dynamic> elo, Map<String, dynamic> exercise) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference usersDB = db.collection("exercises");
+
+    Map<String, dynamic> eloToPost = {};
+    Map<String, dynamic> exerciseIdToPost = {};
+    for (var elm in elo.entries) {
+      String newKey = "oppervlakte-" + elm.key;
+      eloToPost[newKey] = elm.value;
+    }
+
+    for (var elm in exercise.entries) {
+      String newKey = "oppervlakte-" + elm.key;
+      List value = elm.value as List;
+
+      if (value.length > 0) {
+        exerciseIdToPost[newKey] = FieldValue.arrayUnion(value);
+      }
+    }
+
+    usersDB.doc(user).set(
+        {"elo": eloToPost, "generatedPlayed": exerciseIdToPost},
+        SetOptions(merge: true));
+  }
+
   static void updateElo(
       String user,
       List<double> vierkant,

@@ -149,7 +149,12 @@ class _CompetitivePartyState extends State<AsyncMatch> {
 
   void postAllToDB() {
     //loading.value = true;
-    throw ArgumentError("TODO: post info to DB");
+    Database.postExercises(exercisesMade).then((Map<String, dynamic> exs) {
+      Database.updateEloAndEx(widget.user, elos, exs);
+    });
+    //Database.u
+
+    //throw ArgumentError("TODO: post info to DB");
   }
 
   void announceWinner() {
