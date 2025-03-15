@@ -307,7 +307,6 @@ class _FigureState extends State<FigureTheory> {
     String imageChosen = imagesVierkant[idx];
     String pathImage = "assets/images/vierkant/";
 
-    //TODO: get speed from bot
     speed = Random().nextInt(16) + 2;
 
     if (figure != "combined") {
@@ -315,12 +314,13 @@ class _FigureState extends State<FigureTheory> {
       print("generating a exercise...");
       var botInfo = botsInfo[bot];
       var key = "Speed-" + figure[0].toUpperCase() + figure.substring(1);
-      speed = botInfo[key];
-      showFormule = botInfo["showFormule"];
+      print(botInfo);
+      if (botInfo != null) {
+        //TODO: sometimes null????
+        speed = botInfo[key];
+        showFormule = botInfo["showFormule"];
+      }
       updateTime += speed;
-
-      //
-      //int idx; // = progression.indexWhere((num) => num == 0);
 
       if (progression.contains(0)) {
         int idx = progression.indexWhere((num) => num == 0);
