@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:mathapp/Utils/consts.dart';
 import 'package:mathapp/Utils/database.dart';
+import 'package:mathapp/Utils/elo.dart';
 import 'package:mathapp/Utils/redirections.dart';
 import 'package:mathapp/components/title.dart';
 import 'package:mathapp/pages/competitive_ex.dart';
@@ -55,6 +56,7 @@ class _CompetitivePartyState extends State<AsyncMatch> {
   int updateOpponent = 0;
   int updateYou = 0;
 
+  Map<String, dynamic> botsShowFormule = {};
   Map<String, dynamic> bots = {};
 
   Map<String, dynamic> elos = {};
@@ -65,6 +67,7 @@ class _CompetitivePartyState extends State<AsyncMatch> {
   double stepSize = 0;
 
   bool done = false;
+  String winner = "";
   bool showFormule = false;
   bool botsInit = false;
   bool matchInit = false;
@@ -137,7 +140,7 @@ class _CompetitivePartyState extends State<AsyncMatch> {
 
       ex["figure"] = skill;
 
-      ex["showFormule"] = bots[skill];
+      ex["showFormule"] = botsShowFormule[skill];
 
       exercisesToMake.add(ex);
     }
@@ -145,10 +148,45 @@ class _CompetitivePartyState extends State<AsyncMatch> {
   }
 
   void postAllToDB() {
-    loading.value = true;
+    //loading.value = true;
+    throw ArgumentError("TODO: post info to DB");
   }
 
-  void announceWinner() {}
+  void announceWinner() {
+    String opponent = widget.opponent;
+    String you = widget.user;
+    double progressOpp = progression[opponent]!.value;
+
+    setState(() {
+      winner = (progressOpp == 1) ? opponent : you;
+      done = true;
+    });
+  }
+
+  void updateElo(int yourTime) {
+    var elo = elos[figure];
+    var bot = bots[figure];
+
+    var keyFigure =
+        "Speed-" + figure.substring(0, 1).toUpperCase() + figure.substring(1);
+    var botTime = bot[keyFigure];
+
+    var eloBot = bot["elo"];
+    var eloYou = elo["elo"];
+    var t = elo["t"];
+
+    bool won = true;
+    double accuracySpeed = 1;
+
+    if (botTime < yourTime) {
+      won = false;
+      accuracySpeed = botTime / yourTime;
+    }
+
+    var newElo = Elo.updateElo(eloYou, eloBot, won, t, accuracySpeed);
+    elo["elo"] = newElo[0];
+    elo["t"] = newElo[1];
+  }
 
   void exerciseSolved() {
     yourProgress.value += 1;
@@ -157,7 +195,8 @@ class _CompetitivePartyState extends State<AsyncMatch> {
     int tookTime = seconds - updateYou;
     updateYou = seconds;
 
-    //TODO: update elo
+    // update elo
+    updateElo(tookTime);
 
     var time = DateTime.now();
     var doc = {
@@ -302,7 +341,7 @@ class _CompetitivePartyState extends State<AsyncMatch> {
 
         String bot = Consts.getClosetsBot(elo);
 
-        bots[skill] = bot;
+        botsShowFormule[skill] = bot;
         botsNames.add(bot);
 
         if (widget.opponent != "Bot") {
@@ -335,10 +374,10 @@ class _CompetitivePartyState extends State<AsyncMatch> {
       }
 
       Database.getSpeedBots(botsNames).then((res) {
-        Map<String, dynamic> botsInfo = {};
+        //Map<String, dynamic> bots = {};
         double sumWeigth = 0;
         for (var skill in widget.selectedSkills) {
-          var botName = bots[skill];
+          var botName = botsShowFormule[skill];
 
           var botInfo = res[botName];
           bool showFormuleFigure = botInfo["showFormule"];
@@ -348,13 +387,13 @@ class _CompetitivePartyState extends State<AsyncMatch> {
           botInfo["elo"] = elo;
           sumWeigth += 1 / elo;
 
-          botsInfo[skill] = botInfo;
+          bots[skill] = botInfo;
 
-          bots[skill] = showFormuleFigure;
+          botsShowFormule[skill] = showFormuleFigure;
         }
 
         if (widget.opponent == "Bot") {
-          generateExercisesBot(botsInfo, sumWeigth);
+          generateExercisesBot(bots, sumWeigth);
         }
 
         if (matchInit == true) {
@@ -429,9 +468,15 @@ class _CompetitivePartyState extends State<AsyncMatch> {
       ],
     );
 
-    var body = ValueListenableBuilder(
+    Widget body = ValueListenableBuilder(
         valueListenable: loading,
         builder: (context, value, child) => value ? loadingPage : exerciseBody);
+
+    if (done) {
+      body = Column(
+        children: [Text("Winner: " + winner)],
+      );
+    }
 
     return Scaffold(
         body: ListView(

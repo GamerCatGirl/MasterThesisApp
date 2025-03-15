@@ -3,8 +3,8 @@ import 'dart:math';
 class Elo {
   //TODO: vars to experiment with
   static int initElo = 1500;
-  static double weigthSpeed = 0.0;
-  static double weigthAccuracy = 0.0;
+  static double weigthSpeed = 0.8;
+  static double weigthAccuracy = 0.2;
   static double initT = 10;
   static double alpha = 0.05;
   static int maxK = 40;
@@ -21,19 +21,18 @@ class Elo {
 
   static double _trendFactor(double prevTrendfactor, int actualOutcome,
       int expectedOutcome, double accuracySpeed) {
+    //TODO: trendfactor bigger?
     int diffOutcome = actualOutcome - expectedOutcome;
     double impactPrev = (1 - alpha) * prevTrendfactor;
     double impactCorrectnessPrediction =
         alpha * weigthAccuracy * diffOutcome.sign;
-    double speedCategory = (accuracySpeed < 0.25)
+    double speedCategory = (accuracySpeed < 0.26)
         ? -1
         : (accuracySpeed > 0.75)
             ? 1
             : 0;
-    double impactSpeed = alpha *
-        _impactFunctionSpeed(accuracySpeed, speedCategory) *
-        speedCategory.sign *
-        weigthSpeed;
+    double impactS = _impactFunctionSpeed(accuracySpeed, speedCategory);
+    double impactSpeed = alpha * impactS * speedCategory.sign * weigthSpeed;
 
     return impactPrev + impactCorrectnessPrediction + impactSpeed;
   }
