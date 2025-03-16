@@ -49,10 +49,51 @@ class Consts {
     "Painrstudio2.jpg",
     "Paintstudio.jpg",
     "Room.jpg",
-    "Room2.jpg",
-    "Room3.jpg",
     "Room4.jpg",
     "Room5.jpg"
+  ];
+
+  static List<List<String>> storiesVierkant = [
+    [
+      "We willen graag een nieuwe vloer leggen in onze bakerij. Hiervoor moeten we weten hoeveel oppervlakte aan tegels we nodig hebben. De vloer heeft een zijde van",
+      "m. Kan jij de oppervlakte berekenen?"
+    ],
+    [
+      "We willen graag een nieuwe vloer leggen in onze bar. Hiervoor moeten we weten hoeveel oppervlakte aan tegels we nodig hebben. De vloer heeft een zijde van",
+      "m. Kan jij de oppervlakte berekenen?"
+    ],
+    [
+      "We willen graag een nieuwe vloer leggen in ons kapsalon. Hiervoor moeten we weten hoeveel oppervlakte aan tegels we nodig hebben. De vloer heeft een zijde van",
+      "m. Kan jij de oppervlakte berekenen?"
+    ],
+    [
+      "We willen graag een nieuwe vloer leggen in ons ijssalon. Hiervoor moeten we weten hoeveel oppervlakte aan tegels we nodig hebben. De vloer heeft een zijde van",
+      "m. Kan jij de oppervlakte berekenen?"
+    ],
+    [
+      "We willen graag een nieuwe vloer leggen in onze bar. Hiervoor moeten we weten hoeveel oppervlakte aan tegels we nodig hebben. De vloer heeft een zijde van",
+      "m. Kan jij de oppervlakte berekenen?"
+    ],
+    [
+      "De vloer van ons PO lokaal zit zol met verfvlekken die onuitwisbaar zijn. We willen de vloer in een nieuw jasje steken. De vloer heeft een zijde van",
+      "m. Kan jij de oppervlakte berekenen?"
+    ],
+    [
+      "We willen graag een nieuwe vloer leggen in ons atelier. Hiervoor moeten we weten hoeveel oppervlakte aan tegels we nodig hebben. De vloer heeft een zijde van",
+      "m. Kan jij de oppervlakte berekenen?"
+    ],
+    [
+      "We willen graag de vloer verven in onze slaapkamer op de 1ste verdieping. Hiervoor moeten we weten hoeveel oppervlakte aan verf we nodig hebben. De vloer heeft een zijde van",
+      "m. Kan jij de oppervlakte berekenen?"
+    ],
+    [
+      "We willen graag een nieuwe vloer leggen in onze kamer. Hiervoor moeten we weten hoeveel oppervlakte aan tegels we nodig hebben. De vloer heeft een zijde van",
+      "m. Kan jij de oppervlakte berekenen?"
+    ],
+    [
+      "We willen graag een nieuwe vloer leggen in onze kamer. Hiervoor moeten we weten hoeveel oppervlakte aan hout we nodig hebben. De vloer heeft een zijde van",
+      "m. Kan jij de oppervlakte berekenen?"
+    ],
   ];
 
   static List<String> imagesCirkel = [
