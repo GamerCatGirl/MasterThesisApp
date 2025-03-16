@@ -21,12 +21,14 @@ class AsyncMatch extends StatefulWidget {
   final String opponent;
   final String user;
   final List<String> selectedSkills;
+  final VoidCallback goHome;
 
   AsyncMatch(
       {super.key,
       required this.user,
       required this.opponent,
-      required this.selectedSkills});
+      required this.selectedSkills,
+      required this.goHome});
 
   @override
   State<AsyncMatch> createState() => _CompetitivePartyState();
@@ -148,13 +150,9 @@ class _CompetitivePartyState extends State<AsyncMatch> {
   }
 
   void postAllToDB() {
-    //loading.value = true;
     Database.postExercises(exercisesMade).then((Map<String, dynamic> exs) {
       Database.updateEloAndEx(widget.user, elos, exs);
     });
-    //Database.u
-
-    //throw ArgumentError("TODO: post info to DB");
   }
 
   void announceWinner() {
@@ -479,7 +477,16 @@ class _CompetitivePartyState extends State<AsyncMatch> {
 
     if (done) {
       body = Column(
-        children: [Text("Winner: " + winner)],
+        children: [
+          Text("Winner: " + winner),
+          SizedBox(
+            width: 20,
+          ),
+          Center(
+            child: ElevatedButton(
+                onPressed: widget.goHome, child: Text("Oefeningen")),
+          )
+        ],
       );
     }
 

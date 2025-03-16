@@ -59,6 +59,12 @@ class _HomeState extends State<Home> {
     //TODO: check if part of active part to join back in
   }
 
+  void goHome() {
+    setState(() {
+      selectedPage = 0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final topicsSelect = MultiSelectContainer(
@@ -378,6 +384,7 @@ class _HomeState extends State<Home> {
         user: user,
         opponent: playAgainst,
         selectedSkills: selectedItems,
+        goHome: goHome,
       );
     }
 
