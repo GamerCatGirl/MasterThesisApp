@@ -102,14 +102,56 @@ class Consts {
     "books2.JPG",
     "logo.JPG",
     "logo2.JPG",
-    "mario.JPG",
     "painting.JPG",
     "sitting.JPG",
     "sitting2.JPG",
     "sitting3.JPG",
     "sitting4.JPG",
-    "stairs.JPG"
   ];
+
+  static List<List<String>> storiesCirkel = [
+    [
+      "We willen een cirkel vormige zitplaats maken voor mensen die moeten wachten voor hun kapersafspraak. We moeten de oppervlakte berekenen van deze zitplaats om best in te schatten waar we dit zouden plaatsen in ons salon. De zitplaats heeft een straal van",
+      "m. Wat is de oppervlakte?"
+    ],
+    [
+      "We willen een cirkel vormige boekenstand maken voor mensen die wat inspiratie willen opdoen voor hun nieuw kapsel. We moeten de oppervlakte berekenen van deze zitplaats om best in te schatten waar we dit zouden plaatsen in ons salon. De boekenkast heeft een straal van",
+      "m. Wat is de oppervlakte?"
+    ],
+    [
+      "We willen een cirkel vormige boekenstand maken voor mensen die wat inspiratie willen opdoen voor hun nieuw kapsel. We moeten de oppervlakte berekenen van deze zitplaats om best in te schatten waar we dit zouden plaatsen in ons salon. De boekenkast heeft een straal van",
+      "m. Wat is de oppervlakte?"
+    ],
+    [
+      "We willen de oppervlakte van ons logo berekenen. De straal van het logo is",
+      "m. Kan je de oppervlakte berekenen?"
+    ],
+    [
+      "We willen de oppervlakte van ons logo berekenen. De straal van het logo is",
+      "m. Kan je de oppervlakte berekenen?"
+    ],
+    [
+      "We willen een cirkel op de muur childeren maar hiervoor moeten we weten hoevel verf we nodig zullen hebben. De straal van de cirkel is",
+      "m. Kan je de oppervlakte berekenen?"
+    ],
+    [
+      "We willen een cirkel vormige zitplaats maken voor mensen die moeten wachten voor hun kapersafspraak. We moeten de oppervlakte berekenen van deze zitplaats om best in te schatten waar we dit zouden plaatsen in ons salon. De zitplaats heeft een straal van",
+      "m. Wat is de oppervlakte?"
+    ],
+    [
+      "We willen een cirkel vormige zitplaats maken voor mensen die moeten wachten voor hun kapersafspraak. We moeten de oppervlakte berekenen van deze zitplaats om best in te schatten waar we dit zouden plaatsen in ons salon. De zitplaats heeft een straal van",
+      "m. Wat is de oppervlakte?"
+    ],
+    [
+      "We willen een cirkel vormige zitplaats maken voor mensen die moeten wachten voor hun kapersafspraak. We moeten de oppervlakte berekenen van deze zitplaats om best in te schatten waar we dit zouden plaatsen in ons salon. De zitplaats heeft een straal van",
+      "m. Wat is de oppervlakte?"
+    ],
+    [
+      "We willen een cirkel vormige zitplaats maken voor mensen die moeten wachten voor hun kapersafspraak. We moeten de oppervlakte berekenen van deze zitplaats om best in te schatten waar we dit zouden plaatsen in ons salon. De zitplaats heeft een straal van",
+      "m. Wat is de oppervlakte?"
+    ],
+  ];
+
   static List<String> imagesRechthoek = [
     "casette1.JPG",
     "casette2.JPG",
@@ -125,6 +167,75 @@ class Consts {
     "painting9.JPG",
     "painting10.JPG"
   ];
+
+  static List<List<String>> storiesRechthoek = [
+    [
+      "Voor ons decor willen we casettes aan de muur hangen. De breedte van een casette is",
+      "m en de lengte",
+      "m. Kan je de oppervlakte van 1 casette berekenen?"
+    ],
+    [
+      "Voor ons decor willen we casettes aan de muur hangen. De breedte van een casette is",
+      "m en de lengte",
+      "m. Kan je de oppervlakte van 1 casette berekenen?"
+    ],
+    [
+      "Voor ons decor willen we casettes aan de muur hangen. De breedte van een casette is",
+      "m en de lengte",
+      "m. Kan je de oppervlakte van 1 casette berekenen?"
+    ],
+    [
+      "Voor ons decor willen we een kader/schilderij aan de muur hangen. De breedte van een kader is",
+      "m en de lengte",
+      "m. Kan je de oppervlakte van de kader berekenen?"
+    ],
+    [
+      "Voor ons decor willen we een kader/schilderij aan de muur hangen. De breedte van een kader is",
+      "m en de lengte",
+      "m. Kan je de oppervlakte van de kader berekenen?"
+    ],
+    [
+      "Voor ons decor willen we een kader/schilderij aan de muur hangen. De breedte van een kader is",
+      "m en de lengte",
+      "m. Kan je de oppervlakte van de kader berekenen?"
+    ],
+    [
+      "Voor ons decor willen we een kader/schilderij aan de muur hangen. De breedte van een kader is",
+      "m en de lengte",
+      "m. Kan je de oppervlakte van de kader berekenen?"
+    ],
+    [
+      "Voor ons decor willen we een kader/schilderij aan de muur hangen. De breedte van een kader is",
+      "m en de lengte",
+      "m. Kan je de oppervlakte van de kader berekenen?"
+    ],
+    [
+      "Voor ons decor willen we een kader/schilderij aan de muur hangen. De breedte van een kader is",
+      "m en de lengte",
+      "m. Kan je de oppervlakte van de kader berekenen?"
+    ],
+    [
+      "Voor ons decor willen we een kader/schilderij aan de muur hangen. De breedte van een kader is",
+      "m en de lengte",
+      "m. Kan je de oppervlakte van de kader berekenen?"
+    ],
+    [
+      "Voor ons decor willen we een kader/schilderij aan de muur hangen. De breedte van een kader is",
+      "m en de lengte",
+      "m. Kan je de oppervlakte van de kader berekenen?"
+    ],
+    [
+      "Voor ons decor willen we een kader/schilderij aan de muur hangen. De breedte van een kader is",
+      "m en de lengte",
+      "m. Kan je de oppervlakte van de kader berekenen?"
+    ],
+    [
+      "Voor ons decor willen we een kader/schilderij aan de muur hangen. De breedte van een kader is",
+      "m en de lengte",
+      "m. Kan je de oppervlakte van de kader berekenen?"
+    ],
+  ];
+
   static List<String> imagesDriehoek = [
     "painting.JPG",
     "painting2.JPG",
@@ -133,7 +244,44 @@ class Consts {
     "wall.JPG",
     "wall2.JPG",
     "wall3.JPG",
-    "wall4.JPG"
+  ];
+
+  static List<List<String>> storiesDriehoek = [
+    [
+      "We willen een driehoek op de muur verven, maar hiervoor moeten we weten hoeveel verf we nodig hebben om de oppervlakte te kunnen bedekken. De driehoek heeft een basis van",
+      "m, en de hoogte van de driehoek is",
+      "m. Kan je de oppervlakte berekenen?"
+    ],
+    [
+      "We willen een driehoeken op de muur verven, maar hiervoor moeten we weten hoeveel verf we nodig hebben om de oppervlakte te kunnen bedekken. De driehoek heeft een basis van",
+      "m, en de hoogte van de driehoek is",
+      "m. Kan je de oppervlakte berekenen van 1 driehoek?"
+    ],
+    [
+      "We willen een driehoeken op de muur verven, maar hiervoor moeten we weten hoeveel verf we nodig hebben om de oppervlakte te kunnen bedekken. De driehoek heeft een basis van",
+      "m, en de hoogte van de driehoek is",
+      "m. Kan je de oppervlakte berekenen van 1 driehoek?"
+    ],
+    [
+      "We willen wat natuur in ons kapsalon aanbrengen. Hiervoor kiezen we driehoekige bloempotten die aan de muur vast hangen. Kan je de oppervlakte dat 1 bloembak op de muur zou innemen berekenen? De basis is",
+      "m en de hoogte ",
+      "m."
+    ],
+    [
+      "We willen de muur bedenken met driehoeken. Kan je de oppervlakte van 1 driehoek berekenen? De basis is",
+      "m en de hoogte ",
+      "m."
+    ],
+    [
+      "We willen de muur bedenken met driehoeken. Kan je de oppervlakte van 1 driehoek berekenen? De basis is",
+      "m en de hoogte ",
+      "m."
+    ],
+    [
+      "We willen de muur bedenken met driehoeken. Kan je de oppervlakte van 1 driehoek berekenen? De basis is",
+      "m en de hoogte ",
+      "m."
+    ],
   ];
 
   static List<String> imagesCombined = [
