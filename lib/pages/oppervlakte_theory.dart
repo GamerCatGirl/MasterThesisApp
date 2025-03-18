@@ -11,11 +11,11 @@ import 'package:mathapp/components/title.dart';
 import 'package:mathapp/components/title_tile.dart';
 
 class OppervlakteTheory extends StatefulWidget {
-  final VoidCallback done;
+  final Function(List<String>, List<bool>) done;
   final String user;
   final bool solved;
-  final List<dynamic> path;
-  final List<dynamic> pathCompletion;
+  final List<String> path;
+  final List<bool> pathCompletion;
   const OppervlakteTheory(
       {super.key,
       required this.done,
@@ -47,8 +47,8 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
 
   late bool solvedLocal;
 
-  late List<dynamic> path;
-  late List<dynamic> pathCompletion;
+  late List<String> path;
+  late List<bool> pathCompletion;
   bool resPosted = false;
   bool answPosted = false;
 
@@ -62,11 +62,14 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
   }
 
   _goPath() {
+    widget.done(path, pathCompletion);
+    /*
     Navigator.pushNamed(context, '/learning-path', arguments: {
       'user': widget.user,
       'path': path,
       'pathCompletion': pathCompletion
     });
+    */
   }
 
   @override
@@ -539,14 +542,7 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
           children: [
             Spacer(),
             ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/learning-path', arguments: {
-                    'user': widget.user,
-                    'path': path,
-                    'pathCompletion': pathCompletion
-                  });
-                },
-                child: Text("Ga terug naar leerpad")),
+                onPressed: _goPath, child: Text("Ga terug naar leerpad")),
             Spacer()
           ],
         ));

@@ -59,6 +59,8 @@ class _LearningPathState extends State<LearningPath> {
   IconData figures = Icons.auto_awesome_mosaic;
 
   void theoryCallback() {
+    selectedPage.value = 4;
+    /*
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => OppervlakteTheory(
@@ -70,6 +72,7 @@ class _LearningPathState extends State<LearningPath> {
         ),
       ),
     );
+    */
   }
 
   void makeCompEx(String fig) {
@@ -393,11 +396,26 @@ class _LearningPathState extends State<LearningPath> {
           );
         });
 
+    final Widget oppervlakte_theory = OppervlakteTheory(
+      done: (List<String> newPath, List<bool> newPathCompletion) {
+        setState(() {
+          path = newPath;
+          pathCompletion = newPathCompletion;
+        });
+        selectedPage.value = 0;
+      },
+      solved: theoryDoneOppervlakte,
+      user: user,
+      path: path,
+      pathCompletion: pathCompletion,
+    );
+
     final List _pages = [
       exercises,
       Consts.logginFirst,
       compEx,
-      ConversionTheory(done: () {})
+      ConversionTheory(done: () {}),
+      oppervlakte_theory
     ];
 
     final page = ValueListenableBuilder(
