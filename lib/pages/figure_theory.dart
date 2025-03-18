@@ -234,19 +234,24 @@ class _FigureState extends State<FigureTheory> {
     generatedPlayed = [];
     generatedPlayedGenaral[exerciseID] = [];
 
+    //here can still appear null error
     dbComp.doc(widget.user).get().then((doc) {
       var document = doc.data() as Map<String, dynamic>;
-      elos = document['elo'] as Map<String, dynamic>;
-      generatedPlayedGenaral =
-          document['generatedPlayed'] as Map<String, dynamic>;
+      var alreadyPlayed;
 
-      var alreadyPlayed = generatedPlayedGenaral[exerciseID];
-      var eloInfo = elos[exerciseID];
+      if (document['elo'] != null) {
+        elos = document['elo'] as Map<String, dynamic>;
+        generatedPlayedGenaral =
+            document['generatedPlayed'] as Map<String, dynamic>;
 
-      if (eloInfo != null) {
-        elo = eloInfo["elo"];
-        t = eloInfo["t"];
-        bots = Consts.getBots(elo);
+        alreadyPlayed = generatedPlayedGenaral[exerciseID];
+        var eloInfo = elos[exerciseID];
+
+        if (eloInfo != null) {
+          elo = eloInfo["elo"];
+          t = eloInfo["t"];
+          bots = Consts.getBots(elo);
+        }
       }
 
       Database.getSpeedBots(bots).then((data) {
@@ -723,7 +728,7 @@ class _FigureState extends State<FigureTheory> {
         SizedBox(
           height: 20,
         ),
-        viewAnswersButton,
+        //viewAnswersButton,
         //SizedBox(
         //  height: 20,
         //),

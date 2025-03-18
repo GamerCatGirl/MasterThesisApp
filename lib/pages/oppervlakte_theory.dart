@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mathapp/Utils/consts.dart';
 import 'package:mathapp/components/exercise_tile.dart';
 import 'package:mathapp/components/figure_input.dart';
 import 'package:mathapp/components/formule_input.dart';
@@ -62,6 +63,8 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
   }
 
   _goPath() {
+    //TODO: save in cookies
+    Consts.refreshInfo();
     widget.done(path, pathCompletion);
     /*
     Navigator.pushNamed(context, '/learning-path', arguments: {
