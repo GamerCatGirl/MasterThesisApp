@@ -888,7 +888,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
         width: 50,
         child: input3Field,
       ),
-      Text("m\u00B2"),
+      Text("m\u00B2   (vierkant)"),
       Spacer()
     ];
 
@@ -922,7 +922,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
         width: 50,
         child: inputOppervlakteRechthoek,
       ),
-      Text("m\u00B2"),
+      Text("m\u00B2   (rechthoek)"),
       Spacer()
     ];
 
@@ -957,7 +957,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
         width: 50,
         child: inputOppervlakteDriehoek,
       ),
-      Text("m\u00B2"),
+      Text("m\u00B2   (driehoek)"),
       Spacer()
     ];
 
@@ -999,7 +999,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
         width: 50,
         child: inputOppervlakteCirkel,
       ),
-      Text("m\u00B2"),
+      Text("m\u00B2  (cirkel)"),
       Spacer()
     ];
 
