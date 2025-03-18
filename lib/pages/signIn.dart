@@ -4,7 +4,9 @@ import 'package:mathapp/components/rating.dart';
 import 'package:mathapp/components/title.dart';
 
 class Signin extends StatefulWidget {
-  const Signin({super.key});
+  final VoidCallback done;
+
+  const Signin({super.key, required this.done});
 
   @override
   State<Signin> createState() => _SignInState();
@@ -352,9 +354,10 @@ class _SignInState extends State<Signin> {
           children: [
             Spacer(),
             ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/profile');
-                },
+                onPressed: widget.done,
+                //() {
+                //  Navigator.pushNamed(context, '/profile');
+                //},
                 child: Text("Login")),
             Spacer(),
           ],

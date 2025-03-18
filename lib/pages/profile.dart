@@ -51,8 +51,11 @@ class _ProfileState extends State<Profile> {
     });
   }
 
-  void _ToSignIn() {
-    Navigator.pushNamed(context, '/signIn');
+  void _toSignIn() {
+    setState(() {
+      selectedPage = 2;
+    });
+    //Navigator.pushNamed(context, '/signIn');
   }
 
   void _ToSkill() {
@@ -145,7 +148,7 @@ class _ProfileState extends State<Profile> {
 
     final loginButton = ElevatedButton(onPressed: login, child: Text('Login'));
     final signInButton =
-        ElevatedButton(onPressed: _ToSignIn, child: Text('Aanmelden'));
+        ElevatedButton(onPressed: _toSignIn, child: Text('Aanmelden'));
     final skillsButton =
         ElevatedButton(onPressed: _ToSkill, child: Text('Skills'));
     final logoutButton =
@@ -183,9 +186,9 @@ class _ProfileState extends State<Profile> {
           child: signInButton,
         ),
         spacer,
-        Center(
-          child: skillsButton,
-        ),
+        //Center(
+        //  child: skillsButton,
+        //),
       ],
     ));
 
@@ -193,7 +196,14 @@ class _ProfileState extends State<Profile> {
       signInLogIn,
       Viewskills(
         logout: logout,
-      )
+      ),
+      Signin(
+        done: () {
+          setState(() {
+            selectedPage = 0;
+          });
+        },
+      ),
     ];
 
     return Scaffold(

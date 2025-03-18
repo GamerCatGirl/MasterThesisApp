@@ -19,6 +19,19 @@ class Database {
     return db.collection("activeParties");
   }
 
+  static Future<bool> showSkills(String username) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference users = db.collection("users");
+
+    var user = await users.doc(username).get();
+    var data = user.data() as Map<String, dynamic>;
+    var pathCompletion = data["pathCompletion"];
+
+    print(pathCompletion);
+
+    return pathCompletion[0] as bool;
+  }
+
   static Future<bool> userExists(String username) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
     CollectionReference users = db.collection("users");

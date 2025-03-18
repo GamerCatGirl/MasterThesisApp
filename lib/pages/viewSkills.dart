@@ -26,7 +26,7 @@ class RawDataSet {
 }
 
 class _SkillState extends State<Viewskills> {
-  int selectedPage = 0;
+  int selectedPage = 1;
 
   ValueNotifier<List<RawDataSet>> eloDataset = ValueNotifier([]);
   ValueNotifier<List<RawDataSet>> effortDataset = ValueNotifier([]);
@@ -42,21 +42,31 @@ class _SkillState extends State<Viewskills> {
     if (loggedIn) {
       user = Consts.getLoggedInUser();
 
-      Database.getElo(user).then((val) {
-        if (val.isNotEmpty) {
-          var dataset =
-              RawDataSet(title: 'Skills', color: Colors.blue, values: val);
-          eloDataset.value.add(dataset);
-          //loading.value = false;
+      //TODO: check if learning path is done
+      Database.showSkills(user).then((val) {
+        if (val) {
+          Database.getElo(user).then((val) {
+            if (val.isNotEmpty) {
+              var dataset =
+                  RawDataSet(title: 'Skills', color: Colors.blue, values: val);
+              eloDataset.value.add(dataset);
+              //loading.value = false;
+            }
+          });
+
+          Database.getAllElo().then((val) => {
+                eloDataset.value.add(
+                  RawDataSet(title: 'Skills', color: Colors.grey, values: val),
+                ),
+                loading.value = false
+              });
+          setState(() {
+            selectedPage = 0;
+          });
+        } else {
+          selectedPage = 1;
         }
       });
-
-      Database.getAllElo().then((val) => {
-            eloDataset.value.add(
-              RawDataSet(title: 'Skills', color: Colors.grey, values: val),
-            ),
-            loading.value = false
-          });
     }
 
     //TODO: get Elo
@@ -225,6 +235,18 @@ class _SkillState extends State<Viewskills> {
       child: Text('Uitloggen'),
     );
 
+    final pageCompleteLearning = ListView(
+      children: [
+        SizedBox(
+          height: 40,
+        ),
+        Center(
+          child: Text(
+              "Voltooi eerst het leerpad om je vooruitgang te kunnen zien!"),
+        ),
+      ],
+    );
+
     final page = ListView(
       children: [
         space,
@@ -290,7 +312,7 @@ class _SkillState extends State<Viewskills> {
         )
       ],
     );
-    final List _pages = [page];
+    final List _pages = [page, pageCompleteLearning];
 
     return _pages[selectedPage];
   }
