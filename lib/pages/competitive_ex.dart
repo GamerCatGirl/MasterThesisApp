@@ -75,6 +75,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
   String labelVierkant = "Vierkant";
   late String label1;
   late String label2;
+  List<String> storyArr = [];
 
   // Formule needs to be given
   late dynamic showFormule;
@@ -86,6 +87,27 @@ class _CompetitiveState extends State<CompetitiveEx> {
     super.initState();
     int max = Consts().maxMultiplyByHead;
     showFormule = widget.showFormule;
+
+    print("---------------------");
+    print(widget.image);
+    List<String> imageSplitted = widget.image.split("/");
+    int lengthPath = imageSplitted.length;
+    String imageShort = imageSplitted[lengthPath - 1];
+
+    if (widget.figure != "combined") {
+      List images = Consts.images[widget.figure]!;
+      List stories = Consts.stories[widget.figure]!;
+      if (images == null || stories == null) {
+        throw ArgumentError("Figure does not exists!");
+      }
+      int index = images.indexOf(imageShort);
+      if (index == null) {
+        throw ArgumentError("Figure does not exists!");
+      }
+      storyArr = stories[index];
+    }
+    print(storyArr);
+    print("---------------------");
 
     if (widget.figure == "combined") {
       r = Random().nextInt(max);
@@ -123,6 +145,34 @@ class _CompetitiveState extends State<CompetitiveEx> {
         "We willen de oppervlakte van de vloer van ons nieuw kapsalon berekenen. \nWe weten dat 1 zijde " +
             widget.z.toString() +
             "m lang is, hoeveel is dan de oppervlakte van onze vloer?";
+
+    if (widget.figure == "rechthoek") {
+      story = storyArr[0] +
+          " " +
+          widget.b.toString() +
+          " " +
+          storyArr[1] +
+          " " +
+          l.toString() +
+          " " +
+          storyArr[2];
+    } else if (widget.figure == "vierkant") {
+      story = storyArr[0] + " " + widget.z.toString() + " " + storyArr[1];
+    } else if (widget.figure == "cirkel") {
+      story = storyArr[0] + " " + r.toString() + " " + storyArr[1];
+    } else if (widget.figure == "driehoek") {
+      story = storyArr[0] +
+          " " +
+          b.toString() +
+          " " +
+          storyArr[1] +
+          " " +
+          widget.h.toString() +
+          " " +
+          storyArr[2];
+    } else if (widget.figure == "combined") {
+      story = "";
+    }
 
     var input1Field = TextFormField(
       controller: zijde1,
@@ -991,7 +1041,10 @@ class _CompetitiveState extends State<CompetitiveEx> {
     );
     Widget selectFigures = (widget.figure == "combined") ? selector : Text("");
 
-    Widget storyText = Text(story);
+    Widget storyText = Container(
+      padding: EdgeInsets.all(20),
+      child: Text(story),
+    );
     Widget vars = Text(
       varAssign,
       style: TextStyle(fontWeight: FontWeight.bold),

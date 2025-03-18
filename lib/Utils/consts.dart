@@ -308,6 +308,13 @@ class Consts {
     "driehoek": imagesDriehoek
   };
 
+  static Map<String, List> stories = {
+    "vierkant": storiesVierkant,
+    "rechthoek": storiesRechthoek,
+    "driehoek": storiesDriehoek,
+    "cirkel": storiesCirkel,
+  };
+
   static List<List<String>> figuresCombined = [
     [vierkant, cirkel, driehoek],
     [vierkant, rechthoek, driehoek, cirkel],
