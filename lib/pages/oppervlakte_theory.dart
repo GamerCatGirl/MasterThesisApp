@@ -400,6 +400,11 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
         path.add(figure);
         pathCompletion.add(false);
 
+        if (path.length == 5) {
+          path.add("combined");
+          pathCompletion.add(false);
+        }
+
         entries.addAll({"path": path, "pathCompletion": pathCompletion});
       }
 

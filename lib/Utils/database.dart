@@ -288,26 +288,37 @@ class Database {
 
     if (doc.exists) {
       var data = doc.data() as Map<String, dynamic>;
-      var elo = data["elo"] as Map<String, dynamic>;
 
-      var eloCirkel = (elo["oppervlakte-cirkel"] != null)
-          ? elo["oppervlakte-cirkel"]["elo"]
-          : 0;
+      if (data.containsKey("elo")) {
+        var elo = data["elo"] as Map<String, dynamic>;
 
-      var eloVierkant = (elo["oppervlakte-vierkant"] != null)
-          ? elo["oppervlakte-vierkant"]["elo"]
-          : 0;
-      var eloRechthoek = (elo["oppervlakte-rechthoek"] != null)
-          ? elo["oppervlakte-rechthoek"]["elo"]
-          : 0;
-      var eloDriehoek = (elo["oppervlakte-driehoek"] != null)
-          ? elo["oppervlakte-driehoek"]["elo"]
-          : 0;
-      var eloConversion = (elo["conversion-table"] != null)
-          ? elo["conversion-table"]["elo"]
-          : 0;
+        var eloCirkel = (elo["oppervlakte-cirkel"] != null)
+            ? elo["oppervlakte-cirkel"]["elo"]
+            : 0;
 
-      return [eloVierkant, eloCirkel, eloRechthoek, eloDriehoek, eloConversion];
+        var eloVierkant = (elo["oppervlakte-vierkant"] != null)
+            ? elo["oppervlakte-vierkant"]["elo"]
+            : 0;
+        var eloRechthoek = (elo["oppervlakte-rechthoek"] != null)
+            ? elo["oppervlakte-rechthoek"]["elo"]
+            : 0;
+        var eloDriehoek = (elo["oppervlakte-driehoek"] != null)
+            ? elo["oppervlakte-driehoek"]["elo"]
+            : 0;
+        var eloConversion = (elo["conversion-table"] != null)
+            ? elo["conversion-table"]["elo"]
+            : 0;
+
+        return [
+          eloVierkant,
+          eloCirkel,
+          eloRechthoek,
+          eloDriehoek,
+          eloConversion
+        ];
+      } else {
+        return [0, 0, 0, 0, 0];
+      }
     } else {
       throw ArgumentError("No existing Elo for user");
     }
@@ -328,24 +339,33 @@ class Database {
 
     for (var doc in docs) {
       var data = doc.data() as Map<String, dynamic>;
-      var elo = data["elo"] as Map<String, dynamic>;
 
-      var eloCirkel = (elo["oppervlakte-cirkel"] != null)
-          ? elo["oppervlakte-cirkel"]["elo"]
-          : 0;
+      double eloCirkel = 0;
+      double eloVierkant = 0;
+      double eloRechthoek = 0;
+      double eloDriehoek = 0;
+      double eloConversion = 0;
 
-      var eloVierkant = (elo["oppervlakte-vierkant"] != null)
-          ? elo["oppervlakte-vierkant"]["elo"]
-          : 0;
-      var eloRechthoek = (elo["oppervlakte-rechthoek"] != null)
-          ? elo["oppervlakte-rechthoek"]["elo"]
-          : 0;
-      var eloDriehoek = (elo["oppervlakte-driehoek"] != null)
-          ? elo["oppervlakte-driehoek"]["elo"]
-          : 0;
-      var eloConversion = (elo["conversion-table"] != null)
-          ? elo["conversion-table"]["elo"]
-          : 0;
+      if (data.containsKey("elo")) {
+        var elo = data["elo"] as Map<String, dynamic>;
+
+        eloCirkel = (elo["oppervlakte-cirkel"] != null)
+            ? elo["oppervlakte-cirkel"]["elo"]
+            : 0;
+
+        eloVierkant = (elo["oppervlakte-vierkant"] != null)
+            ? elo["oppervlakte-vierkant"]["elo"]
+            : 0;
+        eloRechthoek = (elo["oppervlakte-rechthoek"] != null)
+            ? elo["oppervlakte-rechthoek"]["elo"]
+            : 0;
+        eloDriehoek = (elo["oppervlakte-driehoek"] != null)
+            ? elo["oppervlakte-driehoek"]["elo"]
+            : 0;
+        eloConversion = (elo["conversion-table"] != null)
+            ? elo["conversion-table"]["elo"]
+            : 0;
+      }
 
       vierkantElos.add(eloVierkant);
       rechthoekElos.add(eloRechthoek);
