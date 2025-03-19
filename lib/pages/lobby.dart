@@ -26,15 +26,10 @@ class _LobbyState extends State<Lobby> {
   FirebaseFirestore db = FirebaseFirestore.instance;
   late StreamSubscription listener;
 
-  Widget party = Text("no party");
   int selectedPage = 0;
 
   void startParty() {
     setState(() {
-      party = CompetitiveParty(
-        partyName: partyName,
-        user: widget.user,
-      );
       selectedPage = 1;
     });
   }
@@ -154,7 +149,10 @@ class _LobbyState extends State<Lobby> {
       children: [header, spacer, playersWidget, spacer, startOrLoading],
     );
 
-    List pages = [lobbyPage, party];
+    List pages = [
+      lobbyPage,
+      CompetitiveParty(partyName: widget.partyName, user: widget.user)
+    ];
 
     return Scaffold(body: pages[selectedPage]);
   }

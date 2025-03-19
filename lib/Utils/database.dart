@@ -113,7 +113,7 @@ class Database {
     FirebaseFirestore db = FirebaseFirestore.instance;
     CollectionReference botsDB = db.collection("Bots");
 
-    var bot = bots[0];
+    //var bot = bots[0];
     var info = {};
 
     for (var bot in bots) {
@@ -127,6 +127,20 @@ class Database {
     } //(elm) => bots.contains(elm)).get();
 
     return info;
+  }
+
+  static Future<Map> getAllBots() async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference botsDB = db.collection("Bots");
+
+    var bots = await botsDB.get();
+
+    Map<String, dynamic> data = {};
+
+    for (var docSnapshot in bots.docs) {
+      data[docSnapshot.id] = docSnapshot.data();
+    }
+    return data;
   }
 
   static Future<Map<String, dynamic>> postExercises(

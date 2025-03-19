@@ -85,11 +85,14 @@ class _CompetitiveState extends State<CompetitiveEx> {
   @override
   void initState() {
     super.initState();
+    setupVars();
+    //update db?
+  }
+
+  void setupVars() {
     int max = Consts().maxMultiplyByHead;
     showFormule = widget.showFormule;
 
-    print("---------------------");
-    print(widget.image);
     List<String> imageSplitted = widget.image.split("/");
     int lengthPath = imageSplitted.length;
     String imageShort = imageSplitted[lengthPath - 1];
@@ -106,8 +109,6 @@ class _CompetitiveState extends State<CompetitiveEx> {
       }
       storyArr = stories[index];
     }
-    print(storyArr);
-    print("---------------------");
 
     if (widget.figure == "combined") {
       r = Random().nextInt(max);
@@ -120,7 +121,6 @@ class _CompetitiveState extends State<CompetitiveEx> {
     } else if (widget.figure == "rechthoek") {
       l = widget.z;
     }
-    //update db?
   }
 
   void onSelect(allSelectedItems, selectedItem) {
@@ -133,6 +133,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
 
   @override
   Widget build(BuildContext context) {
+    //showFormule = widget.showFormule;
+    setupVars();
     //Widget iconButton = IconButton(onPressed: (){}), icon: icon);
     double width = MediaQuery.of(context).size.width;
 

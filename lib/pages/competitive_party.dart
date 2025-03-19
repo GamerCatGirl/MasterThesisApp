@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:mathapp/Utils/consts.dart';
 import 'package:mathapp/Utils/database.dart';
 import 'package:mathapp/components/title.dart';
 import 'package:mathapp/pages/competitive_ex.dart';
@@ -37,12 +38,16 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
   int hoogte = 0;
   String image = "";
   String figure = "";
+  bool showFormule = true;
 
   //ValueNotifier<Map<String, double>> progression = ValueNotifier({});
   Map<String, ValueNotifier<double>> progression = {};
 
   ValueNotifier<int> yourProgress = ValueNotifier(0);
   double stepSize = 0;
+
+  Map<String, dynamic> yourElo = {};
+  Map bots = {};
 
   bool done = false;
 
@@ -118,20 +123,29 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
       ));
     }
 
+    Database.getEloAndT(widget.user).then((res) {
+      yourElo["vierkant"] = res[0];
+      yourElo["cirkel"] = res[1];
+      yourElo["rechthoek"] = res[2];
+      yourElo["driehoek"] = res[3];
+    });
+
+    Database.getAllBots().then((res) {
+      bots = res;
+    });
+
     activePlayers.value.add("you");
     Database.joinParty(partyID, widget.user);
 
     //TODO: get info about match out of database
     Database.getPartyInfo(partyID).then((data) {
       //TODO:
-      print(data);
 
       exercises = data["exercises"] as List<dynamic>;
       stepSize = 1 / exercises.length;
 
       List<dynamic> players = data["player"] as List<dynamic>;
       amountPlayers = players.length;
-      print(players);
 
       for (String player in players) {
         progression[player] = ValueNotifier(0);
@@ -174,6 +188,15 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
     Map<String, dynamic> exercise = exercises[idx];
     figure = exercise["figure"];
     image = exercise["image"];
+
+    if (!yourElo.isEmpty && !bots.isEmpty) {
+      var eloAndTFigure = yourElo[figure];
+      var eloFigure = eloAndTFigure["elo"];
+      String bot = Consts.getClosetsBot(eloFigure);
+      var neededInfoBot = bots[bot];
+      print(neededInfoBot);
+      showFormule = neededInfoBot["showFormule"];
+    }
 
     if (figure == "rechthoek") {
       z = exercise["lengte"];
@@ -226,8 +249,10 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
     var exercise = ValueListenableBuilder(
         valueListenable: yourProgress,
         builder: (context, value, child) {
+          print("in builder");
+          print(showFormule);
           return CompetitiveEx(
-              showFormule: true,
+              showFormule: showFormule,
               z: z,
               b: breedte,
               h: hoogte,
