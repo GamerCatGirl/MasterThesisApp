@@ -21,7 +21,7 @@ class _LogicState extends State<Logic> {
 
   String user = "Preview";
 
-  final List _pagesNames = ["Exercises", "LearningPath", "Profile", "Settings"];
+  final List _pagesNames = ["Oefen", "Leerpad", "Profiel", "Settings"];
 
   final List _iconsPages = [
     Icon(Icons.home),

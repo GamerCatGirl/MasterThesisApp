@@ -238,16 +238,16 @@ class _LearningPathState extends State<LearningPath> {
   }
 
   final leftToMid = Image(
-      fit: BoxFit.fitWidth, image: AssetImage("assets/images/paths/LtoM.jpg"));
+      fit: BoxFit.fitWidth, image: AssetImage("assets/images/paths/LtoM.png"));
 
   final midToRight = Image(
-      fit: BoxFit.fitWidth, image: AssetImage("assets/images/paths/MtoR.jpg"));
+      fit: BoxFit.fitWidth, image: AssetImage("assets/images/paths/MtoR.png"));
 
   final rightToMid = Image(
-      fit: BoxFit.fitWidth, image: AssetImage("assets/images/paths/RtoM.jpg"));
+      fit: BoxFit.fitWidth, image: AssetImage("assets/images/paths/RtoM.png"));
 
   final midToLeft = Image(
-      fit: BoxFit.fitWidth, image: AssetImage("assets/images/paths/MtoL.jpg"));
+      fit: BoxFit.fitWidth, image: AssetImage("assets/images/paths/MtoL.png"));
 
   @override
   Widget build(BuildContext context) {
