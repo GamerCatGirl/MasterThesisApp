@@ -253,6 +253,12 @@ class _SkillState extends State<Viewskills> {
           child: Text(
               "Voltooi eerst het leerpad om je vooruitgang te kunnen zien!"),
         ),
+        SizedBox(
+          height: 20,
+        ),
+        Center(
+          child: logoutButton,
+        ),
       ],
     );
 

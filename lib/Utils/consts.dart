@@ -426,6 +426,21 @@ class Consts {
     return path;
   }
 
+  static bool pathCompleted() {
+    List<bool> pathCompletion = retrievePathCompletion();
+
+    if (pathCompletion.length < 5) {
+      return false;
+    }
+
+    var completed = true;
+
+    for (bool elm in pathCompletion) {
+      completed = elm & true;
+    }
+    return completed;
+  }
+
   static void refreshInfo() async {
     String username = getLoggedInUser();
 

@@ -49,10 +49,15 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     bool loggedIn = Consts.loggedIn();
-
+    bool pathDone;
     if (loggedIn) {
       user = Consts.getLoggedInUser();
+      var pathDone = Consts.pathCompleted();
       selectedPage = 0;
+
+      if (!pathDone) {
+        selectedPage = 4;
+      }
     } else {
       selectedPage = 1;
     }
@@ -440,7 +445,24 @@ class _HomeState extends State<Home> {
       return Lobby(partyName: partyJoin.text, user: user);
     }
 
-    List<Widget> pages = [home, Consts.logginFirst, asyncFriend(), lobby()];
+    final completePath = ListView(
+      children: [
+        SizedBox(
+          height: 20,
+        ),
+        Center(
+          child: Text("Voltooi eerst het leerpad!"),
+        )
+      ],
+    );
+
+    List<Widget> pages = [
+      home,
+      Consts.logginFirst,
+      asyncFriend(),
+      lobby(),
+      completePath
+    ];
 
     // TODO: implement build
     return Scaffold(
