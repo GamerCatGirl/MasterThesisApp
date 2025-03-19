@@ -91,7 +91,10 @@ class _ProfileState extends State<Profile> {
           final data = doc.data() as Map<String, dynamic>;
           final passCheck = data['password'];
 
-          if (passCheck == pass) {
+          var hashedPass = Consts.encryptPass(pass);
+          print(hashedPass);
+
+          if (passCheck == hashedPass) {
             setState(() {
               if (data['path'] != null) {
                 learningPath = data['path'];

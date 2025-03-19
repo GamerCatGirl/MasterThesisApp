@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:math';
 import 'dart:html' as html;
 
 import 'package:flutter/material.dart';
 import 'package:mathapp/components/title.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
 
 class Consts {
   int maxMultiplyByHead = 12;
@@ -300,6 +302,13 @@ class Consts {
     "shapes7.JPG",
     "shapes8.JPG"
   ];
+
+  static String encryptPass(String password) {
+    var bytes = utf8.encode(password); // Convert password to bytes
+    var digest = sha256.convert(bytes);
+    var hashed = digest.toString();
+    return hashed;
+  }
 
   static Map<String, List> images = {
     "vierkant": imagesVierkant,

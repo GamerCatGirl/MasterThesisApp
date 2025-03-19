@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mathapp/Utils/consts.dart';
 import 'package:mathapp/components/rating.dart';
 import 'package:mathapp/components/title.dart';
 
@@ -230,8 +231,10 @@ class _SignInState extends State<Signin> {
     void makeUser() {
       CollectionReference dbUsers = db.collection("users");
 
+      String hashedPass = Consts.encryptPass(password.text);
+
       final doc = {
-        "password": password.text,
+        "password": hashedPass,
         "learningDisability": learningDisability,
         "pknow": pKnown,
         "plearn": pLearn,

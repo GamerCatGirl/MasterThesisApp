@@ -133,9 +133,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
 
   @override
   Widget build(BuildContext context) {
-    //showFormule = widget.showFormule;
     setupVars();
-    //Widget iconButton = IconButton(onPressed: (){}), icon: icon);
     double width = MediaQuery.of(context).size.width;
 
     double widthImage = width / 3 * 2;

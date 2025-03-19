@@ -224,6 +224,8 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
     setupExercise(newProgress);
     yourProgress.value = newProgress;
 
+    //TODO: update elo
+
     //TODO: Ranking
     if (newProgress == amountExercises) {
       progression.remove(widget.user);
@@ -249,8 +251,6 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
     var exercise = ValueListenableBuilder(
         valueListenable: yourProgress,
         builder: (context, value, child) {
-          print("in builder");
-          print(showFormule);
           return CompetitiveEx(
               showFormule: showFormule,
               z: z,
