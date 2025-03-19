@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => Profile(),
         '/login': (context) => Profile(),
         '/setting': (context) => Setting(),
-        //'/signIn': (context) => Signin(),
+        ////'/signIn': (context) => Signin(),
       },
       onGenerateRoute: (settings) {
         final args = settings.arguments as Map<String, dynamic>;

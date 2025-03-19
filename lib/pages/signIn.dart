@@ -333,7 +333,10 @@ class _SignInState extends State<Signin> {
     final upload = Row(
       children: [
         Spacer(),
-        ElevatedButton(onPressed: submitAnswers, child: Text('Maak Account')),
+        ElevatedButton.icon(
+            onPressed: submitAnswers,
+            icon: Icon(Icons.login),
+            label: Text('Maak Account')),
         SizedBox(
           width: 50,
         ),
@@ -353,12 +356,10 @@ class _SignInState extends State<Signin> {
         Row(
           children: [
             Spacer(),
-            ElevatedButton(
+            ElevatedButton.icon(
                 onPressed: widget.done,
-                //() {
-                //  Navigator.pushNamed(context, '/profile');
-                //},
-                child: Text("Login")),
+                icon: Icon(Icons.login),
+                label: Text("Login")),
             Spacer(),
           ],
         )
@@ -366,7 +367,7 @@ class _SignInState extends State<Signin> {
     );
     final page = ListView(
       children: [
-        Header(title: "Sign In"),
+        Header(title: "Aanmelden"),
         userNameWidget,
         passwordWidget,
         passwordRepeatWidget,

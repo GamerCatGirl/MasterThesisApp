@@ -146,7 +146,8 @@ class _ProfileState extends State<Profile> {
           ),
         ));
 
-    final loginButton = ElevatedButton(onPressed: login, child: Text('Login'));
+    final loginButton = ElevatedButton.icon(
+        onPressed: login, icon: Icon(Icons.login), label: Text('Login'));
     final signInButton =
         ElevatedButton(onPressed: _toSignIn, child: Text('Aanmelden'));
     final skillsButton =

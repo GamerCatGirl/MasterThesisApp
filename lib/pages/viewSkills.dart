@@ -237,14 +237,13 @@ class _SkillState extends State<Viewskills> {
       ),
       label: Text('Uitloggen'),
     );
-    /*
-    final logoutButton = IconButton(
+
+    final logoutButtonSmall = IconButton(
         onPressed: widget.logout,
         icon: Icon(
           Icons.logout,
           size: 40,
         ));
-  */
     final pageCompleteLearning = ListView(
       children: [
         SizedBox(
@@ -260,7 +259,20 @@ class _SkillState extends State<Viewskills> {
     final page = ListView(
       children: [
         space,
-        title,
+        Row(
+          children: [
+            SizedBox(
+              width: 80,
+            ),
+            Spacer(),
+            title,
+            Spacer(),
+            logoutButtonSmall,
+            SizedBox(
+              width: 20,
+            )
+          ],
+        ),
         h1,
         subH1,
         space,
