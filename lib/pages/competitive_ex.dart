@@ -1004,6 +1004,21 @@ class _CompetitiveState extends State<CompetitiveEx> {
     ];
 
     final figuresSelect = MultiSelectContainer(
+        itemsDecoration: MultiSelectDecorations(
+          decoration: BoxDecoration(
+              border: Border.all(color: Colors.purple[200]!),
+              borderRadius: BorderRadius.circular(20)),
+        ),
+        prefix: MultiSelectPrefix(
+          selectedPrefix: const Padding(
+            padding: EdgeInsets.only(right: 5),
+            child: Icon(
+              Icons.check,
+              color: Colors.white,
+              size: 14,
+            ),
+          ),
+        ),
         items: [
           MultiSelectCard(value: 'vierkant', label: labelVierkant),
           MultiSelectCard(value: 'rechthoek', label: 'Rechthoek'),
