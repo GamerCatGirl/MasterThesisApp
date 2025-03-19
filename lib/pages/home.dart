@@ -12,6 +12,7 @@ import 'package:mathapp/components/title.dart';
 import 'package:mathapp/components/title_tile.dart';
 import 'package:mathapp/pages/async_match.dart';
 import 'package:mathapp/pages/figure_theory.dart';
+import 'package:mathapp/pages/lobby.dart';
 import 'package:mathapp/pages/meetkunde_ex.dart';
 import 'dart:math';
 
@@ -257,7 +258,9 @@ class _HomeState extends State<Home> {
           if (val) {
             String you = user;
             String party = partyMake.text;
-
+            //setState(() {
+            //  selectedPage = 3;
+            //});
             Functions.toLobby(context, party, you);
           }
         });
@@ -268,8 +271,11 @@ class _HomeState extends State<Home> {
       checkInput(partyJoin, errorParty2, "Naam Party").then((val) {
         if (val) {
           String party = partyJoin.text;
+          setState(() {
+            selectedPage = 3;
+          });
 
-          Functions.toLobby(context, party, user);
+          //Functions.toLobby(context, party, user);
         }
       });
     }
@@ -430,7 +436,11 @@ class _HomeState extends State<Home> {
       );
     }
 
-    List<Widget> pages = [home, Consts.logginFirst, asyncFriend()];
+    Widget lobby() {
+      return Lobby(partyName: partyJoin.text, user: user);
+    }
+
+    List<Widget> pages = [home, Consts.logginFirst, asyncFriend(), lobby()];
 
     // TODO: implement build
     return Scaffold(

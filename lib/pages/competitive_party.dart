@@ -273,9 +273,9 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
         valueListenable: loading,
         builder: (context, value, child) => value ? loadingPage : exerciseBody);
 
-    return Scaffold(
-        body: ListView(
+    return //Scaffold( body:
+        ListView(
       children: [title, body],
-    ));
+    ); //);
   }
 }

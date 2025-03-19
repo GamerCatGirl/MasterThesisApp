@@ -6,6 +6,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:mathapp/Utils/database.dart';
 import 'package:mathapp/Utils/redirections.dart';
 import 'package:mathapp/components/title.dart';
+import 'package:mathapp/pages/competitive_party.dart';
 
 class Lobby extends StatefulWidget {
   final String partyName;
@@ -25,6 +26,19 @@ class _LobbyState extends State<Lobby> {
   FirebaseFirestore db = FirebaseFirestore.instance;
   late StreamSubscription listener;
 
+  Widget party = Text("no party");
+  int selectedPage = 0;
+
+  void startParty() {
+    setState(() {
+      party = CompetitiveParty(
+        partyName: partyName,
+        user: widget.user,
+      );
+      selectedPage = 1;
+    });
+  }
+
   void partyInfoChanged(data) {
     players.value = data["player"];
     var oldLeader = lobbyControler;
@@ -34,11 +48,10 @@ class _LobbyState extends State<Lobby> {
 
     if (start != null && start) {
       // start exercise
-      Functions.toCompExercise(context, partyName, widget.user);
+      //Functions.toCompExercise(context, partyName, widget.user);
+      startParty();
     }
 
-    print(lobbyControler);
-    print(widget.user);
     if ((lobbyControler != oldLeader) && (lobbyControler == widget.user)) {
       setState(() {
         lobbyControler;
@@ -87,11 +100,12 @@ class _LobbyState extends State<Lobby> {
     );
   }
 
-  void startParty() async {
+  void startPartyBuild() async {
     bool done = await Database.startParty(partyName);
 
     if (done) {
-      Functions.toCompExercise(context, partyName, widget.user);
+      startParty();
+      //Functions.toCompExercise(context, partyName, widget.user);
     }
   }
 
@@ -125,7 +139,7 @@ class _LobbyState extends State<Lobby> {
     var startButton = Center(
       child: SizedBox(
         width: 200,
-        child: ElevatedButton(onPressed: startParty, child: Text("Start")),
+        child: ElevatedButton(onPressed: startPartyBuild, child: Text("Start")),
       ),
     );
 
@@ -136,10 +150,12 @@ class _LobbyState extends State<Lobby> {
     );
 
     var startOrLoading = lobbyHead ? startButton : loading;
-
-    return Scaffold(
-        body: ListView(
+    Widget lobbyPage = ListView(
       children: [header, spacer, playersWidget, spacer, startOrLoading],
-    ));
+    );
+
+    List pages = [lobbyPage, party];
+
+    return Scaffold(body: pages[selectedPage]);
   }
 }
