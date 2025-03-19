@@ -68,13 +68,26 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final topicsSelect = MultiSelectContainer(
+        itemsDecoration: MultiSelectDecorations(
+          decoration: BoxDecoration(
+              border: Border.all(color: Colors.purple[200]!),
+              borderRadius: BorderRadius.circular(20)),
+        ),
+        prefix: MultiSelectPrefix(
+          selectedPrefix: const Padding(
+            padding: EdgeInsets.only(right: 5),
+            child: Icon(
+              Icons.check,
+              color: Colors.white,
+              size: 14,
+            ),
+          ),
+        ),
         items: [
           MultiSelectCard(value: 'vierkant', label: 'Vierkant'),
           MultiSelectCard(value: 'rechthoek', label: 'Rechthoek'),
           MultiSelectCard(value: 'driehoek', label: 'Driehoek'),
           MultiSelectCard(value: 'cirkel', label: 'Cirkel'),
-          MultiSelectCard(value: 'All', label: 'All'),
-          MultiSelectCard(value: 'Recommended', label: 'Recommended'),
         ],
         onChange: (allSelectedItems, selectedItem) {
           selectedItems = allSelectedItems;
@@ -85,13 +98,13 @@ class _HomeState extends State<Home> {
         });
 
     final opponentField = SizedBox(
-        width: 330,
+        width: 250,
         child: TextFormField(
           controller: opponent,
           onChanged: (value) => errorFriend.value = "",
           decoration: const InputDecoration(
             border: UnderlineInputBorder(),
-            labelText: 'Gebruikersnaam vriend (CAPS sensitive!)',
+            labelText: 'Gebruikersnaam vriend',
           ),
         ));
 
@@ -283,21 +296,29 @@ class _HomeState extends State<Home> {
             Spacer(),
             SizedBox(
               width: 250,
-              child: ElevatedButton(
+              child: ElevatedButton.icon(
                   onPressed: playRandom,
-                  child: Text("Random Opponent (Async)")),
+                  icon: Icon(Icons.play_circle_outline),
+                  label: Text("Willekeurige Tegenspeler")),
             ),
             Spacer()
           ],
         ),
+        Center(
+            child: Text(
+          "De tegenspeler speelt niet op hetzelfde moment!",
+          style: TextStyle(color: Colors.grey),
+        )),
         widthSpacer,
         Row(
           children: [
             Spacer(),
             SizedBox(
               width: 250,
-              child: ElevatedButton(
-                  onPressed: playBot, child: Text("Oefen tegen bot!")),
+              child: ElevatedButton.icon(
+                  icon: Icon(Icons.play_circle_outline),
+                  onPressed: playBot,
+                  label: Text("Oefen tegen bot")),
             ),
             Spacer()
           ],
@@ -309,6 +330,11 @@ class _HomeState extends State<Home> {
           style: TextStyle(fontSize: 30),
         )),
         Center(child: opponentField),
+        Center(
+            child: Text(
+          "OPGELET: hoofdletter gevoelig!",
+          style: TextStyle(color: Colors.grey),
+        )),
         errorFriendListener,
         widthSpacer,
         Row(
@@ -316,26 +342,38 @@ class _HomeState extends State<Home> {
             Spacer(),
             SizedBox(
               width: 250,
-              child: ElevatedButton(
-                  onPressed: playFriendAsync,
-                  child: Text("Play Against Friend (Async)")),
+              child: ElevatedButton.icon(
+                  icon: Icon(Icons.play_circle_outline),
+                  onPressed: playFriendSync,
+                  label: Text("Speel tegen vriend")),
             ),
             Spacer()
           ],
         ),
+        Center(
+            child: Text(
+          "De tegenspeler moet op zijn scherm jouw gebruikersnaam invullen!",
+          style: TextStyle(color: Colors.grey),
+        )),
         widthSpacer,
         Row(
           children: [
             Spacer(),
             SizedBox(
               width: 250,
-              child: ElevatedButton(
-                  onPressed: playFriendSync,
-                  child: Text("Play Against Friend (Sync)")),
+              child: ElevatedButton.icon(
+                  icon: Icon(Icons.play_circle_outline),
+                  onPressed: playFriendAsync,
+                  label: Text("Speel tegen vriend (offline)")),
             ),
             Spacer()
           ],
         ),
+        Center(
+            child: Text(
+          "De tegenspeler zal niet op hetzelfde moment tegen jou spelen!",
+          style: TextStyle(color: Colors.grey),
+        )),
         widthSpacer,
         Center(
             child: Text(
@@ -350,8 +388,10 @@ class _HomeState extends State<Home> {
             Spacer(),
             SizedBox(
               width: 250,
-              child: ElevatedButton(
-                  onPressed: makeParty, child: Text("Maak een party!")),
+              child: ElevatedButton.icon(
+                  icon: Icon(Icons.add),
+                  onPressed: makeParty,
+                  label: Text("Maak een party!")),
             ),
             Spacer()
           ],
@@ -370,8 +410,10 @@ class _HomeState extends State<Home> {
             Spacer(),
             SizedBox(
               width: 250,
-              child: ElevatedButton(
-                  onPressed: joinParty, child: Text("Play In Party (Sync)")),
+              child: ElevatedButton.icon(
+                  icon: Icon(Icons.play_circle_outline),
+                  onPressed: joinParty,
+                  label: Text("Ga naar party!")),
             ),
             Spacer()
           ],
