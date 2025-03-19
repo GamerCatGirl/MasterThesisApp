@@ -135,11 +135,11 @@ class _SkillState extends State<Viewskills> {
       height: 20,
     );
 
-    final title = Center(child: Header(title: "Logged in as " + user));
+    final title = Center(child: Header(title: "Profiel van " + user));
 
     final h1 = Center(
       child: Text(
-        "Performance",
+        "Hoe goed scoor je tegenover je klasgenoten?",
         style: TextStyle(fontSize: 25),
       ),
     );
@@ -158,7 +158,7 @@ class _SkillState extends State<Viewskills> {
 
     final subH2 = Center(
       child: Text(
-        "Dit is gebaseerd op hoe veel oefeningen je maakt tegenover je klasgenoten.",
+        "Dit is gebaseerd op het aantal oefeningen je maakt tegenover je klasgenoten.",
       ),
     );
 
@@ -230,11 +230,21 @@ class _SkillState extends State<Viewskills> {
           }
         });
 
-    final logoutButton = ElevatedButton(
+    final logoutButton = ElevatedButton.icon(
       onPressed: widget.logout,
-      child: Text('Uitloggen'),
+      icon: Icon(
+        Icons.logout,
+      ),
+      label: Text('Uitloggen'),
     );
-
+    /*
+    final logoutButton = IconButton(
+        onPressed: widget.logout,
+        icon: Icon(
+          Icons.logout,
+          size: 40,
+        ));
+  */
     final pageCompleteLearning = ListView(
       children: [
         SizedBox(
@@ -306,7 +316,7 @@ class _SkillState extends State<Viewskills> {
         ),
         Center(
           child: SizedBox(
-            width: 200,
+            width: 150,
             child: logoutButton,
           ),
         )

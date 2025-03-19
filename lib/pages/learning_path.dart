@@ -252,8 +252,8 @@ class _LearningPathState extends State<LearningPath> {
   @override
   Widget build(BuildContext context) {
     List<Widget> pathWidgets = [
-      Header(title: "H5: Oppervlakte"),
-      Text("Leerpad van " + user),
+      //Header(title: "H5: Oppervlakte"),
+      //Text("Leerpad van " + user),
     ];
 
     void addCustoms() {
