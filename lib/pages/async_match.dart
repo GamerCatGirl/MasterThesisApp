@@ -159,9 +159,8 @@ class _CompetitivePartyState extends State<AsyncMatch> {
     String opponent = widget.opponent;
     String you = widget.user;
     double progressOpp = progression[opponent]!.value;
-
     setState(() {
-      winner = (progressOpp == 1) ? opponent : you;
+      winner = (progressOpp.round() == 1) ? opponent : you;
       done = true;
     });
   }
@@ -475,10 +474,21 @@ class _CompetitivePartyState extends State<AsyncMatch> {
         valueListenable: loading,
         builder: (context, value, child) => value ? loadingPage : exerciseBody);
 
+    var color = (winner == widget.user) ? Colors.green : Colors.red;
+
     if (done) {
       body = Column(
         children: [
-          Text("Winner: " + winner),
+          SizedBox(
+            height: 30,
+          ),
+          Text(
+            "Winner: " + winner,
+            style: TextStyle(fontSize: 30, color: color),
+          ),
+          SizedBox(
+            height: 30,
+          ),
           SizedBox(
             width: 20,
           ),

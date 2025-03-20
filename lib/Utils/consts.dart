@@ -405,6 +405,11 @@ class Consts {
     return path;
   }
 
+  static void updatePathCompletion(List pathCompletion) {
+    var pathCompletedStr = pathCompletion.toString();
+    saveToCookies("pathCompletion", pathCompletedStr);
+  }
+
   static List<bool> retrievePathCompletion() {
     var pathCompletionStr = retrieveFromCookies("pathCompletion");
     int length = pathCompletionStr.length;

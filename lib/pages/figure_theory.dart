@@ -496,6 +496,8 @@ class _FigureState extends State<FigureTheory> {
         .doc(widget.user)
         .set({"pathCompletion": pathCompletion}, SetOptions(merge: true));
 
+    Consts.updatePathCompletion(pathCompletion);
+
     //post to DB
     //post matchIDs played
     CollectionReference dbEx = db.collection("exercises");

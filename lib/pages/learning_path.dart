@@ -390,7 +390,10 @@ class _LearningPathState extends State<LearningPath> {
             opponent: "bot",
             exerciseName: value,
             done: () {
-              //TODO: update learning path
+              setState(() {
+                path = Consts.retrievePath();
+                pathCompletion = Consts.retrievePathCompletion();
+              });
               selectedPage.value = 0;
             },
           );
