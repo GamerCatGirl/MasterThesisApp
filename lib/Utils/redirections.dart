@@ -18,6 +18,7 @@ class Functions {
           builder: (context) => CompetitiveParty(
                 partyName: partyName,
                 user: user,
+                done: () {},
               )),
     );
   }

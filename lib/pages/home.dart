@@ -11,6 +11,7 @@ import 'package:mathapp/components/start_exercise.dart';
 import 'package:mathapp/components/title.dart';
 import 'package:mathapp/components/title_tile.dart';
 import 'package:mathapp/pages/async_match.dart';
+import 'package:mathapp/pages/competitive_party.dart';
 import 'package:mathapp/pages/figure_theory.dart';
 import 'package:mathapp/pages/lobby.dart';
 import 'package:mathapp/pages/meetkunde_ex.dart';
@@ -36,6 +37,7 @@ class _HomeState extends State<Home> {
   List<String> selectedItems = [];
 
   String playAgainst = "";
+  String partyName = "";
 
   final TextEditingController opponent = TextEditingController();
   final TextEditingController partyMake = TextEditingController();
@@ -240,15 +242,22 @@ class _HomeState extends State<Home> {
           List<String> partyUsers = [you, opponentName];
           partyUsers.sort();
 
-          String partyName = partyUsers.join("%%");
+          partyName = partyUsers.join("%%");
 
           //TODO: check if party exists -> join
           Database.partyExists(partyName).then((exists) {
             if (exists) {
-              Functions.toCompExercise(context, partyName, user);
+              setState(() {
+                selectedPage = 5;
+              });
+
+              //Functions.toCompExercise(context, partyName, user);
             } else if (checkSelect()) {
               Database.makeParty(partyName, partyUsers, selectedItems);
-              Functions.toCompExercise(context, partyName, user);
+              setState(() {
+                selectedPage = 5;
+              });
+              //Functions.toCompExercise(context, partyName, user);
             }
 
             //ELSE: waiting page for opponent
@@ -441,6 +450,18 @@ class _HomeState extends State<Home> {
       );
     }
 
+    Widget syncFriend() {
+      return CompetitiveParty(
+        partyName: partyName,
+        user: user,
+        done: () {
+          setState(() {
+            selectedPage = 0;
+          });
+        },
+      );
+    }
+
     Widget lobby() {
       return Lobby(partyName: partyJoin.text, user: user);
     }
@@ -457,11 +478,12 @@ class _HomeState extends State<Home> {
     );
 
     List<Widget> pages = [
-      home,
-      Consts.logginFirst,
-      asyncFriend(),
-      lobby(),
-      completePath
+      home, //0
+      Consts.logginFirst, //1
+      asyncFriend(), //2
+      lobby(), //3
+      completePath, //4
+      syncFriend() //5
     ];
 
     // TODO: implement build

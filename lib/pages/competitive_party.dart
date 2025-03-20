@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:mathapp/Utils/consts.dart';
 import 'package:mathapp/Utils/database.dart';
+import 'package:mathapp/Utils/elo.dart';
 import 'package:mathapp/components/title.dart';
 import 'package:mathapp/pages/competitive_ex.dart';
 import 'package:mathapp/pages/exercises.dart';
@@ -17,8 +18,13 @@ import 'package:mathapp/pages/setting.dart';
 class CompetitiveParty extends StatefulWidget {
   final String partyName;
   final String user;
+  final VoidCallback done;
 
-  CompetitiveParty({super.key, required this.partyName, required this.user});
+  CompetitiveParty(
+      {super.key,
+      required this.partyName,
+      required this.user,
+      required this.done});
 
   @override
   State<CompetitiveParty> createState() => _CompetitivePartyState();
@@ -32,6 +38,14 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
   List<dynamic> exercises = [];
   int amountPlayers = 2;
   int placing = 0;
+
+  int seconds = 0;
+
+  void updateSeconds() {
+    seconds += 1;
+  }
+
+  late Timer stopWatch;
 
   int z = 0;
   int breedte = 0;
@@ -56,6 +70,8 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
   ValueNotifier<bool> loading = ValueNotifier(true);
   ValueNotifier<List<String>> activePlayers = ValueNotifier([]);
   FirebaseFirestore db = FirebaseFirestore.instance;
+
+  List<String> updatedUsers = [];
 
   List<String> rankings = [];
 
@@ -90,7 +106,8 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
       if (progressPlayer >= 1) {
         if (done) {
           progression.remove(user);
-        } else {
+        } else if (!updatedUsers.contains(user)) {
+          updatedUsers.add(user);
           placing += 1;
         }
         rankings.add(user);
@@ -103,6 +120,10 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
     super.initState();
     partyID = widget.partyName;
     partyName = widget.partyName;
+
+    stopWatch = Timer.periodic(Duration(seconds: 1), (timer) {
+      updateSeconds();
+    });
 
     if (partyName.contains("%%")) {
       partyName = partyName.replaceAll("%%", " VS ");
@@ -128,6 +149,7 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
       yourElo["cirkel"] = res[1];
       yourElo["rechthoek"] = res[2];
       yourElo["driehoek"] = res[3];
+      yourElo["conversion"] = res[4];
     });
 
     Database.getAllBots().then((res) {
@@ -171,7 +193,6 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
       setupExercise(yourProgress.value);
 
       if (activePlayers.value.length == amountPlayers) {
-        print(activePlayers.value);
         setState(() {
           loading.value = false;
           progression;
@@ -184,7 +205,6 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
     if (idx == exercises.length) {
       return;
     }
-
     Map<String, dynamic> exercise = exercises[idx];
     figure = exercise["figure"];
     image = exercise["image"];
@@ -194,7 +214,6 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
       var eloFigure = eloAndTFigure["elo"];
       String bot = Consts.getClosetsBot(eloFigure);
       var neededInfoBot = bots[bot];
-      print(neededInfoBot);
       showFormule = neededInfoBot["showFormule"];
     }
 
@@ -209,6 +228,8 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
       z = exercise["basis"];
       hoogte = exercise["hoogte"];
     }
+
+    seconds = 0;
   }
 
   void exerciseSolved() {
@@ -218,17 +239,48 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
     double progress = 1 / amountExercises * newProgress;
 
     progression[widget.user]?.value = progress;
-    print(progress);
     Database.updateProgress(widget.user, progress);
+
+    var eloAndT = yourElo[figure];
+    var elo = eloAndT["elo"];
+    var t = eloAndT["t"];
+    String botName = Consts.getClosetsBot(elo);
+    var bot = bots[botName];
+    var key =
+        "Speed-" + figure.substring(0, 1).toUpperCase() + figure.substring(1);
+    var eloBotStr = botName.substring(3);
+    var eloBot = int.parse(eloBotStr);
+    var speedBot = bot[key];
+    var yourSpeed = seconds;
+    var won = !(speedBot < yourSpeed);
+    var accuracy = won ? 1 : speedBot / yourSpeed;
+    var newElo =
+        Elo.updateElo(elo, eloBot, !(speedBot < yourSpeed), t, accuracy);
+
+    eloAndT["elo"] = newElo[0];
+    eloAndT["t"] = newElo[1];
 
     setupExercise(newProgress);
     yourProgress.value = newProgress;
 
-    //TODO: update elo
-
-    //TODO: Ranking
     if (newProgress == amountExercises) {
       progression.remove(widget.user);
+
+      Map<String, List> exercisesToPost = {
+        "vierkant": [],
+        "rechthoek": [],
+        "cirkel": [],
+        "driehoek": []
+      };
+      int id = 0;
+      for (var ex in exercises) {
+        String fig = ex["figure"];
+        String idToPost = partyID + id.toString();
+        exercisesToPost[fig]!.add(idToPost);
+        id += 1;
+      }
+      Database.updateEloAndEx(widget.user, yourElo, exercisesToPost);
+
       setState(() {
         placing += 1;
         done = true;
@@ -298,9 +350,37 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
         valueListenable: loading,
         builder: (context, value, child) => value ? loadingPage : exerciseBody);
 
+    var duringEx = [title, body];
+    var textYourPlace = Center(
+      child: Text(
+        "Je eindigt op plaats: " + placing.toString(),
+        style: TextStyle(fontSize: 20),
+      ),
+    );
+    //var buttonExercise =
+    var afterEx = [
+      title,
+      progressionBars,
+      SizedBox(
+        height: 20,
+      ),
+      textYourPlace,
+      SizedBox(
+        height: 20,
+      ),
+      Center(
+        child: ElevatedButton.icon(
+            icon: Icon(Icons.home),
+            onPressed: widget.done,
+            label: Text("Terug naar oefen pagina!")),
+      )
+    ];
+
+    var page = done ? afterEx : duringEx;
+
     return //Scaffold( body:
         ListView(
-      children: [title, body],
+      children: page,
     ); //);
   }
 }

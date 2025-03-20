@@ -151,7 +151,13 @@ class _LobbyState extends State<Lobby> {
 
     List pages = [
       lobbyPage,
-      CompetitiveParty(partyName: widget.partyName, user: widget.user)
+      CompetitiveParty(
+        partyName: widget.partyName,
+        user: widget.user,
+        done: () {
+          print("Todo: implement lobby 157");
+        },
+      )
     ];
 
     return Scaffold(body: pages[selectedPage]);
