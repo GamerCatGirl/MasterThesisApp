@@ -103,6 +103,10 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
       double progressPlayer = doc["progress"];
       progression[user]?.value = progressPlayer;
 
+      //TODO: if progression player to 0 -> delete from party! (left)
+
+      //TODO: if one player finished delete party?? (later never accesed normally)
+
       if (progressPlayer >= 1) {
         if (done) {
           progression.remove(user);
@@ -159,10 +163,7 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
     activePlayers.value.add("you");
     Database.joinParty(partyID, widget.user);
 
-    //TODO: get info about match out of database
     Database.getPartyInfo(partyID).then((data) {
-      //TODO:
-
       exercises = data["exercises"] as List<dynamic>;
       stepSize = 1 / exercises.length;
 

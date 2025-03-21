@@ -370,7 +370,9 @@ class _LearningPathState extends State<LearningPath> {
         }
       });
 
-      pathWidgets.removeLast();
+      if (pathWidgets.length > 0) {
+        pathWidgets.removeLast();
+      }
     }
 
     addCustoms();

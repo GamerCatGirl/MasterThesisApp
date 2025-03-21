@@ -17,7 +17,7 @@ class Logic extends StatefulWidget {
 
 class _LogicState extends State<Logic> {
   // VARIABLES
-  late int selectedPage;
+  int selectedPage = 2;
 
   String user = "Preview";
 
