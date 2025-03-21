@@ -413,9 +413,14 @@ class Database {
     FirebaseFirestore db = FirebaseFirestore.instance;
     CollectionReference partiesDB = db.collection("activeParties");
 
-    partiesDB.doc(partyName).update({
-      "player": FieldValue.arrayRemove([userName]) // Add "newTag" to the array
-    });
+    try {
+      partiesDB.doc(partyName).update({
+        "player":
+            FieldValue.arrayRemove([userName]) // Add "newTag" to the array
+      });
+    } catch (e) {
+      print("no party to update");
+    }
   }
 
   static void changeLeader(String partyName) {
@@ -430,8 +435,11 @@ class Database {
   static void deleteParty(String partyName) {
     FirebaseFirestore db = FirebaseFirestore.instance;
     CollectionReference partiesDB = db.collection("activeParties");
-
-    partiesDB.doc(partyName).delete();
+    try {
+      partiesDB.doc(partyName).delete();
+    } catch (e) {
+      print("delete of party: $partyName failed");
+    }
   }
 
   static void leaderChanged(String partyName) {

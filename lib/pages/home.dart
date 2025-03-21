@@ -288,8 +288,6 @@ class _HomeState extends State<Home> {
           setState(() {
             selectedPage = 3;
           });
-
-          //Functions.toLobby(context, party, user);
         }
       });
     }
@@ -463,7 +461,14 @@ class _HomeState extends State<Home> {
     }
 
     Widget lobby() {
-      return Lobby(partyName: partyJoin.text, user: user);
+      return Lobby(
+          partyName: partyJoin.text,
+          user: user,
+          done: () {
+            setState(() {
+              selectedPage = 0;
+            });
+          });
     }
 
     final completePath = ListView(

@@ -11,8 +11,13 @@ import 'package:mathapp/pages/competitive_party.dart';
 class Lobby extends StatefulWidget {
   final String partyName;
   final String user;
+  final VoidCallback done;
 
-  Lobby({super.key, required this.partyName, required this.user});
+  Lobby(
+      {super.key,
+      required this.partyName,
+      required this.user,
+      required this.done});
 
   @override
   State<Lobby> createState() => _LobbyState();
@@ -29,6 +34,7 @@ class _LobbyState extends State<Lobby> {
   int selectedPage = 0;
 
   void startParty() {
+    listener.cancel();
     setState(() {
       selectedPage = 1;
     });
@@ -156,6 +162,7 @@ class _LobbyState extends State<Lobby> {
         user: widget.user,
         done: () {
           print("Todo: implement lobby 157");
+          widget.done();
         },
       )
     ];

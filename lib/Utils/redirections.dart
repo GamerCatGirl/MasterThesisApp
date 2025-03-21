@@ -33,6 +33,11 @@ class Functions {
 
   static void toLobby(BuildContext context, String party, String user) {
     Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => Lobby(partyName: party, user: user)));
+        builder: (context) => Lobby(
+            partyName: party,
+            user: user,
+            done: () {
+              print("TODO: implement");
+            })));
   }
 }
