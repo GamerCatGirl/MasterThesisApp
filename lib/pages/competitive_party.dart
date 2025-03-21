@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -38,6 +39,7 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
   List<dynamic> exercises = [];
   int amountPlayers = 2;
   int placing = 0;
+  int seed = Random().nextInt(1000000000);
 
   int seconds = 0;
 
@@ -276,11 +278,18 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
       int id = 0;
       for (var ex in exercises) {
         String fig = ex["figure"];
-        String idToPost = partyID + id.toString();
+        String idToPost = partyID + id.toString() + seed.toString();
         exercisesToPost[fig]!.add(idToPost);
         id += 1;
       }
+      print("updating elo...");
       Database.updateEloAndEx(widget.user, yourElo, exercisesToPost);
+      print("deleting party...$partyID");
+      try {
+        Database.deleteParty(partyID);
+      } catch (e) {
+        print("party already deleted");
+      }
 
       setState(() {
         placing += 1;
@@ -372,7 +381,15 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
       Center(
         child: ElevatedButton.icon(
             icon: Icon(Icons.home),
-            onPressed: widget.done,
+            onPressed: () {
+              print("pressing on go back");
+              try {
+                Database.leaveParty(partyName, widget.user);
+              } catch (e) {
+                print("error in leaving party");
+              }
+              widget.done();
+            },
             label: Text("Terug naar oefen pagina!")),
       )
     ];

@@ -60,19 +60,6 @@ class _LearningPathState extends State<LearningPath> {
 
   void theoryCallback() {
     selectedPage.value = 4;
-    /*
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => OppervlakteTheory(
-          done: () {},
-          solved: theoryDoneOppervlakte,
-          user: user,
-          path: path,
-          pathCompletion: pathCompletion,
-        ),
-      ),
-    );
-    */
   }
 
   void makeCompEx(String fig) {
