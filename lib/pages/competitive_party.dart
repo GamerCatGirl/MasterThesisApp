@@ -382,7 +382,6 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
         child: ElevatedButton.icon(
             icon: Icon(Icons.home),
             onPressed: () {
-              print("pressing on go back");
               try {
                 Database.leaveParty(partyName, widget.user);
               } catch (e) {

@@ -3,6 +3,7 @@ import 'package:mathapp/pages/competitive_party.dart';
 import 'package:mathapp/pages/home.dart';
 import 'package:mathapp/pages/learning_path.dart';
 import 'package:mathapp/pages/lobby.dart';
+import 'package:mathapp/pages/logic.dart';
 
 class Functions {
   void toLearningPatch(String user, List<dynamic> path,
@@ -31,13 +32,18 @@ class Functions {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) => Home()));
   }
 
+  static void toLogic(BuildContext context) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => Logic()));
+  }
+
   static void toLobby(BuildContext context, String party, String user) {
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => Lobby(
             partyName: party,
             user: user,
             done: () {
-              print("TODO: implement");
+              toLogic(context);
             })));
   }
 }
