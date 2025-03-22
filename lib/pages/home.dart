@@ -309,6 +309,7 @@ class _HomeState extends State<Home> {
         ),
         errorSelectListener,
         widthSpacer,
+        /*
         Row(
           children: [
             Spacer(),
@@ -327,6 +328,7 @@ class _HomeState extends State<Home> {
           "De tegenspeler speelt niet op hetzelfde moment!",
           style: TextStyle(color: Colors.grey),
         )),
+        */
         widthSpacer,
         Row(
           children: [
@@ -374,6 +376,7 @@ class _HomeState extends State<Home> {
           style: TextStyle(color: Colors.grey),
         )),
         widthSpacer,
+        /*
         Row(
           children: [
             Spacer(),
@@ -392,6 +395,7 @@ class _HomeState extends State<Home> {
           "De tegenspeler zal niet op hetzelfde moment tegen jou spelen!",
           style: TextStyle(color: Colors.grey),
         )),
+        */
         widthSpacer,
         Center(
             child: Text(
