@@ -749,7 +749,7 @@ class _FigureState extends State<FigureTheory> {
           var exercise = ListView(
             children: [
               Text("Oppervlakte"),
-              Spacer(),
+              //Spacer(),
               ValueListenableBuilder<int>(
                 valueListenable: ownProgress,
                 builder: (context, value, child) {
@@ -800,7 +800,7 @@ class _FigureState extends State<FigureTheory> {
                       },
                     )
                   : Text(''),
-              Spacer(),
+              //Spacer(),
               ValueListenableBuilder(
                   valueListenable: ownProgress,
                   builder: (context, value, child) {
@@ -815,7 +815,7 @@ class _FigureState extends State<FigureTheory> {
                         figure: figure,
                         callback: exerciseSolved);
                   }),
-              Spacer(),
+              //Spacer(),
             ],
           );
           if (value) {
