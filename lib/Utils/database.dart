@@ -230,6 +230,9 @@ class Database {
     FirebaseFirestore db = FirebaseFirestore.instance;
     CollectionReference exDB = db.collection(dbName);
 
+    print("db Name: $dbName");
+    print("user: $user");
+
     var doc = await exDB.where("user", isEqualTo: user).orderBy("elo").get();
 
     if (doc.size > 0) {
