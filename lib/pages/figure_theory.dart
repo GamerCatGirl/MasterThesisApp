@@ -416,21 +416,23 @@ class _FigureState extends State<FigureTheory> {
       idx = Random().nextInt(maxIDX);
       imageChosen = imagesRechthoek[idx];
       pathImage = "assets/images/rechthoek/";
-      breedte = Random().nextInt(Consts().maxMultiplyByHead + 1);
+      breedte = Random().nextInt(Consts().maxMultiplyByHead) + 1;
     } else if (figure == "driehoek") {
       maxIDX = imagesDriehoek.length;
       idx = Random().nextInt(maxIDX);
       imageChosen = imagesDriehoek[idx];
       pathImage = "assets/images/driehoek/";
-      hoogte = Random().nextInt(Consts().maxMultiplyByHead + 1);
+      hoogte = Random().nextInt(Consts().maxMultiplyByHead) + 1;
     } else if (figure == "combined") {
-      hoogte = Random().nextInt(Consts().maxMultiplyByHead + 1);
-      breedte = Random().nextInt(Consts().maxMultiplyByHead + 1);
+      hoogte = Random().nextInt(Consts().maxMultiplyByHead) + 1;
+      breedte = Random().nextInt(Consts().maxMultiplyByHead) + 1;
     }
 
     image = pathImage + imageChosen;
-    z = Random().nextInt(Consts().maxMultiplyByHead) +
-        1; //TODO: hou rekening met elo
+    z = Random().nextInt(Consts().maxMultiplyByHead) + 1;
+    if (figure == "rechthoek" && z == breedte) {
+      z = z + 1; //anders zou het een vierkant zijn
+    }
     generated = true;
     eloExercise = elo.floor();
     return;
