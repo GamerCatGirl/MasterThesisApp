@@ -45,11 +45,11 @@ class _LearningPathState extends State<LearningPath> {
   }
 
   IconData theory = Icons.article_outlined;
-  IconData iconVierkantEx = Icons.square;
+  IconData iconVierkantEx = Icons.square_outlined;
   IconData iconTriangleEx = Icons.change_history_sharp;
   IconData iconOppervlakte = Icons.category_outlined;
   IconData iconCirlceEx = Icons.circle_outlined;
-  IconData iconRectangle = Icons.crop_16_9_outlined;
+  IconData iconRectangle = Icons.crop_16_9_sharp;
   IconData iconPlattegrond = Icons.design_services;
   IconData classExercise = Icons.diversity_3;
   IconData iconSkip = Icons.double_arrow_rounded;

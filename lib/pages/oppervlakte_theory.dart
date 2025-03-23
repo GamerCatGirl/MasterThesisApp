@@ -33,7 +33,7 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
   IconData iconVierkantEx = Icons.square_outlined;
   IconData iconTriangleEx = Icons.change_history_sharp;
   IconData iconCirlceEx = Icons.circle_outlined;
-  IconData iconRectangle = Icons.crop_16_9_outlined;
+  IconData iconRectangle = Icons.crop_16_9_sharp;
   final pGuessInit = 0.3;
   final pSlippInit = 0.1;
   final pLearningInfluence = 0.02;
@@ -103,7 +103,6 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
   void checkCompleted() {
     if (meetkundeLevel.length >= 8) {
       //TODO: verander naar 9 al driehoek ook is toegevoegd
-      print("postToDB?");
       CollectionReference dbExercises = db.collection("exercises");
 
       final docRef = dbExercises.doc(widget.user);
@@ -278,7 +277,6 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
 
     final docRef = dbExercises.doc(widget.user);
     docRef.get().then((doc) {
-      print(doc);
       var answers = doc['oppervlakteTheory'];
       var answersCorrection = doc['oppervlakteTheoryResults'];
 
