@@ -58,9 +58,11 @@ class _FigureInputTileState extends State<FigureInputTile> {
         widget.icon,
         size: 60,
       ),
-      SizedBox(width: 100, child: inputField),
+      SizedBox(width: 130, child: inputField),
       //TODO: question mark
-
+      SizedBox(
+        width: 300,
+      ),
       //TODO: show answer
       answer,
 

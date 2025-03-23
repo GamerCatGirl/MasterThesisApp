@@ -23,10 +23,12 @@ class _FormuleInputTileState extends State<FormuleInputTile> {
   final TextEditingController inputText = TextEditingController();
   var answer = SizedBox(child: Text(""));
 
-  String tipVierkant = "Gebruik z";
-  String tipRechthoek = "Gebruik l en b";
-  String tipCirkel = "Gebruik staal of diameter";
-  String tipCirkel2 = "Gebruik 3.14";
+  String tipVierkant = "Gebruik z (voor zijde)";
+  String tipVierkant2 = "Gebruik geen macht";
+  String tipRechthoek = "Gebruik l (voor lengte)";
+  String tipRechthoek2 = "Gebruik b (voor breedte)";
+  String tipCirkel = "Gebruik straal of r";
+  String tipCirkel2 = "Gebruik 3,14";
   String tipDriehoek = "Gebruik b en h";
   String tipDriehoek2 = "Er is een deling door 2";
 
@@ -34,7 +36,7 @@ class _FormuleInputTileState extends State<FormuleInputTile> {
   String formuleRechthoek = "lxb";
   String formuleRechthoek2 = "bxl";
   String formuleCirkel = "straalxstraalx3,14";
-  String formuleCirkel2 = "diameterx3,14";
+  String formuleCirkel2 = "rxrx3,14";
   String formuleDriehoek = "(bxh):2";
   String formuleDriehoek2 = "(hxb):2";
 
@@ -55,7 +57,8 @@ class _FormuleInputTileState extends State<FormuleInputTile> {
   @override
   Widget build(BuildContext context) {
     var input = widget.controller.text;
-    var inputWithoutSpaces = input.replaceAll(' ', '');
+    var inputWithoutdots = input.replaceAll('.', ',');
+    var inputWithoutSpaces = inputWithoutdots.replaceAll(' ', '');
 
     //TODO: post if results are correct false so we do not need to check it again later
 
@@ -63,10 +66,14 @@ class _FormuleInputTileState extends State<FormuleInputTile> {
       formule = formuleVierkant;
       formule2 = formuleVierkant;
       hint1 = tipVierkant;
+      hint2 = tipVierkant2;
+      amountHints = 2;
     } else if (widget.name.toLowerCase() == "rechthoek") {
       formule = formuleRechthoek;
       formule2 = formuleRechthoek2;
       hint1 = tipRechthoek;
+      hint2 = tipRechthoek2;
+      amountHints = 2;
     } else if (widget.name.toLowerCase() == "driehoek") {
       formule = formuleDriehoek;
       formule2 = formuleDriehoek2;
@@ -91,7 +98,7 @@ class _FormuleInputTileState extends State<FormuleInputTile> {
         currentHint += 1;
         setState(() {
           showHintText = Text(
-              "All hints have been given, press again to show hints again");
+              "Alle hints zijn getoond, klik opnieuw om de hints te doorlopen");
         });
       } else if ((currentHint == 2 && amountHints == 1) || (currentHint == 3)) {
         currentHint = 1;
@@ -148,6 +155,15 @@ class _FormuleInputTileState extends State<FormuleInputTile> {
       }
     }
 
+    Widget spaceLeft = SizedBox(
+      width: 100,
+    );
+
+    Widget spaceHint = SizedBox(
+      width: 300,
+      child: showHintText,
+    );
+
     return Row(children: [
       Spacer(),
       Icon(
@@ -157,7 +173,7 @@ class _FormuleInputTileState extends State<FormuleInputTile> {
       SizedBox(width: 130, child: inputField),
       answer,
       iconHintPlacer,
-      showHintText,
+      spaceHint,
       //TODO: question mark/ tip
       //TODO: check answer
       Spacer(),
