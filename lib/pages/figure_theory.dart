@@ -429,8 +429,8 @@ class _FigureState extends State<FigureTheory> {
     }
 
     image = pathImage + imageChosen;
-    z = Random()
-        .nextInt(Consts().maxMultiplyByHead + 1); //TODO: hou rekening met elo
+    z = Random().nextInt(Consts().maxMultiplyByHead) +
+        1; //TODO: hou rekening met elo
     generated = true;
     eloExercise = elo.floor();
     return;
