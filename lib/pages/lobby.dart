@@ -161,7 +161,6 @@ class _LobbyState extends State<Lobby> {
         partyName: widget.partyName,
         user: widget.user,
         done: () {
-          print("Todo: implement lobby 157");
           widget.done();
         },
       )

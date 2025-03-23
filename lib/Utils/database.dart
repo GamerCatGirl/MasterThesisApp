@@ -574,7 +574,6 @@ class Database {
 
     if (selectedItems.contains("Recommended")) {
       skills.remove("Recommended");
-      //TODO: get Elo of users
     } else {
       for (int i = 0; i < amountExercises; i++) {
         int idxSkill = Random().nextInt(skills.length);

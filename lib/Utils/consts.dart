@@ -519,6 +519,9 @@ class Consts {
     if (figure == "vierkant") {
       return {"z": random1};
     } else if (figure == "rechthoek") {
+      if (random1 == random2) {
+        random1 += 1;
+      }
       return {"breedte": random1, "lengte": random2};
     } else if (figure == "driehoek") {
       return {"basis": random1, "hoogte": random2};

@@ -282,9 +282,9 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
         exercisesToPost[fig]!.add(idToPost);
         id += 1;
       }
-      print("updating elo...");
+
       Database.updateEloAndEx(widget.user, yourElo, exercisesToPost);
-      print("deleting party...$partyID");
+
       try {
         Database.deleteParty(partyID);
       } catch (e) {
