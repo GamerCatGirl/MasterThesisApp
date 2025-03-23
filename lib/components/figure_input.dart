@@ -60,9 +60,7 @@ class _FigureInputTileState extends State<FigureInputTile> {
       ),
       SizedBox(width: 130, child: inputField),
       //TODO: question mark
-      SizedBox(
-        width: 300,
-      ),
+      //SizedBox(width: 300,),
       //TODO: show answer
       answer,
 

@@ -188,8 +188,7 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
         //driehoekFormule == "" ||
         cirkelFormule == "") {
       setState(() {
-        error =
-            "Please fill in all fields, if you don't know the answer fill in '/'";
+        error = "Vul alle velden in, als je het antwoord niet weet vul '/' in";
       });
     } else {
       tries -= 1;
@@ -197,6 +196,8 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
       if (tries == 0) {
         textButton = "Ga terug naar leerpad";
         error = "Geen zorgen, we zullen later opnieuw proberen :)";
+      } else {
+        error = "";
       }
 
       setState(() {
@@ -425,7 +426,10 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
 
   @override
   Widget build(BuildContext context) {
-    final title = Header(title: "Oppervlakte");
+    final title = Center(
+      child: Header(title: "Oppervlakte"),
+    );
+
     final subTitle = Text("Already made: " + widget.solved.toString());
 
     final vierkantNameWidget = FigureInputTile(
@@ -548,26 +552,57 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
           children: [
             Spacer(),
             ElevatedButton(
-                onPressed: _goPath, child: Text("Ga terug naar leerpad")),
+                onPressed: _goPath,
+                child: Text(
+                  "Ga terug naar leerpad",
+                  style: TextStyle(fontSize: 20),
+                )),
             Spacer()
           ],
         ));
 
     final exerciseWidgets = [
-      title,
-      subTitle,
-      Text("Ken je alle onderstaande figuren?"),
+      Center(
+        child: title,
+      ),
+      //title,
+      Center(
+        child: Text(
+          "Ken je alle onderstaande figuren?",
+          style: TextStyle(fontSize: 20),
+        ),
+      ),
+
       vierkantNameWidget,
       rechthoekNameWidget,
       driehoekNameWidget,
       cirkelNameWidget,
-      Text("Welke formules ken je nog voor de oppervlakte?"),
+      SizedBox(
+        height: 30,
+      ),
+      Center(
+        child: Text(
+          "Welke formules ken je nog voor de oppervlakte?",
+          style: TextStyle(fontSize: 20),
+        ),
+      ),
+
       vierkantFormuleWidget,
       rechthoekFormuleWidget,
       // driehoekFormuleWidget,
       cirkelFormuleWidget,
-      Text(
-          "Geen zorgen als je niet alle antwoorden wist, ik zal je helpen bij het leren van deze formules!"),
+      SizedBox(
+        height: 30,
+      ),
+      Center(
+        child: Text(
+          "Geen zorgen als je niet alle antwoorden wist, ik zal je helpen bij het leren van deze formules!",
+          style: TextStyle(color: Colors.grey),
+        ),
+      ),
+      SizedBox(
+        height: 30,
+      ),
       Row(
         children: [
           Spacer(),
@@ -575,7 +610,13 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
           Spacer()
         ],
       ),
-      Text(error, style: TextStyle(color: Colors.red)),
+      SizedBox(
+        height: 10,
+      ),
+      Center(
+        child: Text(error, style: TextStyle(color: Colors.red)),
+      ),
+
       showPreviousAnswersButton,
       buttonLeerpad,
     ];
@@ -596,8 +637,9 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
           ],
         ));
 
-    final sub2 =
-        Text("Je hebt deze oefening al gemaakt :) Wat wilt u graag doen?");
+    final sub2 = Center(
+      child: Text("Je hebt deze oefening al gemaakt :) Wat wilt u graag doen?"),
+    );
     final exercisesMade = [
       title,
       sub2,
@@ -731,7 +773,9 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
     );
 
     final solution = [
-      Header(title: "Vorige Antwoorden: "),
+      Center(
+        child: Header(title: "Vorige Antwoorden: "),
+      ),
       vierkantWidget,
       rechthoekWidget,
       driehoekWidget,
@@ -741,7 +785,7 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
       buttonLeerpad
     ];
 
-    final pages = [exerciseWidgets, exercisesMade, solution];
+    List pages = [exerciseWidgets, exercisesMade, solution];
 
     //return Scaffold(body: Center(child: Column(children: exerciseWidgets)));
 
