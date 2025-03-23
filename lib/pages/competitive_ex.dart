@@ -64,6 +64,10 @@ class _CompetitiveState extends State<CompetitiveEx> {
   final TextEditingController formuleDriehoek = TextEditingController();
   final TextEditingController oppervlakteDriehoek = TextEditingController();
   //combined: select the figures
+  String warning =
+      "De afmetingen van de figuren zijn niet realistisch voorgesteld!";
+  String textCombined =
+      "Welke figuren kan je vinden op bovenstaande afbeelding?";
   int r = 0;
   int l = 0;
   int b = 0;
@@ -1054,6 +1058,13 @@ class _CompetitiveState extends State<CompetitiveEx> {
     Widget selector = Center(
       child: figuresSelect,
     );
+
+    Widget whatToSelect = (widget.figure == "combined")
+        ? Text(
+            textCombined,
+            style: TextStyle(color: Colors.grey),
+          )
+        : Text("");
     Widget selectFigures = (widget.figure == "combined") ? selector : Text("");
 
     Widget storyText = Container(
@@ -1142,9 +1153,19 @@ class _CompetitiveState extends State<CompetitiveEx> {
       Center(
         child: vierkant,
       ),
+      Center(
+        child: Text(
+          warning,
+          style: TextStyle(color: Colors.grey),
+        ),
+      ),
       storyText,
       vars,
+      SizedBox(
+        height: 10,
+      ),
       selectFigures,
+      whatToSelect,
       rows,
       SizedBox(
         height: 20,
