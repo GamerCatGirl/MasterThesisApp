@@ -213,6 +213,7 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
       meetkundeResults["driehoekName"] = inputDriehoek.text;
       meetkundeResults["cirkelName"] = inputCirkel.text;
       meetkundeResults["vierkantFormule"] = inputVierkantFormule.text;
+      meetkundeResults["driehoekFormule"] = inputDriehoekFormule.text;
       meetkundeResults["rechthoekFormule"] = inputRechthoekFormule.text;
       meetkundeResults["cirkelFormule"] = inputCirkelFormule.text;
 
@@ -271,7 +272,7 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
   var colorDriehoekFormule = Colors.black;
   var colorCirkelFormule = Colors.black;
 
-  var score = 7;
+  var score = 8;
 
   void showPreviousAnswers() {
     CollectionReference dbExercises = db.collection("exercises");
@@ -288,6 +289,12 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
       answerCirkel = lastAnswer["cirkelName"];
       answerCirkelFormule = lastAnswer["cirkelFormule"];
       answerDriehoek = lastAnswer["driehoekName"];
+      answerDriehoekFormule = "";
+
+      if (lastAnswer.containsKey("driehoekFormule")) {
+        answerDriehoekFormule = lastAnswer["driehoekFormule"];
+      }
+
       answerRechthoek = lastAnswer["rechthoekName"];
       answerRechthoekFormule = lastAnswer["rechthoekFormule"];
       answerVierkant = lastAnswer["vierkantName"];
@@ -308,6 +315,15 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
         colorDriehoekNaam = Colors.red;
         score -= 1;
       }
+
+      if (lastAnswerCor.containsKey("driehoekFormule")) {
+        answerDriehoekFormuleCorrect = lastAnswerCor["driehoekFormule"];
+        if (!answerDriehoekFormuleCorrect) {
+          colorDriehoekFormule = Colors.red;
+          score -= 1;
+        }
+      }
+
       answerRechthoekCorrect = lastAnswerCor["rechthoekName"];
       if (!answerRechthoekCorrect) {
         colorRechthoekNaam = Colors.red;
@@ -507,8 +523,9 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
         controller: inputDriehoekFormule,
         saveResult: (res) {
           meetkundeLevel["driehoekFormule"] = res;
-          //meetkundeResults["driehoekFomule"] = inputDriehoekFormule.text;
           checkCompleted();
+          meetkundeResults["driehoekFomule"] = inputDriehoekFormule.text;
+          //checkCompleted();
           updateSkill(res, ["oppervlakte", "driehoek"], "remember");
         },
         showAnswers: showAnswers,
@@ -710,7 +727,7 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
     final textScore = Row(children: [
       Spacer(),
       Text(
-        "Score: " + score.toString() + "/7",
+        "Score: " + score.toString() + "/8",
         style: TextStyle(fontSize: 30),
       ),
       Spacer(),
