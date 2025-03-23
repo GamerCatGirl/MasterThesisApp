@@ -143,7 +143,6 @@ class _FormuleInputTileState extends State<FormuleInputTile> {
         showHint = false;
         iconHintPlacer = SizedBox(child: Text(""));
         showHintText = Text("");
-        print(widget.name);
         widget.saveResult(true);
       } else {
         widget.saveResult(false);

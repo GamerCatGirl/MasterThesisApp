@@ -193,12 +193,12 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
     } else {
       tries -= 1;
 
-      if (tries == 0) {
-        textButton = "Ga terug naar leerpad";
-        error = "Geen zorgen, we zullen later opnieuw proberen :)";
-      } else {
-        error = "";
-      }
+      //if (tries == 0) {
+      //  textButton = "Ga terug naar leerpad";
+      //  error = "Geen zorgen, we zullen later opnieuw proberen :)";
+      //} else {
+      error = "";
+      //}
 
       setState(() {
         showAnswers = true;
@@ -589,7 +589,7 @@ class _OppervlakteTheoryState extends State<OppervlakteTheory> {
 
       vierkantFormuleWidget,
       rechthoekFormuleWidget,
-      // driehoekFormuleWidget,
+      driehoekFormuleWidget, //TODO error?
       cirkelFormuleWidget,
       SizedBox(
         height: 30,

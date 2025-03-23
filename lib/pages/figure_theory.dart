@@ -345,7 +345,6 @@ class _FigureState extends State<FigureTheory> {
       List<String> figures = Consts.figuresCombined[idx];
       //+ x figures to select
       int speedSum = figures.length;
-      print("figs: " + figures.toString());
       showFormule = {};
 
       //TODO: showFormule a vect of bools
