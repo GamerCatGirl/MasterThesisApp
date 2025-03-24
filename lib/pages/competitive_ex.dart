@@ -42,6 +42,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
   final _show_start_exercise = true;
   int size = Random().nextInt(98) + 2; //number between 2 and 100
   String errorCode = "";
+  String eenheid = "m";
   //vierkant
   final TextEditingController zijde1 = TextEditingController();
   final TextEditingController zijde2 = TextEditingController();
@@ -104,7 +105,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
     if (widget.figure != "combined") {
       List images = Consts.images[widget.figure]!;
       List stories = Consts.stories[widget.figure]!;
-      if (images == null || stories == null) {
+      List eenheden = Consts.eenheden[widget.figure]!;
+      if (images == null || stories == null || eenheden == null) {
         throw ArgumentError("Figure does not exists!");
       }
       int index = images.indexOf(imageShort);
@@ -112,6 +114,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
         throw ArgumentError("Figure does not exists!");
       }
       storyArr = stories[index];
+      eenheid = eenheden[index];
     }
 
     if (widget.figure == "combined") {
@@ -148,31 +151,32 @@ class _CompetitiveState extends State<CompetitiveEx> {
     String story = //TODO: make this dynamic depending on image!
         "We willen de oppervlakte van de vloer van ons nieuw kapsalon berekenen. \nWe weten dat 1 zijde " +
             widget.z.toString() +
-            "m lang is, hoeveel is dan de oppervlakte van onze vloer?";
+            eenheid +
+            " lang is, hoeveel is dan de oppervlakte van onze vloer?";
 
     if (widget.figure == "rechthoek") {
       story = storyArr[0] +
           " " +
           widget.b.toString() +
-          " " +
+          eenheid +
           storyArr[1] +
           " " +
           l.toString() +
-          " " +
+          eenheid +
           storyArr[2];
     } else if (widget.figure == "vierkant") {
-      story = storyArr[0] + " " + widget.z.toString() + " " + storyArr[1];
+      story = storyArr[0] + " " + widget.z.toString() + eenheid + storyArr[1];
     } else if (widget.figure == "cirkel") {
-      story = storyArr[0] + " " + r.toString() + " " + storyArr[1];
+      story = storyArr[0] + " " + r.toString() + eenheid + storyArr[1];
     } else if (widget.figure == "driehoek") {
       story = storyArr[0] +
           " " +
           b.toString() +
-          " " +
+          eenheid +
           storyArr[1] +
           " " +
           widget.h.toString() +
-          " " +
+          eenheid +
           storyArr[2];
     } else if (widget.figure == "combined") {
       story = "";
@@ -321,18 +325,23 @@ class _CompetitiveState extends State<CompetitiveEx> {
         icon: Icons.abc,
         name: widget.figure);
 
-    String varAssignVierkant = "z = " + widget.z.toString() + "m";
+    String varAssignVierkant = "z = " + widget.z.toString() + eenheid;
 
-    String varAssignCirkel = "straal = " + r.toString() + "m";
+    String varAssignCirkel = "straal = " + r.toString() + eenheid;
 
     String varAssignRechthoek = "lengte = " +
         l.toString() +
-        "m\n breedte = " +
+        eenheid +
+        "\n breedte = " +
         widget.b.toString() +
-        "m";
+        eenheid;
 
-    String varAssignDriehoek =
-        "basis = " + b.toString() + "m\n hoogte = " + widget.h.toString() + "m";
+    String varAssignDriehoek = "basis = " +
+        b.toString() +
+        eenheid +
+        "\n hoogte = " +
+        widget.h.toString() +
+        eenheid;
 
     String varAssignCombined = "z = " + //vierkant
         widget.z.toString() +
@@ -361,7 +370,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
                         : varAssignVierkant;
 
     bool checkResultRechthoekFormule() {
-      String inputFormule = formuleRechthoek.text.replaceAll("m", "");
+      String inputFormule = formuleRechthoek.text.replaceAll(eenheid, "");
 
       int oppervlakteCalc = (widget.b ?? 1) * l;
 
@@ -417,7 +426,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
     }
 
     bool checkResultVierkantFormule() {
-      String inputFormule = formuleVierkant.text.replaceAll("m", "");
+      String inputFormule = formuleVierkant.text.replaceAll(eenheid, "");
 
       int oppervlakteCalc = widget.z * widget.z;
 
@@ -462,7 +471,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
     }
 
     bool checkResultDriehoekFormule() {
-      String inputFormule = formuleDriehoek.text.replaceAll("m", "");
+      String inputFormule = formuleDriehoek.text.replaceAll(eenheid, "");
       double oppervlakteCalc = (widget.h * b) / 2;
 
       if (!inputFormule.contains(":")) {
@@ -552,7 +561,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
       String formule = formuleCirkel.text
           .replaceAll(" ", "")
           .replaceAll(",", ".")
-          .replaceAll("m", "");
+          .replaceAll(eenheid, "");
 
       if (!formule.contains("x")) {
         setState(() {
@@ -865,19 +874,19 @@ class _CompetitiveState extends State<CompetitiveEx> {
     var rowVierkant = [
       Spacer(),
       SizedBox(width: 40, child: input1Field),
-      Text("m"),
+      Text(eenheid),
       Text("  X  "),
       SizedBox(
         width: 40,
         child: input2Field,
       ),
-      Text("m"),
+      Text(eenheid),
       Text("  =  "),
       SizedBox(
         width: 50,
         child: input3Field,
       ),
-      Text("m\u00B2"),
+      Text(eenheid + "\u00B2"),
       Spacer(),
     ];
 
@@ -892,26 +901,26 @@ class _CompetitiveState extends State<CompetitiveEx> {
         width: 50,
         child: input3Field,
       ),
-      Text("m\u00B2   (vierkant)"),
+      Text(eenheid + "\u00B2   (vierkant)"),
       Spacer()
     ];
 
     var rowRechthoek = [
       Spacer(),
       SizedBox(width: 40, child: input1FieldRechthoek),
-      Text("m"),
+      Text(eenheid),
       Text("  X  "),
       SizedBox(
         width: 40,
         child: input2FieldRechthoek,
       ),
-      Text("m"),
+      Text(eenheid),
       Text("  =  "),
       SizedBox(
         width: 50,
         child: inputOppervlakteRechthoek,
       ),
-      Text("m\u00B2"),
+      Text(eenheid + "\u00B2"),
       Spacer(),
     ];
 
@@ -926,7 +935,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
         width: 50,
         child: inputOppervlakteRechthoek,
       ),
-      Text("m\u00B2   (rechthoek)"),
+      Text(eenheid + "\u00B2   (rechthoek)"),
       Spacer()
     ];
 
@@ -934,19 +943,19 @@ class _CompetitiveState extends State<CompetitiveEx> {
       Spacer(),
       Text("( "),
       SizedBox(width: 40, child: input1FieldDriehoek),
-      Text("m"),
+      Text(eenheid),
       Text("  X  "),
       SizedBox(
         width: 40,
         child: input2FieldDriehoek,
       ),
-      Text("m) : 2"),
+      Text(eenheid + ") : 2"),
       Text("  =  "),
       SizedBox(
         width: 50,
         child: inputOppervlakteDriehoek,
       ),
-      Text("m\u00B2"),
+      Text(eenheid + "\u00B2"),
       Spacer(),
     ];
 
@@ -961,7 +970,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
         width: 50,
         child: inputOppervlakteDriehoek,
       ),
-      Text("m\u00B2   (driehoek)"),
+      Text(eenheid + "\u00B2   (driehoek)"),
       Spacer()
     ];
 
@@ -971,13 +980,13 @@ class _CompetitiveState extends State<CompetitiveEx> {
         width: 60,
         child: input1FieldCirkel,
       ),
-      Text("m"),
+      Text(eenheid),
       Text("  X  "),
       SizedBox(
         width: 60,
         child: input2FieldCirkel,
       ),
-      Text("m"),
+      Text(eenheid),
       Text("  X  "),
       SizedBox(
         width: 40,
@@ -988,7 +997,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
         width: 50,
         child: inputOppervlakteCirkel,
       ),
-      Text("m\u00B2"),
+      Text(eenheid + "\u00B2"),
       Spacer(),
     ];
 
@@ -1003,7 +1012,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
         width: 50,
         child: inputOppervlakteCirkel,
       ),
-      Text("m\u00B2  (cirkel)"),
+      Text(eenheid + "\u00B2  (cirkel)"),
       Spacer()
     ];
 
@@ -1169,6 +1178,12 @@ class _CompetitiveState extends State<CompetitiveEx> {
       rows,
       SizedBox(
         height: 20,
+      ),
+      Center(
+        child: Text(
+          "Je hoeft zelf geen eenheden in te vullen!",
+          style: TextStyle(color: Colors.grey),
+        ),
       ),
       Center(
         child: IconButton(
