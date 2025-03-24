@@ -807,6 +807,7 @@ class _FigureState extends State<FigureTheory> {
                   builder: (context, value, child) {
                     return CompetitiveEx(
                         showFormule: showFormule,
+                        conversion: false,
                         z: z,
                         b: breedte,
                         h: hoogte,

@@ -45,21 +45,46 @@ class _SkillState extends State<Viewskills> {
       //TODO: check if learning path is done
       Database.showSkills(user).then((val) {
         if (val) {
+          var datasetElo1 = RawDataSet(
+              title: 'Skills', color: Colors.blue, values: [0, 0, 0, 0, 0]);
+          var datasetEffort1 = RawDataSet(
+              title: 'Inzet', color: Colors.purple, values: [0, 10, 10, 20, 0]);
+
           Database.getElo(user).then((val) {
             if (val.isNotEmpty) {
-              var dataset =
+              datasetElo1 =
                   RawDataSet(title: 'Skills', color: Colors.blue, values: val);
-              eloDataset.value.add(dataset);
+              //eloDataset.value.add(dataset);
               //loading.value = false;
             }
           });
 
-          Database.getAllElo().then((val) => {
-                eloDataset.value.add(
-                  RawDataSet(title: 'Skills', color: Colors.grey, values: val),
-                ),
-                loading.value = false
-              });
+          Database.getAllElo().then((val) {
+            var resElo = val.sublist(0, 5);
+
+            List<double> res = [];
+            for (double eloMid in resElo) {
+              res.add(eloMid);
+            }
+
+            eloDataset.value.add(
+                RawDataSet(title: 'Skills', color: Colors.grey, values: res));
+            eloDataset.value.add(datasetElo1);
+
+            //inzet
+            List<double> inzet = [];
+            var inzetMap = val[5];
+            inzet.add(inzetMap["vierkant"]!); // inzetMap["vierkant"];
+            inzet.add(inzetMap["cirkel"]!);
+            inzet.add(inzetMap["rechthoek"]!);
+            inzet.add(inzetMap["driehoek"]!);
+            inzet.add(0);
+            effortDataset.value.add(
+                RawDataSet(title: 'Inzet', color: Colors.grey, values: inzet));
+            effortDataset.value.add(datasetEffort1);
+
+            loading.value = false;
+          });
           setState(() {
             selectedPage = 0;
           });
@@ -108,7 +133,7 @@ class _SkillState extends State<Viewskills> {
   }
 
   List<RadarDataSet> showingDataSets2() {
-    return rawDataSets2.asMap().entries.map((entry) {
+    return effortDataset.value.asMap().entries.map((entry) {
       final index = entry.key;
       final rawDataSet = entry.value;
 
@@ -220,6 +245,49 @@ class _SkillState extends State<Viewskills> {
       );
     }
 
+    SizedBox loadRadar2() {
+      return SizedBox(
+        height: 300,
+        child: RadarChart(RadarChartData(
+          dataSets: showingDataSets2(),
+          radarBackgroundColor: Colors.transparent,
+          borderData: FlBorderData(show: false),
+          titleTextStyle: TextStyle(color: Colors.black, fontSize: 14),
+          getTitle: (index, angle) {
+            final usedAngle = angle;
+            switch (index) {
+              case 0:
+                return RadarChartTitle(
+                  text: 'Opp. vierkant',
+                  angle: usedAngle,
+                );
+              case 2:
+                return RadarChartTitle(
+                  text: 'Opp. rechthoek',
+                  angle: usedAngle,
+                );
+              case 1:
+                return RadarChartTitle(text: 'Opp. Cirkel', angle: usedAngle);
+              case 3:
+                return RadarChartTitle(text: 'Opp. Driehoek', angle: usedAngle);
+              case 4:
+                return RadarChartTitle(
+                    text: 'Conversion Tabel', angle: usedAngle);
+              default:
+                return const RadarChartTitle(text: '');
+            }
+          },
+          titlePositionPercentageOffset: 0.2,
+          tickBorderData: const BorderSide(color: Colors.transparent),
+          gridBorderData: BorderSide(color: Colors.orange, width: 2),
+          ticksTextStyle:
+              const TextStyle(color: Colors.transparent, fontSize: 10),
+          radarBorderData:
+              const BorderSide(color: Colors.transparent), //buitenste cirkel
+        )),
+      );
+    }
+
     var radar = ValueListenableBuilder(
         valueListenable: loading,
         builder: (x, val, y) {
@@ -227,6 +295,16 @@ class _SkillState extends State<Viewskills> {
             return Text("loading");
           } else {
             return loadRadar1();
+          }
+        });
+
+    var radar2 = ValueListenableBuilder(
+        valueListenable: loading,
+        builder: (x, val, y) {
+          if (val) {
+            return Text("loading");
+          } else {
+            return loadRadar2();
           }
         });
 
@@ -288,47 +366,7 @@ class _SkillState extends State<Viewskills> {
         h2,
         subH2,
         space,
-        SizedBox(
-          height: 300,
-          child: RadarChart(RadarChartData(
-            dataSets: showingDataSets2(),
-            radarBackgroundColor: Colors.transparent,
-            borderData: FlBorderData(show: false),
-            titleTextStyle: TextStyle(color: Colors.black, fontSize: 14),
-            getTitle: (index, angle) {
-              final usedAngle = angle;
-              switch (index) {
-                case 0:
-                  return RadarChartTitle(
-                    text: 'Opp. vierkant',
-                    angle: usedAngle,
-                  );
-                case 2:
-                  return RadarChartTitle(
-                    text: 'Opp. rechthoek',
-                    angle: usedAngle,
-                  );
-                case 1:
-                  return RadarChartTitle(text: 'Opp. Cirkel', angle: usedAngle);
-                case 3:
-                  return RadarChartTitle(
-                      text: 'Opp. Driehoek', angle: usedAngle);
-                case 4:
-                  return RadarChartTitle(
-                      text: 'Conversion Tabel', angle: usedAngle);
-                default:
-                  return const RadarChartTitle(text: '');
-              }
-            },
-            titlePositionPercentageOffset: 0.2,
-            tickBorderData: const BorderSide(color: Colors.transparent),
-            gridBorderData: BorderSide(color: Colors.orange, width: 2),
-            ticksTextStyle:
-                const TextStyle(color: Colors.transparent, fontSize: 10),
-            radarBorderData:
-                const BorderSide(color: Colors.transparent), //buitenste cirkel
-          )),
-        ),
+        radar2,
         SizedBox(
           height: 40,
         ),

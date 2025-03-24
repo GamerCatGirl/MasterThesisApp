@@ -327,7 +327,7 @@ class Database {
     }
   }
 
-  static Future<List<double>> getAllElo() async {
+  static Future<List> getAllElo() async {
     FirebaseFirestore db = FirebaseFirestore.instance;
     CollectionReference usersDB = db.collection("exercises");
 
@@ -339,6 +339,15 @@ class Database {
     var cirkelElos = [];
     var driehoekElos = [];
     var conversionElos = [];
+
+    List<String> keys = ["vierkant", "cirkel", "driehoek", "rechthoek"];
+
+    Map<String, dynamic> exercisesMade = {
+      "vierkant": [],
+      "cirkel": [],
+      "driehoek": [],
+      "rechthoek": []
+    };
 
     for (var doc in docs) {
       var data = doc.data() as Map<String, dynamic>;
@@ -375,6 +384,32 @@ class Database {
       cirkelElos.add(eloCirkel);
       driehoekElos.add(eloDriehoek);
       conversionElos.add(eloConversion);
+
+      Map<String, int> amounts = {
+        "vierkant": 0,
+        "rechthoek": 0,
+        "cirkel": 0,
+        "driehoek": 0
+      };
+      if (data.containsKey("generatedPlayed")) {
+        var exercises = data["generatedPlayed"] as Map<String, dynamic>;
+        for (var key in keys) {
+          String keyDB = "oppervlakte-" + key;
+
+          if (exercises.containsKey(keyDB)) {
+            List data = exercises[keyDB];
+            int amount = data.length;
+            amounts[key] = amount;
+          }
+          int amountToAdd = amounts[key]!;
+          exercisesMade[key]!.add(amountToAdd);
+        }
+      }
+    }
+
+    for (var key in keys) {
+      var amounts = exercisesMade[key]!;
+      exercisesMade[key] = amounts.reduce((a, b) => a + b) / amounts.length;
     }
 
     var eloVierkant =
@@ -387,7 +422,14 @@ class Database {
     var eloConversion =
         conversionElos.reduce((a, b) => a + b) / conversionElos.length;
 
-    return [eloVierkant, eloCirkel, eloRechthoek, eloDriehoek, eloConversion];
+    return [
+      eloVierkant,
+      eloCirkel,
+      eloRechthoek,
+      eloDriehoek,
+      eloConversion,
+      exercisesMade
+    ];
   }
 
   static void login(String user) {

@@ -21,6 +21,7 @@ class CompetitiveEx extends StatefulWidget {
   final dynamic showFormule;
   final String image;
   final String figure;
+  final bool conversion;
 
   const CompetitiveEx(
       {super.key,
@@ -31,6 +32,7 @@ class CompetitiveEx extends StatefulWidget {
       required this.image,
       required this.figure,
       required this.callback,
+      required this.conversion,
       this.b,
       required this.h});
 
@@ -86,6 +88,9 @@ class _CompetitiveState extends State<CompetitiveEx> {
   late dynamic showFormule;
   bool checkFormule = false;
   final TextEditingController inputFormule = TextEditingController();
+
+  //omzettingen van eenheden
+  bool conversion = false;
 
   @override
   void initState() {

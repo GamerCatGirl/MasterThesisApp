@@ -429,6 +429,7 @@ class _CompetitivePartyState extends State<AsyncMatch> {
         builder: (context, value, child) {
           return CompetitiveEx(
               showFormule: showFormule,
+              conversion: false,
               z: z,
               b: breedte,
               h: hoogte,
