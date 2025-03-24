@@ -327,6 +327,39 @@ class Database {
     }
   }
 
+  static Future<Map<String, double>> getEffort(String user) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference usersDB = db.collection("exercises");
+
+    var doc = await usersDB.doc(user).get();
+    List<String> keys = ["vierkant", "cirkel", "driehoek", "rechthoek"];
+
+    Map<String, double> exercisesMade = {
+      "vierkant": 0,
+      "cirkel": 0,
+      "driehoek": 0,
+      "rechthoek": 0
+    };
+
+    if (doc.exists) {
+      var data = doc.data() as Map<String, dynamic>;
+
+      if (data.containsKey("generatedPlayed")) {
+        var exercises = data["generatedPlayed"] as Map<String, dynamic>;
+        for (var key in keys) {
+          String keyDB = "oppervlakte-" + key;
+
+          if (exercises.containsKey(keyDB)) {
+            List data = exercises[keyDB];
+            int amount = data.length;
+            exercisesMade[key] = amount as double;
+          }
+        }
+      }
+    }
+    return exercisesMade;
+  }
+
   static Future<List> getAllElo() async {
     FirebaseFirestore db = FirebaseFirestore.instance;
     CollectionReference usersDB = db.collection("exercises");

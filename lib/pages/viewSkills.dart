@@ -59,6 +59,17 @@ class _SkillState extends State<Viewskills> {
             }
           });
 
+          Database.getEffort(user).then((val) {
+            List<double> inzet = [];
+            inzet.add(val["vierkant"]!); // inzetMap["vierkant"];
+            inzet.add(val["cirkel"]!);
+            inzet.add(val["rechthoek"]!);
+            inzet.add(val["driehoek"]!);
+            inzet.add(0);
+            datasetEffort1 =
+                RawDataSet(title: 'Inzet', color: Colors.purple, values: inzet);
+          });
+
           Database.getAllElo().then((val) {
             var resElo = val.sublist(0, 5);
 
