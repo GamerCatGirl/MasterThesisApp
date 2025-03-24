@@ -84,9 +84,7 @@ class Database {
 
     var usersQ = await usersDB.get();
     var users = usersQ.docs;
-    print("before error");
     var amountUsers = users.length;
-    print("after error");
     var found = false;
 
     while (!found) {
