@@ -42,7 +42,6 @@ class _SkillState extends State<Viewskills> {
     if (loggedIn) {
       user = Consts.getLoggedInUser();
 
-      //TODO: check if learning path is done
       Database.showSkills(user).then((val) {
         if (val) {
           var datasetElo1 = RawDataSet(

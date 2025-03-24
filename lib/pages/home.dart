@@ -170,6 +170,9 @@ class _HomeState extends State<Home> {
       if (field.text == "") {
         error.value = "Vul '" + nameField + "' in!";
         return false;
+      } else if (field.text == user) {
+        error.value = "Vul een gebruiker in dat niet jouw gebruikersnaam is!";
+        return false;
       } else if (nameField == "Gebruikersnaam vriend" && field.text != user) {
         bool userExists = await Database.userExists(field.text);
 
@@ -177,7 +180,14 @@ class _HomeState extends State<Home> {
           error.value = "Gebruiker bestaat niet";
         }
 
-        return userExists;
+        bool canCompeteAgainst = await Database.canCompeteAgainst(field.text);
+
+        if (!canCompeteAgainst) {
+          error.value =
+              "Gebruiken heeft zijn leerpad nog niet voltooid, probeer later opnieuw!";
+        }
+
+        return canCompeteAgainst;
       } else if (field == partyMake) {
         bool partyExists = await Database.partyExists(field.text);
         if (partyExists) {
@@ -374,7 +384,6 @@ class _HomeState extends State<Home> {
           style: TextStyle(color: Colors.grey),
         )),
         widthSpacer,
-        /*
         Row(
           children: [
             Spacer(),
@@ -393,7 +402,6 @@ class _HomeState extends State<Home> {
           "De tegenspeler zal niet op hetzelfde moment tegen jou spelen!",
           style: TextStyle(color: Colors.grey),
         )),
-        */
         widthSpacer,
         Center(
             child: Text(

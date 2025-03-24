@@ -45,6 +45,29 @@ class Database {
     }
   }
 
+  static Future<bool> canCompeteAgainst(String username) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference users = db.collection("users");
+    //print("in can compete against");
+    var doc = await users.doc(username).get();
+    if (doc.exists) {
+      var data = doc.data() as Map<String, dynamic>;
+      if (data.containsKey("pathCompletion")) {
+        var path = data["pathCompletion"] as List<dynamic>;
+        var canCompete = true;
+        //print(path);
+        for (var elm in path) {
+          canCompete = canCompete && elm;
+        }
+        return canCompete;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
   static Future<String> findUserToPlayAgainst(
       List<String> skills, String user) async {
     List<String> skillsAdapted = skills;
@@ -61,9 +84,9 @@ class Database {
 
     var usersQ = await usersDB.get();
     var users = usersQ.docs;
-
+    print("before error");
     var amountUsers = users.length;
-
+    print("after error");
     var found = false;
 
     while (!found) {
