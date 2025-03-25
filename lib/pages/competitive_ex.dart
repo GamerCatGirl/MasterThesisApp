@@ -71,9 +71,11 @@ class _CompetitiveState extends State<CompetitiveEx> {
       "De afmetingen van de figuren zijn niet realistisch voorgesteld!";
   String textCombined =
       "Welke figuren kan je vinden op bovenstaande afbeelding?";
-  int r = 0;
-  int l = 0;
-  int b = 0;
+
+  //int max = Consts().maxMultiplyByHead;
+  int r = Random().nextInt(Consts().maxMultiplyByHead) + 1;
+  int l = Random().nextInt(Consts().maxMultiplyByHead) + 1;
+  int b = Random().nextInt(Consts().maxMultiplyByHead) + 1;
   ValueNotifier<List> selectedItems = ValueNotifier([]);
   ValueNotifier<String> errorSelect = ValueNotifier("");
   ValueNotifier<List> rowCombined = ValueNotifier([]);
@@ -100,6 +102,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
   }
 
   void setupVars() {
+    print("setup vars recalled!");
     int max = Consts().maxMultiplyByHead;
     showFormule = widget.showFormule;
 
@@ -123,9 +126,10 @@ class _CompetitiveState extends State<CompetitiveEx> {
     }
 
     if (widget.figure == "combined") {
-      r = Random().nextInt(max);
-      l = Random().nextInt(max);
-      b = Random().nextInt(max);
+      //if (widget.z != )
+      //r = Random().nextInt(max);
+      //l = Random().nextInt(max);
+      //b = Random().nextInt(max);
     } else if (widget.figure == "cirkel") {
       r = widget.z;
     } else if (widget.figure == "driehoek") {
@@ -864,6 +868,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
         done = checkResultDriehoek();
       } else if (widget.figure == "combined") {
         done = checkResultCombined();
+        print("checking combined");
+        print(done);
       } else {
         return false;
       }
