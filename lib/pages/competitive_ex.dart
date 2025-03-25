@@ -44,7 +44,15 @@ class _CompetitiveState extends State<CompetitiveEx> {
   final _show_start_exercise = true;
   int size = Random().nextInt(98) + 2; //number between 2 and 100
   String errorCode = "";
-  String eenheid = "m";
+  String fromEenheid = "m";
+  String toEenheid = "m";
+  double mulitplyWith = 1;
+  List<String> eenhedenAll = ["cm", "dm", "m"];
+  Map omzettingen = {
+    "cm": {"cm": 1, "dm": 0.1, "m": 0.01},
+    "dm": {"cm": 10, "dm": 1, "m": 0.1},
+    "m": {"cm": 100, "dm": 10, "m": 1},
+  };
   //vierkant
   final TextEditingController zijde1 = TextEditingController();
   final TextEditingController zijde2 = TextEditingController();
@@ -93,11 +101,16 @@ class _CompetitiveState extends State<CompetitiveEx> {
 
   //omzettingen van eenheden
   bool conversion = false;
+  final TextEditingController convertFrom1 = TextEditingController();
+  final TextEditingController convertTo1 = TextEditingController();
+  final TextEditingController convertFrom2 = TextEditingController();
+  final TextEditingController convertTo2 = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     setupVars();
+    conversion = widget.conversion;
     //update db?
   }
 
@@ -121,7 +134,15 @@ class _CompetitiveState extends State<CompetitiveEx> {
         throw ArgumentError("Figure does not exists!");
       }
       storyArr = stories[index];
-      eenheid = eenheden[index];
+      fromEenheid = eenheden[index];
+      toEenheid = eenheden[index];
+      if (conversion) {
+        //TODO: from eenheid different
+        int maxIdx = eenhedenAll.length;
+        int idx = Random().nextInt(maxIdx);
+        toEenheid = eenhedenAll[idx];
+        mulitplyWith = omzettingen[fromEenheid][toEenheid];
+      }
     }
 
     if (widget.figure == "combined") {
@@ -149,6 +170,9 @@ class _CompetitiveState extends State<CompetitiveEx> {
   @override
   Widget build(BuildContext context) {
     setupVars();
+
+    print(conversion);
+
     double width = MediaQuery.of(context).size.width;
 
     double widthImage = width / 3 * 2;
@@ -159,32 +183,33 @@ class _CompetitiveState extends State<CompetitiveEx> {
     String story = //TODO: make this dynamic depending on image!
         "We willen de oppervlakte van de vloer van ons nieuw kapsalon berekenen. \nWe weten dat 1 zijde " +
             widget.z.toString() +
-            eenheid +
+            fromEenheid +
             " lang is, hoeveel is dan de oppervlakte van onze vloer?";
 
     if (widget.figure == "rechthoek") {
       story = storyArr[0] +
           " " +
           widget.b.toString() +
-          eenheid +
+          fromEenheid +
           storyArr[1] +
           " " +
           l.toString() +
-          eenheid +
+          fromEenheid +
           storyArr[2];
     } else if (widget.figure == "vierkant") {
-      story = storyArr[0] + " " + widget.z.toString() + eenheid + storyArr[1];
+      story =
+          storyArr[0] + " " + widget.z.toString() + fromEenheid + storyArr[1];
     } else if (widget.figure == "cirkel") {
-      story = storyArr[0] + " " + r.toString() + eenheid + storyArr[1];
+      story = storyArr[0] + " " + r.toString() + fromEenheid + storyArr[1];
     } else if (widget.figure == "driehoek") {
       story = storyArr[0] +
           " " +
           b.toString() +
-          eenheid +
+          fromEenheid +
           storyArr[1] +
           " " +
           widget.h.toString() +
-          eenheid +
+          fromEenheid +
           storyArr[2];
     } else if (widget.figure == "combined") {
       story = "";
@@ -333,23 +358,67 @@ class _CompetitiveState extends State<CompetitiveEx> {
         icon: Icons.abc,
         name: widget.figure);
 
-    String varAssignVierkant = "z = " + widget.z.toString() + eenheid;
+    var inputFromConv1 = TextFormField(
+      controller: convertFrom1,
+      decoration: const InputDecoration(
+        border: UnderlineInputBorder(),
+      ),
+    );
 
-    String varAssignCirkel = "straal = " + r.toString() + eenheid;
+    var inputToConv1 = TextFormField(
+      controller: convertTo1,
+      decoration: const InputDecoration(
+        border: UnderlineInputBorder(),
+      ),
+    );
+
+    var inputFromConv2 = TextFormField(
+      controller: convertFrom2,
+      decoration: const InputDecoration(
+        border: UnderlineInputBorder(),
+      ),
+    );
+
+    var inputToConv2 = TextFormField(
+      controller: convertTo2,
+      decoration: const InputDecoration(
+        border: UnderlineInputBorder(),
+      ),
+    );
+
+    List<Widget> convertArrVierkant = [
+      Spacer(),
+      Text("z = "),
+      SizedBox(
+        width: 60,
+        child: inputFromConv1,
+      ),
+      Text(fromEenheid + " = "),
+      SizedBox(
+        width: 60,
+        child: inputToConv1,
+      ),
+      Text(toEenheid),
+      Spacer(),
+    ];
+
+    String varAssignVierkant = "z = " + widget.z.toString() + fromEenheid;
+
+    String varAssignCirkel = "straal = " + r.toString() + fromEenheid;
 
     String varAssignRechthoek = "lengte = " +
         l.toString() +
-        eenheid +
+        fromEenheid +
         "\n breedte = " +
         widget.b.toString() +
-        eenheid;
+        fromEenheid;
 
     String varAssignDriehoek = "basis = " +
         b.toString() +
-        eenheid +
+        fromEenheid +
         "\n hoogte = " +
         widget.h.toString() +
-        eenheid;
+        fromEenheid;
 
     String varAssignCombined = "z = " + //vierkant
         widget.z.toString() +
@@ -378,9 +447,10 @@ class _CompetitiveState extends State<CompetitiveEx> {
                         : varAssignVierkant;
 
     bool checkResultRechthoekFormule() {
-      String inputFormule = formuleRechthoek.text.replaceAll(eenheid, "");
+      String inputFormule = formuleRechthoek.text.replaceAll(toEenheid, "");
 
-      int oppervlakteCalc = (widget.b ?? 1) * l;
+      double oppervlakteCalc =
+          (widget.b ?? 1) * mulitplyWith * l * mulitplyWith;
 
       if (!inputFormule.contains("x")) {
         setState(() {
@@ -402,8 +472,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
       String leftSide = splitted[0].replaceAll(" ", "");
       String rightSide = splitted[1].replaceAll(" ", "");
 
-      String lengte = l.toString();
-      String breedte = widget.b.toString();
+      String lengte = (l * mulitplyWith).toString();
+      String breedte = (widget.b! * mulitplyWith).toString();
 
       if (leftSide != lengte && rightSide != lengte) {
         setState(() {
@@ -434,9 +504,10 @@ class _CompetitiveState extends State<CompetitiveEx> {
     }
 
     bool checkResultVierkantFormule() {
-      String inputFormule = formuleVierkant.text.replaceAll(eenheid, "");
+      String inputFormule = formuleVierkant.text.replaceAll(toEenheid, "");
 
-      int oppervlakteCalc = widget.z * widget.z;
+      double oppervlakteCalc =
+          widget.z * mulitplyWith * widget.z * mulitplyWith;
 
       if (!inputFormule.contains("x")) {
         setState(() {
@@ -458,7 +529,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
       String leftSide = splitted[0].replaceAll(" ", "");
       String rightSide = splitted[1].replaceAll(" ", "");
 
-      String zijde = widget.z.toString();
+      String zijde = (widget.z * mulitplyWith).toString();
 
       if (leftSide != zijde || rightSide != zijde) {
         setState(() {
@@ -479,8 +550,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
     }
 
     bool checkResultDriehoekFormule() {
-      String inputFormule = formuleDriehoek.text.replaceAll(eenheid, "");
-      double oppervlakteCalc = (widget.h * b) / 2;
+      String inputFormule = formuleDriehoek.text.replaceAll(toEenheid, "");
+      double oppervlakteCalc = (widget.h * mulitplyWith * b * mulitplyWith) / 2;
 
       if (!inputFormule.contains(":")) {
         setState(() {
@@ -537,14 +608,16 @@ class _CompetitiveState extends State<CompetitiveEx> {
       String leftAtom = breakUp[0];
       String rightAtom = breakUp[1];
 
-      if (leftAtom != widget.h.toString() && rightAtom != widget.h.toString()) {
+      if (leftAtom != (widget.h * mulitplyWith).toString() &&
+          rightAtom != (widget.h * mulitplyWith).toString()) {
         setState(() {
           errorCode = "De hoogte van de driehoek ontbreekt in de formule!";
         });
         return false;
       }
 
-      if (leftAtom != b.toString() && rightAtom != b.toString()) {
+      if (leftAtom != (b * mulitplyWith).toString() &&
+          rightAtom != (b * mulitplyWith).toString()) {
         setState(() {
           errorCode = "De basis van de driehoek ontbreekt in de formule!";
         });
@@ -565,11 +638,11 @@ class _CompetitiveState extends State<CompetitiveEx> {
     }
 
     bool checkResultCirkelFormule() {
-      double oppervlakteVal = r * r * 3.14;
+      double oppervlakteVal = r * mulitplyWith * r * mulitplyWith * 3.14;
       String formule = formuleCirkel.text
           .replaceAll(" ", "")
           .replaceAll(",", ".")
-          .replaceAll(eenheid, "");
+          .replaceAll(toEenheid, "");
 
       if (!formule.contains("x")) {
         setState(() {
@@ -612,7 +685,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
         return false;
       }
 
-      if (r1 != r.toString()) {
+      if (r1 != (r * mulitplyWith).toString()) {
         setState(() {
           errorCode = "De straal (r) in de formule klopt niet! (cirkel)";
         });
@@ -644,15 +717,16 @@ class _CompetitiveState extends State<CompetitiveEx> {
         return checkResultRechthoekFormule();
       }
 
-      int oppervlakteCalc = (widget.b ?? 1) * l;
+      double oppervlakteCalc =
+          (widget.b ?? 1) * mulitplyWith * l * mulitplyWith;
 
-      if (lengte.text != l.toString()) {
+      if (lengte.text != (l * mulitplyWith).toString()) {
         setState(() {
           errorCode =
               "de ingevulde lengte (l) komt niet overeen met de werkelijke lengte (input 1)";
         });
         return false;
-      } else if (breedte.text != widget.b.toString()) {
+      } else if (breedte.text != (widget.b! * mulitplyWith).toString()) {
         setState(() {
           errorCode =
               "de ingevulde breedte (b) komt niet overeen met de werkelijke breedte (input 2)";
@@ -670,7 +744,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
     }
 
     bool checkResultDriehoek() {
-      double oppervlakteCalc = ((widget.h ?? 1) * b) / 2;
+      double oppervlakteCalc =
+          ((widget.h * mulitplyWith) * b * mulitplyWith) / 2;
 
       if (widget.figure != "combined" && !showFormule) {
         return checkResultDriehoekFormule();
@@ -684,7 +759,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
               "de ingevulde basis (b) komt niet overeen met de werkelijke basis (input 1)";
         });
         return false;
-      } else if (hoogte.text != widget.h.toString()) {
+      } else if (hoogte.text != (widget.h * mulitplyWith).toString()) {
         setState(() {
           errorCode =
               "de ingevulde hoogte (h) komt niet overeen met de werkelijke hoogte (input 2)";
@@ -708,13 +783,13 @@ class _CompetitiveState extends State<CompetitiveEx> {
         return checkResultCirkelFormule();
       }
 
-      if (straal1.text != r.toString()) {
+      if (straal1.text != (r * mulitplyWith).toString()) {
         setState(() {
           errorCode =
               "de ingevulde straal (r) komt niet overeen met de werkelijke straal (input 1)";
         });
         return false;
-      } else if (straal2.text != r.toString()) {
+      } else if (straal2.text != (r * mulitplyWith).toString()) {
         setState(() {
           errorCode =
               "de ingevulde straal (r) komt niet overeen met de werkelijke straal (input 2)";
@@ -727,7 +802,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
         });
         return false;
       } else {
-        double oppervlakteVal = r * r * 3.14;
+        double oppervlakteVal = r * mulitplyWith * r * mulitplyWith * 3.14;
         String oppervlakteNumber = oppervlakteCirkel.text.replaceAll(",", ".");
         double oppervlakteFilledin = double.parse(oppervlakteNumber);
 
@@ -749,6 +824,10 @@ class _CompetitiveState extends State<CompetitiveEx> {
     void resultsChecked() {
       widget.callback();
       setState(() {
+        convertFrom1.text = "";
+        convertTo1.text = "";
+        convertFrom2.text = "";
+        convertTo2.text = "";
         zijde1.text = "";
         zijde2.text = "";
         oppervlakte.text = "";
@@ -781,20 +860,20 @@ class _CompetitiveState extends State<CompetitiveEx> {
         return checkResultVierkantFormule();
       }
 
-      if (zijde1.text != widget.z.toString()) {
+      if (zijde1.text != (widget.z * mulitplyWith).toString()) {
         setState(() {
           errorCode =
               "de ingevulde zijde (z) komt niet overeen met de werkelijke zijde (input 1)";
         });
         return false;
-      } else if (zijde2.text != widget.z.toString()) {
+      } else if (zijde2.text != (widget.z * mulitplyWith).toString()) {
         setState(() {
           errorCode =
               "de ingevulde zijde (z) komt niet overeen met de werkelijke zijde (input 2)";
         });
         return false;
       } else if (oppervlakte.text.replaceAll(" ", "") !=
-          (widget.z * widget.z).toString()) {
+          (widget.z * mulitplyWith * widget.z * mulitplyWith).toString()) {
         setState(() {
           errorCode =
               "de oppervlakte (vierkant) is niet juist berekend, maar zijde 1 en 2 kloppen, probeer opnieuw, je bent er bijna :)";
@@ -882,19 +961,19 @@ class _CompetitiveState extends State<CompetitiveEx> {
     var rowVierkant = [
       Spacer(),
       SizedBox(width: 40, child: input1Field),
-      Text(eenheid),
+      Text(toEenheid),
       Text("  X  "),
       SizedBox(
         width: 40,
         child: input2Field,
       ),
-      Text(eenheid),
+      Text(toEenheid),
       Text("  =  "),
       SizedBox(
         width: 50,
         child: input3Field,
       ),
-      Text(eenheid + "\u00B2"),
+      Text(toEenheid + "\u00B2"),
       Spacer(),
     ];
 
@@ -909,26 +988,26 @@ class _CompetitiveState extends State<CompetitiveEx> {
         width: 50,
         child: input3Field,
       ),
-      Text(eenheid + "\u00B2   (vierkant)"),
+      Text(toEenheid + "\u00B2   (vierkant)"),
       Spacer()
     ];
 
     var rowRechthoek = [
       Spacer(),
       SizedBox(width: 40, child: input1FieldRechthoek),
-      Text(eenheid),
+      Text(toEenheid),
       Text("  X  "),
       SizedBox(
         width: 40,
         child: input2FieldRechthoek,
       ),
-      Text(eenheid),
+      Text(toEenheid),
       Text("  =  "),
       SizedBox(
         width: 50,
         child: inputOppervlakteRechthoek,
       ),
-      Text(eenheid + "\u00B2"),
+      Text(toEenheid + "\u00B2"),
       Spacer(),
     ];
 
@@ -943,7 +1022,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
         width: 50,
         child: inputOppervlakteRechthoek,
       ),
-      Text(eenheid + "\u00B2   (rechthoek)"),
+      Text(toEenheid + "\u00B2   (rechthoek)"),
       Spacer()
     ];
 
@@ -951,19 +1030,19 @@ class _CompetitiveState extends State<CompetitiveEx> {
       Spacer(),
       Text("( "),
       SizedBox(width: 40, child: input1FieldDriehoek),
-      Text(eenheid),
+      Text(toEenheid),
       Text("  X  "),
       SizedBox(
         width: 40,
         child: input2FieldDriehoek,
       ),
-      Text(eenheid + ") : 2"),
+      Text(toEenheid + ") : 2"),
       Text("  =  "),
       SizedBox(
         width: 50,
         child: inputOppervlakteDriehoek,
       ),
-      Text(eenheid + "\u00B2"),
+      Text(toEenheid + "\u00B2"),
       Spacer(),
     ];
 
@@ -978,7 +1057,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
         width: 50,
         child: inputOppervlakteDriehoek,
       ),
-      Text(eenheid + "\u00B2   (driehoek)"),
+      Text(toEenheid + "\u00B2   (driehoek)"),
       Spacer()
     ];
 
@@ -988,13 +1067,13 @@ class _CompetitiveState extends State<CompetitiveEx> {
         width: 60,
         child: input1FieldCirkel,
       ),
-      Text(eenheid),
+      Text(toEenheid),
       Text("  X  "),
       SizedBox(
         width: 60,
         child: input2FieldCirkel,
       ),
-      Text(eenheid),
+      Text(toEenheid),
       Text("  X  "),
       SizedBox(
         width: 40,
@@ -1005,7 +1084,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
         width: 50,
         child: inputOppervlakteCirkel,
       ),
-      Text(eenheid + "\u00B2"),
+      Text(toEenheid + "\u00B2"),
       Spacer(),
     ];
 
@@ -1020,9 +1099,17 @@ class _CompetitiveState extends State<CompetitiveEx> {
         width: 50,
         child: inputOppervlakteCirkel,
       ),
-      Text(eenheid + "\u00B2  (cirkel)"),
+      Text(toEenheid + "\u00B2  (cirkel)"),
       Spacer()
     ];
+
+    List<Widget> conversionRow = [];
+
+    if (conversion && mulitplyWith != 1) {
+      if (widget.figure == "vierkant") {
+        conversionRow = convertArrVierkant;
+      }
+    }
 
     final figuresSelect = MultiSelectContainer(
         itemsDecoration: MultiSelectDecorations(
@@ -1180,6 +1267,9 @@ class _CompetitiveState extends State<CompetitiveEx> {
       vars,
       SizedBox(
         height: 10,
+      ),
+      Row(
+        children: conversionRow,
       ),
       selectFigures,
       whatToSelect,

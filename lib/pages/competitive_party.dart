@@ -55,6 +55,7 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
   String image = "";
   String figure = "";
   bool showFormule = true;
+  bool conversion = true; //TODO: dynamic ajust
 
   //ValueNotifier<Map<String, double>> progression = ValueNotifier({});
   Map<String, ValueNotifier<double>> progression = {};
@@ -315,7 +316,7 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
         builder: (context, value, child) {
           return CompetitiveEx(
               showFormule: showFormule,
-              conversion: false,
+              conversion: conversion,
               z: z,
               b: breedte,
               h: hoogte,
