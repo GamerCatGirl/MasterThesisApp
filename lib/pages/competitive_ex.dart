@@ -102,7 +102,6 @@ class _CompetitiveState extends State<CompetitiveEx> {
   }
 
   void setupVars() {
-    print("setup vars recalled!");
     int max = Consts().maxMultiplyByHead;
     showFormule = widget.showFormule;
 
@@ -868,8 +867,6 @@ class _CompetitiveState extends State<CompetitiveEx> {
         done = checkResultDriehoek();
       } else if (widget.figure == "combined") {
         done = checkResultCombined();
-        print("checking combined");
-        print(done);
       } else {
         return false;
       }
