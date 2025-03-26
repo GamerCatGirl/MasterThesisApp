@@ -9,6 +9,7 @@ import 'package:mathapp/components/icon_button_switch.dart';
 import 'package:mathapp/components/row_exercise.dart';
 import 'package:mathapp/components/start_exercise.dart';
 import 'package:mathapp/components/title_tile.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
 
@@ -882,13 +883,17 @@ class _CompetitiveState extends State<CompetitiveEx> {
         return checkResultCirkelFormule();
       }
 
-      if (straal1.text != (r * mulitplyWith).toString()) {
+      int rtocheck =
+          (double.parse(straal1.text.replaceAll(",", ".")) * 100).round();
+      int rtocheck2 =
+          (double.parse(straal2.text.replaceAll(",", ".")) * 100).round();
+      if (rtocheck != (r * mulitplyWith * 100).round()) {
         setState(() {
           errorCode =
               "de ingevulde straal (r) komt niet overeen met de werkelijke straal (input 1)";
         });
         return false;
-      } else if (straal2.text != (r * mulitplyWith).toString()) {
+      } else if (rtocheck2 != (r * mulitplyWith * 100).round()) {
         setState(() {
           errorCode =
               "de ingevulde straal (r) komt niet overeen met de werkelijke straal (input 2)";
@@ -907,6 +912,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
 
         var rounded1 = (oppervlakteVal * 100).round();
         var rounded2 = (oppervlakteFilledin * 100).round();
+        print(rounded1);
+        print(rounded2);
 
         if (rounded1 != rounded2) {
           setState(() {
@@ -1045,6 +1052,28 @@ class _CompetitiveState extends State<CompetitiveEx> {
           setState(() {
             errorCode =
                 "Zijde (z) is juist ingevuld voor je van eenheid veranderd, maar is niet juist omgezet!";
+          });
+          return false;
+        }
+      } else if (widget.figure == "cirkel") {
+        print(fromEenheid + " -> " + toEenheid);
+        print(r * mulitplyWith);
+        print(mulitplyWith);
+        if (convertFrom1.text != r.toString()) {
+          setState(() {
+            errorCode =
+                "Straal (r) is niet juist ingevuld voor je van eenheid veranderd!";
+          });
+          return false;
+        }
+
+        String converTo = convertTo1.text.replaceAll(",", ".");
+        int conv = (double.parse(converTo) * 100).round();
+        int contr = (r * mulitplyWith * 100).round();
+        if (conv != contr) {
+          setState(() {
+            errorCode =
+                "Straal (r) is juist ingevuld voor je van eenheid veranderd, maar is niet juist omgezet!";
           });
           return false;
         }
@@ -1458,7 +1487,12 @@ class _CompetitiveState extends State<CompetitiveEx> {
           Expanded(
               child: Column(
             children: [
-              Text("test"),
+              Text(
+                  style: TextStyle(color: Colors.red),
+                  "Opgelet! '.' wordt op dit rekenmachine als komma gebruikt \n(',' is om 1000 tallen te onderscheiden)!"),
+              SizedBox(
+                height: 10,
+              ),
               SizedBox(
                 width: 400,
                 height: 600,
