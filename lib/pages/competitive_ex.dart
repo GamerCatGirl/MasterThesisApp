@@ -9,6 +9,7 @@ import 'package:mathapp/components/icon_button_switch.dart';
 import 'package:mathapp/components/row_exercise.dart';
 import 'package:mathapp/components/start_exercise.dart';
 import 'package:mathapp/components/title_tile.dart';
+import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
 
 class CompetitiveEx extends StatefulWidget {
@@ -175,7 +176,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
 
     double width = MediaQuery.of(context).size.width;
 
-    double widthImage = width / 3 * 2;
+    double widthImage = width / 6 * 2;
 
     final vierkant = Image(
         fit: BoxFit.cover, width: widthImage, image: AssetImage(widget.image));
@@ -397,6 +398,86 @@ class _CompetitiveState extends State<CompetitiveEx> {
       SizedBox(
         width: 60,
         child: inputToConv1,
+      ),
+      Text(toEenheid),
+      Spacer(),
+    ];
+
+    List<Widget> convertArrCircle = [
+      Spacer(),
+      Text("r = "),
+      SizedBox(
+        width: 60,
+        child: inputFromConv1,
+      ),
+      Text(fromEenheid + " = "),
+      SizedBox(
+        width: 60,
+        child: inputToConv1,
+      ),
+      Text(toEenheid),
+      Spacer(),
+    ];
+
+    List<Widget> convertArrTriangle1 = [
+      Spacer(),
+      Text("b = "),
+      SizedBox(
+        width: 60,
+        child: inputFromConv1,
+      ),
+      Text(fromEenheid + " = "),
+      SizedBox(
+        width: 60,
+        child: inputToConv1,
+      ),
+      Text(toEenheid),
+      Spacer(),
+    ];
+
+    List<Widget> convertArrTriangle2 = [
+      Spacer(),
+      Text("h = "),
+      SizedBox(
+        width: 60,
+        child: inputFromConv2,
+      ),
+      Text(fromEenheid + " = "),
+      SizedBox(
+        width: 60,
+        child: inputToConv2,
+      ),
+      Text(toEenheid),
+      Spacer(),
+    ];
+
+    List<Widget> convertArrRectangle1 = [
+      Spacer(),
+      Text("l = "),
+      SizedBox(
+        width: 60,
+        child: inputFromConv1,
+      ),
+      Text(fromEenheid + " = "),
+      SizedBox(
+        width: 60,
+        child: inputToConv1,
+      ),
+      Text(toEenheid),
+      Spacer(),
+    ];
+
+    List<Widget> convertArrRectangle2 = [
+      Spacer(),
+      Text("b = "),
+      SizedBox(
+        width: 60,
+        child: inputFromConv2,
+      ),
+      Text(fromEenheid + " = "),
+      SizedBox(
+        width: 60,
+        child: inputToConv2,
       ),
       Text(toEenheid),
       Spacer(),
@@ -1104,10 +1185,19 @@ class _CompetitiveState extends State<CompetitiveEx> {
     ];
 
     List<Widget> conversionRow = [];
+    List<Widget> conversionRow2 = [];
 
     if (conversion && mulitplyWith != 1) {
       if (widget.figure == "vierkant") {
         conversionRow = convertArrVierkant;
+      } else if (widget.figure == "cirkel") {
+        conversionRow = convertArrCircle;
+      } else if (widget.figure == "driehoek") {
+        conversionRow = convertArrTriangle1;
+        conversionRow2 = convertArrTriangle2;
+      } else if (widget.figure == "rechthoek") {
+        conversionRow = convertArrRectangle1;
+        conversionRow2 = convertArrRectangle2;
       }
     }
 
@@ -1247,7 +1337,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
           }
         });
 
-    return Column(children: [
+    List<Widget> ex = [
       Center(
         child: Text("Exercise " +
             widget.currentExercise.toString() +
@@ -1270,6 +1360,9 @@ class _CompetitiveState extends State<CompetitiveEx> {
       ),
       Row(
         children: conversionRow,
+      ),
+      Row(
+        children: conversionRow2,
       ),
       selectFigures,
       whatToSelect,
@@ -1295,6 +1388,34 @@ class _CompetitiveState extends State<CompetitiveEx> {
         style: TextStyle(color: Colors.red),
       ),
       //])
-    ]);
+    ];
+
+    return Container(
+        width: MediaQuery.of(context).size.width,
+        child: Row(children: [
+          SizedBox(width: 20),
+          Expanded(child: Column(children: ex)),
+          Expanded(
+              child: Column(
+            children: [
+              Text("test"),
+              SizedBox(
+                width: 400,
+                height: 600,
+                child: SimpleCalculator(
+                  theme: const CalculatorThemeData(
+                    displayColor: Colors.black,
+                    displayStyle:
+                        const TextStyle(fontSize: 80, color: Colors.yellow),
+                    /*...*/
+                  ),
+                ),
+              )
+            ],
+          ))
+        ])); //,
+    //Column(children: [Text("test")])
+    //],
+    //);
   }
 }
