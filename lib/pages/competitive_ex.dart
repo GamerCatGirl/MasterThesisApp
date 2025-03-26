@@ -107,11 +107,14 @@ class _CompetitiveState extends State<CompetitiveEx> {
   final TextEditingController convertFrom2 = TextEditingController();
   final TextEditingController convertTo2 = TextEditingController();
 
+  //check chance?
+  String errorCheck = "";
+
   @override
   void initState() {
     super.initState();
-    setupVars();
     conversion = widget.conversion;
+    setupVars();
     //update db?
   }
 
@@ -135,15 +138,27 @@ class _CompetitiveState extends State<CompetitiveEx> {
         throw ArgumentError("Figure does not exists!");
       }
       storyArr = stories[index];
+
       fromEenheid = eenheden[index];
       toEenheid = eenheden[index];
+
+      //if (lastImage != widget.image) {
       if (conversion) {
+        print("setup conversion");
         //TODO: from eenheid different
         int maxIdx = eenhedenAll.length;
         int idx = Random().nextInt(maxIdx);
+        if (eenhedenAll[idx] == fromEenheid) {
+          idx += 1;
+        }
+        if (idx == eenhedenAll.length) {
+          idx = 0;
+        }
         toEenheid = eenhedenAll[idx];
         mulitplyWith = omzettingen[fromEenheid][toEenheid];
       }
+      //lastImage = widget.image;
+      //}
     }
 
     if (widget.figure == "combined") {
@@ -172,11 +187,14 @@ class _CompetitiveState extends State<CompetitiveEx> {
   Widget build(BuildContext context) {
     setupVars();
 
-    print(conversion);
-
     double width = MediaQuery.of(context).size.width;
 
     double widthImage = width / 6 * 2;
+
+    if (conversion) {
+      errorCheck =
+          "Opgelet, als je resultaten controleerd en het resultaat is niet juist krijg je een nieuwe omzetting! (50% kans)";
+    }
 
     final vierkant = Image(
         fit: BoxFit.cover, width: widthImage, image: AssetImage(widget.image));
@@ -1015,8 +1033,33 @@ class _CompetitiveState extends State<CompetitiveEx> {
       }
     }
 
+    bool checkConversion() {
+      if (widget.figure == "vierkant") {
+        if (convertFrom1.text != widget.z.toString()) {
+          setState(() {
+            errorCode =
+                "Zijde (z) is niet juist ingevuld voor je van eenheid veranderd!";
+          });
+          return false;
+        } else if (convertTo1.text != (widget.z * mulitplyWith).toString()) {
+          setState(() {
+            errorCode =
+                "Zijde (z) is juist ingevuld voor je van eenheid veranderd, maar is niet juist omgezet!";
+          });
+          return false;
+        }
+      }
+      return true;
+    }
+
     bool checkResult() {
       bool done = false;
+
+      if (conversion && mulitplyWith != 1) {
+        bool conversionDone = checkConversion();
+        if (!conversionDone) return false;
+      }
+
       if (widget.figure == "vierkant") {
         done = checkResultVierkant();
       } else if (widget.figure == "cirkel") {
@@ -1376,12 +1419,29 @@ class _CompetitiveState extends State<CompetitiveEx> {
           style: TextStyle(color: Colors.grey),
         ),
       ),
-      Center(
-        child: IconButton(
-            onPressed: () {
-              checkResult();
-            },
-            icon: Icon(Icons.done)),
+      Row(
+        children: [
+          Spacer(),
+          SizedBox(
+            width: 100,
+          ),
+          IconButton(
+              onPressed: () {
+                checkResult();
+              },
+              icon: Icon(Icons.done)),
+          SizedBox(
+            width: 10,
+          ),
+          SizedBox(
+            width: 300,
+            child: Text(
+              errorCheck,
+              style: TextStyle(color: Colors.grey),
+            ),
+          ),
+          Spacer()
+        ],
       ),
       Text(
         errorCode,
