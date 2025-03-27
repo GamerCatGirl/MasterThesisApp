@@ -650,7 +650,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
     }
 
     bool checkResultDriehoekFormule() {
-      String inputFormule = formuleDriehoek.text.replaceAll(toEenheid, "");
+      String inputFormule =
+          formuleDriehoek.text.replaceAll(toEenheid, "").replaceAll(" ", "");
       double oppervlakteCalc = (widget.h * mulitplyWith * b * mulitplyWith) / 2;
 
       if (!inputFormule.contains(":")) {
@@ -707,27 +708,31 @@ class _CompetitiveState extends State<CompetitiveEx> {
 
       String leftAtom = breakUp[0];
       String rightAtom = breakUp[1];
+      //TODO: convert to rounded after 2 dec after ,
+      int lft = (double.parse(leftAtom) * 100).round();
+      int rght = (double.parse(rightAtom) * 100).round();
 
-      if (leftAtom != (widget.h * mulitplyWith).toString() &&
-          rightAtom != (widget.h * mulitplyWith).toString()) {
+      int lftCtr = (widget.h * mulitplyWith * 100).round();
+      int rgtCtr = (b * mulitplyWith * 100).round();
+      if (lft != lftCtr && rght != lftCtr) {
         setState(() {
           errorCode = "De hoogte van de driehoek ontbreekt in de formule!";
         });
         return false;
       }
 
-      if (leftAtom != (b * mulitplyWith).toString() &&
-          rightAtom != (b * mulitplyWith).toString()) {
+      if (lft != rgtCtr && rght != rgtCtr) {
         setState(() {
           errorCode = "De basis van de driehoek ontbreekt in de formule!";
         });
         return false;
       }
 
-      if (double.parse(oppervlakteDriehoek.text
-              .replaceAll(" ", "")
-              .replaceAll(",", ".")) !=
-          oppervlakteCalc) {
+      int oppRound = (oppervlakteCalc * 100).round();
+      double parsedRes = double.parse(
+          oppervlakteDriehoek.text.replaceAll(" ", "").replaceAll(",", "."));
+      int pRes = (parsedRes * 100).round();
+      if (oppRound != pRes) {
         setState(() {
           errorCode = "De oppervlakte klopt niet, maar formule is wel correct!";
         });
@@ -865,8 +870,13 @@ class _CompetitiveState extends State<CompetitiveEx> {
               "de ingevulde hoogte (h) komt niet overeen met de werkelijke hoogte (input 2)";
         });
         return false;
-      } else if (double.parse(oppervlakteDriehoek.text.replaceAll(" ", "")) !=
-          oppervlakteCalc) {
+      }
+      //TODO: round * 100
+      int contr = (oppervlakteCalc * 100).round();
+      String parsedRes =
+          oppervlakteDriehoek.text.replaceAll(" ", "").replaceAll(",", ".");
+      int comp = (double.parse(parsedRes) * 100).round();
+      if (comp != contr) {
         setState(() {
           errorCode =
               "de oppervlakte (driehoek) is niet juist berekend, maar de basis en hoogte kloppen, probeer opnieuw, je bent er bijna :)";
@@ -1055,7 +1065,6 @@ class _CompetitiveState extends State<CompetitiveEx> {
     bool checkConversion() {
       int convFr =
           (int.parse(convertFrom1.text.replaceAll(",", ".")) * 100).round();
-      print(double.parse(convertTo1.text.replaceAll(",", ".")));
       int convTo =
           (double.parse(convertTo1.text.replaceAll(",", ".")) * 100).round();
       if (widget.figure == "vierkant") {
@@ -1073,9 +1082,6 @@ class _CompetitiveState extends State<CompetitiveEx> {
           return false;
         }
       } else if (widget.figure == "cirkel") {
-        print(fromEenheid + " -> " + toEenheid);
-        print(r * mulitplyWith);
-
         if (convFr != r * 100) {
           setState(() {
             errorCode =
@@ -1089,6 +1095,75 @@ class _CompetitiveState extends State<CompetitiveEx> {
           setState(() {
             errorCode =
                 "Straal (r) is juist ingevuld voor je van eenheid veranderd, maar is niet juist omgezet!";
+          });
+          return false;
+        }
+        return true;
+      }
+      int convFr2 =
+          (int.parse(convertFrom2.text.replaceAll(",", ".")) * 100).round();
+      int convTo2 =
+          (double.parse(convertTo2.text.replaceAll(",", ".")) * 100).round();
+
+      if (widget.figure == "rechthoek") {
+        int contr1 = (l * mulitplyWith * 100).round();
+        int contr2 = (widget.b! * mulitplyWith * 100).round();
+        if (convFr != l * 100) {
+          setState(() {
+            errorCode =
+                "Lengte (l) is niet juist ingevuld voor je van eenheid veranderd!";
+          });
+          return false;
+        }
+        if (convTo != contr1) {
+          setState(() {
+            errorCode =
+                "Lengte (l) is juist ingevuld voor je van eenheid veranderd, maar is niet juist omgezet!";
+          });
+          return false;
+        }
+        if (convFr2 != widget.b! * 100) {
+          setState(() {
+            errorCode =
+                "Breedte (b) is niet juist ingevuld voor je van eenheid veranderd!";
+          });
+          return false;
+        }
+        if (convTo2 != contr2) {
+          setState(() {
+            errorCode =
+                "Breedte (b) is juist ingevuld voor je van eenheid veranderd, maar is niet juist omgezet!";
+          });
+          return false;
+        }
+      } else if (widget.figure == "driehoek") {
+        int contr1 = (b * mulitplyWith * 100).round();
+        int contr2 = (widget.h! * mulitplyWith * 100).round();
+        if (convFr != b * 100) {
+          setState(() {
+            errorCode =
+                "Basis (b) is niet juist ingevuld voor je van eenheid veranderd!";
+          });
+          return false;
+        }
+        if (convTo != contr1) {
+          setState(() {
+            errorCode =
+                "Hoogte (h) is juist ingevuld voor je van eenheid veranderd, maar is niet juist omgezet!";
+          });
+          return false;
+        }
+        if (convFr2 != widget.h! * 100) {
+          setState(() {
+            errorCode =
+                "Basis (b) is niet juist ingevuld voor je van eenheid veranderd!";
+          });
+          return false;
+        }
+        if (convTo2 != contr2) {
+          setState(() {
+            errorCode =
+                "Hoogte (h) is juist ingevuld voor je van eenheid veranderd, maar is niet juist omgezet!";
           });
           return false;
         }
