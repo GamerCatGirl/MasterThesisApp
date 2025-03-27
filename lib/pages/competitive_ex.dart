@@ -145,7 +145,6 @@ class _CompetitiveState extends State<CompetitiveEx> {
 
       //if (lastImage != widget.image) {
       if (conversion) {
-        print("setup conversion");
         //TODO: from eenheid different
         int maxIdx = eenhedenAll.length;
         int idx = Random().nextInt(maxIdx);
@@ -547,7 +546,10 @@ class _CompetitiveState extends State<CompetitiveEx> {
                         : varAssignVierkant;
 
     bool checkResultRechthoekFormule() {
-      String inputFormule = formuleRechthoek.text.replaceAll(toEenheid, "");
+      String inputFormule = formuleRechthoek.text
+          .replaceAll(toEenheid, "")
+          .replaceAll(",", ".")
+          .replaceAll(" ", "");
 
       double oppervlakteCalc =
           (widget.b ?? 1) * mulitplyWith * l * mulitplyWith;
@@ -564,16 +566,23 @@ class _CompetitiveState extends State<CompetitiveEx> {
 
       if (splitted.length > 2) {
         setState(() {
-          errorCode = "De formule hoort maar in 'x' te bevatten!";
+          errorCode =
+              "De formule hoort maar in 'x' te bevatten! (geen hoofdletter)";
         });
         return false;
       }
 
-      String leftSide = splitted[0].replaceAll(" ", "");
-      String rightSide = splitted[1].replaceAll(" ", "");
+      String leftSi = splitted[0].replaceAll(" ", "");
+      String rightSi = splitted[1].replaceAll(" ", "");
 
-      String lengte = (l * mulitplyWith).toString();
-      String breedte = (widget.b! * mulitplyWith).toString();
+      int leftSide = (double.parse(leftSi) * 100).round();
+      int rightSide = (double.parse(rightSi) * 100).round();
+
+      String len = (l * mulitplyWith).toString();
+      String bre = (widget.b! * mulitplyWith).toString();
+
+      int lengte = (l * mulitplyWith * 100).round();
+      int breedte = (widget.b! * mulitplyWith * 100).round();
 
       if (leftSide != lengte && rightSide != lengte) {
         setState(() {
@@ -591,8 +600,11 @@ class _CompetitiveState extends State<CompetitiveEx> {
         return false;
       }
 
-      if (oppervlakteRechthoek.text.replaceAll(" ", "") !=
-          oppervlakteCalc.toString()) {
+      int contr = (oppervlakteCalc * 100).round();
+      String res =
+          oppervlakteRechthoek.text.replaceAll(" ", "").replaceAll(",", ".");
+      int resC = (double.parse(res) * 100).round();
+      if (contr != resC) {
         setState(() {
           errorCode =
               "de oppervlakte (rechthoek) is niet juist berekend, maar de breedte en lengte kloppen, probeer opnieuw, je bent er bijna :)";
@@ -650,8 +662,10 @@ class _CompetitiveState extends State<CompetitiveEx> {
     }
 
     bool checkResultDriehoekFormule() {
-      String inputFormule =
-          formuleDriehoek.text.replaceAll(toEenheid, "").replaceAll(" ", "");
+      String inputFormule = formuleDriehoek.text
+          .replaceAll(toEenheid, "")
+          .replaceAll(" ", "")
+          .replaceAll(",", ".");
       double oppervlakteCalc = (widget.h * mulitplyWith * b * mulitplyWith) / 2;
 
       if (!inputFormule.contains(":")) {
@@ -871,7 +885,7 @@ class _CompetitiveState extends State<CompetitiveEx> {
         });
         return false;
       }
-      //TODO: round * 100
+      //round * 100
       int contr = (oppervlakteCalc * 100).round();
       String parsedRes =
           oppervlakteDriehoek.text.replaceAll(" ", "").replaceAll(",", ".");
@@ -934,8 +948,6 @@ class _CompetitiveState extends State<CompetitiveEx> {
 
         var rounded1 = (oppervlakteVal * 100).round();
         var rounded2 = (oppervlakteFilledin * 100).round();
-        print(rounded1);
-        print(rounded2);
 
         if (rounded1 != rounded2) {
           setState(() {
@@ -1068,19 +1080,20 @@ class _CompetitiveState extends State<CompetitiveEx> {
       int convTo =
           (double.parse(convertTo1.text.replaceAll(",", ".")) * 100).round();
       if (widget.figure == "vierkant") {
-        if (convFr != (widget.z * 100)) {
+        if (convFr != (widget.z * 100).round()) {
           setState(() {
             errorCode =
                 "Zijde (z) is niet juist ingevuld voor je van eenheid veranderd!";
           });
           return false;
-        } else if (convTo != (widget.z * mulitplyWith * 100)) {
+        } else if (convTo != (widget.z * mulitplyWith * 100).round()) {
           setState(() {
             errorCode =
                 "Zijde (z) is juist ingevuld voor je van eenheid veranderd, maar is niet juist omgezet!";
           });
           return false;
         }
+        return true;
       } else if (widget.figure == "cirkel") {
         if (convFr != r * 100) {
           setState(() {
