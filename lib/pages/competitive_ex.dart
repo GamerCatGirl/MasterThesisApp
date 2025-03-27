@@ -166,11 +166,10 @@ class _CompetitiveState extends State<CompetitiveEx> {
       //}
     }
 
-    if (widget.figure == "combined") {
-      //if (widget.z != )
-      //r = Random().nextInt(max);
-      //l = Random().nextInt(max);
-      //b = Random().nextInt(max);
+    if (widget.figure == "combined" && errorCode == "") {
+      r = Random().nextInt(max) + 1;
+      l = Random().nextInt(max) + 1;
+      b = Random().nextInt(max) + 1;
     } else if (widget.figure == "cirkel") {
       r = widget.z;
     } else if (widget.figure == "driehoek") {
@@ -1075,6 +1074,11 @@ class _CompetitiveState extends State<CompetitiveEx> {
           bool resVierkant = checkResultCirkel();
           result = result && resVierkant;
         }
+
+        if (result && errorCode == "") {
+          setState(() {});
+        }
+
         return result;
       }
     }
