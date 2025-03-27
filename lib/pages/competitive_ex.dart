@@ -143,6 +143,9 @@ class _CompetitiveState extends State<CompetitiveEx> {
       fromEenheid = eenheden[index];
       toEenheid = eenheden[index];
 
+      conversion = widget.conversion;
+      showFormule = widget.showFormule;
+
       //if (lastImage != widget.image) {
       if (conversion) {
         //TODO: from eenheid different
@@ -156,6 +159,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
         }
         toEenheid = eenhedenAll[idx];
         mulitplyWith = omzettingen[fromEenheid][toEenheid];
+      } else {
+        mulitplyWith = 1;
       }
       //lastImage = widget.image;
       //}

@@ -22,3 +22,8 @@ samples, guidance on mobile development, and a full API reference.
 # push
 
 Run "git pushall"
+
+# push to brach
+
+git push origin branch - gitlab
+git push git branch - github

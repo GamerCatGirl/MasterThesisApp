@@ -219,6 +219,7 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
       String bot = Consts.getClosetsBot(eloFigure);
       var neededInfoBot = bots[bot];
       showFormule = neededInfoBot["showFormule"];
+      conversion = neededInfoBot["conversionUnlocked"];
     }
 
     if (figure == "rechthoek") {
