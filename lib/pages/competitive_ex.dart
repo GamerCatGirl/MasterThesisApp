@@ -882,11 +882,23 @@ class _CompetitiveState extends State<CompetitiveEx> {
       } else if (widget.figure == "combined" && !showFormule["cirkel"]) {
         return checkResultCirkelFormule();
       }
-
+      if (straal1.text.isEmpty) {
+        setState(() {
+          errorCode = "vul de straal in (input 1)";
+        });
+        return false;
+      } else if (straal2.text.isEmpty) {
+        setState(() {
+          errorCode = "vul de straal in (input 2)";
+        });
+        return false;
+      }
       int rtocheck =
           (double.parse(straal1.text.replaceAll(",", ".")) * 100).round();
+
       int rtocheck2 =
           (double.parse(straal2.text.replaceAll(",", ".")) * 100).round();
+
       if (rtocheck != (r * mulitplyWith * 100).round()) {
         setState(() {
           errorCode =
@@ -1041,14 +1053,19 @@ class _CompetitiveState extends State<CompetitiveEx> {
     }
 
     bool checkConversion() {
+      int convFr =
+          (int.parse(convertFrom1.text.replaceAll(",", ".")) * 100).round();
+      print(double.parse(convertTo1.text.replaceAll(",", ".")));
+      int convTo =
+          (double.parse(convertTo1.text.replaceAll(",", ".")) * 100).round();
       if (widget.figure == "vierkant") {
-        if (convertFrom1.text != widget.z.toString()) {
+        if (convFr != (widget.z * 100)) {
           setState(() {
             errorCode =
                 "Zijde (z) is niet juist ingevuld voor je van eenheid veranderd!";
           });
           return false;
-        } else if (convertTo1.text != (widget.z * mulitplyWith).toString()) {
+        } else if (convTo != (widget.z * mulitplyWith * 100)) {
           setState(() {
             errorCode =
                 "Zijde (z) is juist ingevuld voor je van eenheid veranderd, maar is niet juist omgezet!";
@@ -1058,8 +1075,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
       } else if (widget.figure == "cirkel") {
         print(fromEenheid + " -> " + toEenheid);
         print(r * mulitplyWith);
-        print(mulitplyWith);
-        if (convertFrom1.text != r.toString()) {
+
+        if (convFr != r * 100) {
           setState(() {
             errorCode =
                 "Straal (r) is niet juist ingevuld voor je van eenheid veranderd!";
@@ -1067,10 +1084,8 @@ class _CompetitiveState extends State<CompetitiveEx> {
           return false;
         }
 
-        String converTo = convertTo1.text.replaceAll(",", ".");
-        int conv = (double.parse(converTo) * 100).round();
         int contr = (r * mulitplyWith * 100).round();
-        if (conv != contr) {
+        if (convTo != contr) {
           setState(() {
             errorCode =
                 "Straal (r) is juist ingevuld voor je van eenheid veranderd, maar is niet juist omgezet!";
