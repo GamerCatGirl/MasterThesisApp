@@ -80,6 +80,7 @@ class _FigureState extends State<FigureTheory> {
   int speed = 10;
   double speedInterval = 0.5;
   dynamic showFormule = false;
+  bool conversion = false;
   ValueNotifier<bool> completed = ValueNotifier(false);
   ValueNotifier<bool> won = ValueNotifier(false);
 
@@ -322,6 +323,7 @@ class _FigureState extends State<FigureTheory> {
         //TODO: sometimes null????
         speed = botInfo[key];
         showFormule = botInfo["showFormule"];
+        conversion = botInfo["conversionUnlocked"];
       }
       updateTime += speed;
 
@@ -807,7 +809,7 @@ class _FigureState extends State<FigureTheory> {
                   builder: (context, value, child) {
                     return CompetitiveEx(
                         showFormule: showFormule,
-                        conversion: false,
+                        conversion: conversion,
                         z: z,
                         b: breedte,
                         h: hoogte,
