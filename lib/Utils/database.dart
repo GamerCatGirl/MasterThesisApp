@@ -636,6 +636,21 @@ class Database {
     }
   }
 
+  static void updateProgression(String user, Map<String, List> eloProgression,
+      Map<String, List> tProgression, DateTime time) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference progressionDB = db.collection("eloProgression");
+
+    var doc = {
+      "user": user,
+      "elo": eloProgression,
+      "t": tProgression,
+      "time": time,
+    };
+
+    progressionDB.add(doc);
+  }
+
   static void makeParty(
       String partyName, List<String> usersParty, List<String> selectedItems) {
     FirebaseFirestore db = FirebaseFirestore.instance;

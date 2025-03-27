@@ -36,6 +36,22 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
   late String partyID;
   late String partyName;
 
+  DateTime startTime = DateTime.now();
+
+  Map<String, List> tProgression = {
+    "vierkant": [],
+    "rechthoek": [],
+    "cirkel": [],
+    "driehoek": []
+  };
+
+  Map<String, List> eloProgression = {
+    "vierkant": [],
+    "rechthoek": [],
+    "cirkel": [],
+    "driehoek": []
+  };
+
   List<dynamic> exercises = [];
   int amountPlayers = 2;
   int placing = 0;
@@ -265,6 +281,11 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
     eloAndT["elo"] = newElo[0];
     eloAndT["t"] = newElo[1];
 
+    if (eloProgression.containsKey(figure)) {
+      eloProgression[figure]!.add(newElo[0]);
+      tProgression[figure]!.add(newElo[1]);
+    }
+
     setupExercise(newProgress);
     yourProgress.value = newProgress;
 
@@ -286,6 +307,9 @@ class _CompetitivePartyState extends State<CompetitiveParty> {
       }
 
       Database.updateEloAndEx(widget.user, yourElo, exercisesToPost);
+
+      Database.updateProgression(
+          widget.user, eloProgression, tProgression, startTime);
 
       try {
         Database.deleteParty(partyID);

@@ -111,6 +111,20 @@ class _FigureState extends State<FigureTheory> {
   int eloCoversion = Elo.initElo;
   double tConversion = Elo.initT;
 
+  Map<String, List> tProgression = {
+    "vierkant": [],
+    "rechthoek": [],
+    "cirkel": [],
+    "driehoek": []
+  };
+
+  Map<String, List> eloProgression = {
+    "vierkant": [],
+    "rechthoek": [],
+    "cirkel": [],
+    "driehoek": []
+  };
+
   List<String> bots = ["Bot1200", "Bot1500", "Bot1800"];
   List<String> botsVierkant = ["Bot1200", "Bot1500", "Bot1800"];
   List<String> botsRechthoek = ["Bot1200", "Bot1500", "Bot1800"];
