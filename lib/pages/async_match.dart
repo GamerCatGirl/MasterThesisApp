@@ -47,6 +47,22 @@ class _CompetitivePartyState extends State<AsyncMatch> {
 
   Timer? stopWatch;
 
+  DateTime startTime = DateTime.now();
+
+  Map<String, List> tProgression = {
+    "vierkant": [],
+    "rechthoek": [],
+    "cirkel": [],
+    "driehoek": []
+  };
+
+  Map<String, List> eloProgression = {
+    "vierkant": [],
+    "rechthoek": [],
+    "cirkel": [],
+    "driehoek": []
+  };
+
   Map<String, List> exercisesMade = {
     "vierkant": [],
     "rechthoek": [],
@@ -153,6 +169,9 @@ class _CompetitivePartyState extends State<AsyncMatch> {
     Database.postExercises(exercisesMade).then((Map<String, dynamic> exs) {
       Database.updateEloAndEx(widget.user, elos, exs);
     });
+
+    Database.updateProgression(
+        widget.user, eloProgression, tProgression, startTime);
   }
 
   void announceWinner() {
@@ -188,6 +207,11 @@ class _CompetitivePartyState extends State<AsyncMatch> {
     var newElo = Elo.updateElo(eloYou, eloBot, won, t, accuracySpeed);
     elo["elo"] = newElo[0];
     elo["t"] = newElo[1];
+
+    if (eloProgression.containsKey(figure)) {
+      eloProgression[figure]!.add(newElo[0]);
+      tProgression[figure]!.add(newElo[1]);
+    }
   }
 
   void exerciseSolved() {
