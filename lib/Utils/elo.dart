@@ -5,8 +5,9 @@ class Elo {
   static int initElo = 1500;
   static double weigthSpeed = 0.8;
   static double weigthAccuracy = 0.2;
-  static double initT = 10;
-  static double alpha = 0.05;
+  static double initT = 1;
+  static int tmulti = 10;
+  static double alpha = 0.1;
   static int maxK = 40;
   static int thresholdElo = 100;
 
@@ -55,7 +56,7 @@ class Elo {
     int expectedOutcome = (chanceWin > 0.5) ? 1 : -1;
     double t =
         _trendFactor(prevT, actualOutcome, expectedOutcome, accuracySpeed);
-    double k = _calcK(t);
+    double k = _calcK(t) * tmulti;
     int changeElo = (actualOutcome * k * (1 - chanceWin)).toInt();
 
     int newElo = prevElo + changeElo;
